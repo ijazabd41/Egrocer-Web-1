@@ -127,12 +127,25 @@
       </div>
 
       <!-- ADDRESS -->
+      <!-- ADDRESS BOOK -->
       <div class="pg-tab" id="tab-address">
-        <h2 style="font-size:17px;font-weight:800;margin-bottom:16px">📍 My Home Address</h2>
-        <div class="fs">
-          <h3>🏠 Home Delivery Address</h3>
-          <p style="font-size:12px;color:#6b7280;margin-bottom:12px">Add or update your home address. We use it for delivery on every order.</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <h2 style="font-size:17px;font-weight:800">📍 Address Book</h2>
+          <button onclick="showNewAddressForm()" class="sbtn" style="padding:8px 16px;max-width:max-content;font-size:12px">+ Add New</button>
+        </div>
+        <div id="addressList" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div style="color:#9ca3af;padding:20px;text-align:center;grid-column:1/-1">⏳ Loading addresses...</div>
+        </div>
+        
+        <!-- NEW ADDRESS FORM -->
+        <div id="newAddressFormSec" class="fs" style="display:none;margin-top:20px;border-top:1.5px solid #e5e7eb;padding-top:20px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <h3>🏠 Add New Address</h3>
+            <button onclick="document.getElementById('newAddressFormSec').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer">×</button>
+          </div>
           <div class="fgrid">
+            <div class="fg"><label class="fl">Name *</label><input class="fi" id="aName" placeholder="e.g. Home, Office"></div>
+            <div class="fg"><label class="fl">Phone</label><input class="fi" id="aPhone"></div>
             <div class="fg full"><label class="fl">Street / Building *</label><input class="fi" id="aStreet" placeholder="Building No, Street, Area"></div>
             <div class="fg full"><label class="fl">Street 2 (Apt / Villa)</label><input class="fi" id="aStreet2" placeholder="Apartment / Villa / Floor"></div>
             <div class="fg"><label class="fl">City</label><input class="fi" id="aCity" placeholder="Dubai"></div>
@@ -145,13 +158,14 @@
               <label class="fl">State / Emirate</label>
               <select class="fsel" id="aState"></select>
             </div>
+            <div class="fg"><label class="fl">Type</label>
+              <select class="fsel" id="aType"><option value="delivery">Delivery</option><option value="invoice">Invoice</option></select>
+            </div>
           </div>
           <div id="addrMsg" style="margin-top:8px;font-size:12px;font-weight:600"></div>
           <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-            <button onclick="saveAddress()" class="sbtn" style="max-width:220px">💾 Save Home Address</button>
-            <a href="javascript:void(0)" onclick="if(Cart.count()===0){ toast('Your cart is empty', 'warn'); return; } location.href='checkout.html';" style="background:#f3f4f6;color:#374151;padding:11px 18px;border-radius:8px;font-weight:700;font-size:12px;text-decoration:none;display:inline-flex;align-items:center">🛒 Go to Checkout</a>
+            <button onclick="saveNewAddress()" class="sbtn" style="max-width:220px">💾 Save Address</button>
           </div>
-          <div style="margin-top:14px;font-size:11px;color:#9ca3af">Saved via <code>/api/contacts/{partner_id}/update</code>. On checkout this address is used along with your chosen carrier (delivery method).</div>
         </div>
       </div>
 
@@ -424,6 +438,8 @@ async function viewOrderDetail(oid){
             var hasGeo = del.partner_latitude && del.partner_longitude;
             var mapUrl = hasGeo?'https://maps.google.com/?q='+del.partner_latitude+','+del.partner_longitude:'';
             var dcarrier = Array.isArray(del.carrier_id)?del.carrier_id[1]:(del.carrier_id||carrier||'');
+            var trackUrl = del.carrier_tracking_url || '';
+            var trackRef = del.carrier_tracking_ref || '';
             delHtml += '<div style="padding:8px 0;border-bottom:1px solid #dbeafe">'
               +'<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:5px">'
               +'<div><div style="font-size:13px;font-weight:800">'+(del.name||'Picking #'+del.id)+'</div>'
@@ -431,10 +447,12 @@ async function viewOrderDetail(oid){
               +'<span class="os '+(dstateKey==='done'?'os-ok':dstateKey==='cancel'?'os-cancel':'os-proc')+'">'+dstate+'</span>'
               +'</div>'
               +(dcarrier?'<div style="font-size:11px;color:#374151;margin-top:3px">Carrier: <strong>'+dcarrier+'</strong></div>':'')
+              +(trackRef?'<div style="font-size:11px;color:#374151;margin-top:2px">Tracking #: <strong>'+trackRef+'</strong></div>':'')
               +(del.scheduled_date?'<div style="font-size:11px;color:#6b7280">Scheduled: '+(del.scheduled_date||'').slice(0,16)+'</div>':'')
               +(del.date_done?'<div style="font-size:11px;color:#6b7280">Delivered: '+(del.date_done||'').slice(0,16)+'</div>':'')
               +(del.origin?'<div style="font-size:11px;color:#6b7280">Source: '+del.origin+'</div>':'')
-              +(mapUrl?'<a href="'+mapUrl+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;background:#fff;border:1px solid #93c5fd;color:#1e40af;padding:5px 10px;border-radius:6px;font-weight:700;font-size:10px;text-decoration:none">📍 Map Directions</a>':'')
+              +(mapUrl?'<a href="'+mapUrl+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;background:#fff;border:1px solid #93c5fd;color:#1e40af;padding:5px 10px;border-radius:6px;font-weight:700;font-size:10px;text-decoration:none;margin-right:6px">📍 Map Directions</a>':'')
+              +(trackUrl?'<a href="'+trackUrl+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;background:#1e40af;border:1px solid #1e40af;color:#fff;padding:5px 10px;border-radius:6px;font-weight:700;font-size:10px;text-decoration:none">🚚 Track Shipment</a>':'')
               +'</div>';
           }catch(_){
             delHtml += '<div style="padding:6px 0;font-size:11px;color:#9ca3af">Picking #'+pid2+' — could not load</div>';
@@ -565,53 +583,81 @@ async function loadLoyalty(){
 }
 
 async function loadAddress(){
-  // Load countries/states
+  document.getElementById('addressList').innerHTML='<div style="color:#9ca3af;padding:20px;text-align:center;grid-column:1/-1">⏳ Loading addresses...</div>';
+  var pid = API.myPid(); if(!pid)return;
   try{
-    var cR = await API.getCountries();
-    var countries = cR.data||[];
-    var cSel = document.getElementById('aCountry');
-    cSel.innerHTML='<option value="">Select Country</option>'+countries.map(function(c){ return '<option value="'+c.id+'">'+c.name+'</option>'; }).join('');
-    // UAE default
-    var uae = countries.find(function(c){ return c.name==='United Arab Emirates'||c.id===228; });
-    if(uae) cSel.value = uae.id;
-
-    var sR = await API.getStates();
-    var states = sR.data||[];
-    var sSel = document.getElementById('aState');
-    sSel.innerHTML='<option value="">Select State/Emirate</option>'+states.filter(function(s){ return !uae||(Array.isArray(s.country_id)?s.country_id[0]===uae.id:s.country_id===uae.id); }).map(function(s){ return '<option value="'+s.id+'">'+s.name+'</option>'; }).join('');
-  }catch(_){}
-
-  try{
-    var r = await API.myProfile();
-    var p = Array.isArray(r.data)?r.data[0]:r.data;
-    if(p){
-      document.getElementById('aStreet').value = p.street||'';
-      document.getElementById('aStreet2').value = p.street2||'';
-      document.getElementById('aCity').value = p.city||'';
-      document.getElementById('aZip').value = p.zip||'';
-      if(p.country_id) document.getElementById('aCountry').value = Array.isArray(p.country_id)?p.country_id[0]:p.country_id;
-      if(p.state_id) document.getElementById('aState').value = Array.isArray(p.state_id)?p.state_id[0]:p.state_id;
-    }
-  }catch(_){}
+    var r = await API.getChildContacts(pid);
+    var addrs = r.data||[];
+    var html = addrs.length ? addrs.map(a => {
+      return '<div style="border:1px solid #e5e7eb;border-radius:12px;padding:16px;background:#f9fafb">' +
+        '<div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;margin-bottom:8px">' + (a.type==='delivery'?'🚚 Delivery':a.type==='invoice'?'🧾 Invoice':'Contact') + '</div>' +
+        '<div style="font-weight:700;margin-bottom:4px">' + (a.name||'') + '</div>' +
+        '<div style="font-size:12px;color:#6b7280">' + [a.street,a.street2,a.city,a.zip].filter(Boolean).join(', ') + '</div>' +
+        '<div style="font-size:12px;color:#6b7280;margin-top:4px">' + (a.phone?'📞 '+a.phone:'') + '</div>' +
+      '</div>';
+    }).join('') : '<div style="color:#9ca3af;padding:20px;text-align:center;grid-column:1/-1">No addresses found. Add a new delivery or invoice address!</div>';
+    document.getElementById('addressList').innerHTML = html;
+  }catch(e){
+    document.getElementById('addressList').innerHTML='<div style="color:var(--red);padding:20px;text-align:center;grid-column:1/-1">❌ Failed to load addresses: '+e.message+'</div>';
+  }
 }
 
-async function saveAddress(){
-  var pid=API.myPid(); if(!pid)return;
-  var msg=document.getElementById('addrMsg');
-  var street=document.getElementById('aStreet').value.trim();
-  if(!street){ msg.textContent='❌ Street / Building is required'; msg.style.color='var(--red)'; return; }
-  msg.textContent='⏳ Saving address...'; msg.style.color='#9ca3af';
-  try{
-    await API.updContact(pid,{
-      street:street,
-      street2:document.getElementById('aStreet2').value.trim(),
-      city:document.getElementById('aCity').value.trim(),
-      zip:document.getElementById('aZip').value.trim(),
-      country_id:document.getElementById('aCountry').value,
-      state_id:document.getElementById('aState').value
-    });
-    msg.textContent='✅ Home address saved to your profile!'; msg.style.color='#065f46';
-  }catch(e){ msg.textContent='❌ '+e.message; msg.style.color='var(--red)'; }
+async function showNewAddressForm(){
+  document.getElementById('newAddressFormSec').style.display='block';
+  document.getElementById('addrMsg').textContent='';
+  document.getElementById('aName').value='';
+  document.getElementById('aPhone').value='';
+  document.getElementById('aStreet').value='';
+  document.getElementById('aStreet2').value='';
+  document.getElementById('aCity').value='';
+  document.getElementById('aZip').value='';
+  
+  if(document.getElementById('aCountry').options.length === 0){
+    try{
+      var [cr, sr] = await Promise.all([API.getCountries(), API.getStates()]);
+      var cSel = document.getElementById('aCountry');
+      var countries = cr.data||[];
+      var uae = countries.find(function(c){ return c.code==='AE'||c.name.includes('United Arab Emirates'); });
+      cSel.innerHTML='<option value="">Select Country</option>'+countries.map(function(c){ return '<option value="'+c.id+'">'+c.name+'</option>'; }).join('');
+      if(uae) cSel.value = uae.id;
+      
+      var states = sr.data||[];
+      var sSel = document.getElementById('aState');
+      sSel.innerHTML='<option value="">Select State/Emirate</option>'+states.filter(function(s){ return !uae||(Array.isArray(s.country_id)?s.country_id[0]===uae.id:s.country_id===uae.id); }).map(function(s){ return '<option value="'+s.id+'">'+s.name+'</option>'; }).join('');
+    }catch(_){}
+  }
+}
+
+async function saveNewAddress(){
+  var pid = API.myPid(); if(!pid)return;
+  var msg = document.getElementById('addrMsg');
+  var name = document.getElementById('aName').value.trim();
+  var street = document.getElementById('aStreet').value.trim();
+  if(!name || !street){ msg.textContent='❌ Name and Street are required'; msg.style.color='var(--red)'; return; }
+  
+  msg.textContent='⏳ Saving...'; msg.style.color='#9ca3af';
+  try {
+    var payload = {
+      parent_id: pid,
+      name: name,
+      phone: document.getElementById('aPhone').value.trim(),
+      street: street,
+      street2: document.getElementById('aStreet2').value.trim(),
+      city: document.getElementById('aCity').value.trim(),
+      zip: document.getElementById('aZip').value.trim(),
+      type: document.getElementById('aType').value,
+      country_id: document.getElementById('aCountry').value,
+      state_id: document.getElementById('aState').value
+    };
+    await API.addAddress(payload);
+    msg.textContent='✅ Address created successfully!'; msg.style.color='#065f46';
+    setTimeout(() => {
+      document.getElementById('newAddressFormSec').style.display='none';
+      loadAddress();
+    }, 1000);
+  }catch(e){
+    msg.textContent='❌ '+e.message; msg.style.color='var(--red)';
+  }
 }
 
 async function doLogout(){

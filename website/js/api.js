@@ -747,7 +747,12 @@ const API = ((_DB='staging-apr17', SK='cd_session', NOTIFY='eicoopit@gmail.com')
   // Home delivery: add customer address via updContact
   // Store pickup: show company address from description field + Google Maps button
   const getDeliveryMethods = () => GET('/api/delivery-method', { user_id:'2' });
-  const updDelivery = (oid, cid) => GET(`/api/order/${oid}/update`, { carrier_id:cid, origin:'COOPDISCOUNT-WEB' });
+  const updDelivery = (oid, cid, opts={}) => {
+    const p = { carrier_id:cid, origin:'COOPDISCOUNT-WEB' };
+    if (opts.partner_shipping_id) p.partner_shipping_id = opts.partner_shipping_id;
+    if (opts.partner_invoice_id) p.partner_invoice_id = opts.partner_invoice_id;
+    return GET(`/api/order/${oid}/update`, p);
+  };
   const getDeliveries = (p={}) => GET('/api/delivery-order', p);
   async function getDelivery(id) {
     try { return await GET(`/api/delivery-order/${id}`); }
@@ -910,11 +915,12 @@ const API = ((_DB='staging-apr17', SK='cd_session', NOTIFY='eicoopit@gmail.com')
     const prov = parseInt(provId, 10);
     const uid = myUserId() || 2;
     const attempts = [
+      { args: `[${tx}]`, transaction_id: tx },
       { args: `[${prov}]`, transaction_id: tx },
       { transaction_id: tx, provider_id: prov },
+      { args: `[${tx}]`, transaction_id: tx, user_id: uid },
       { args: `[${prov}]`, transaction_id: tx, user_id: uid },
       { transaction_id: tx, provider_id: prov, user_id: uid },
-      { args: `[${prov}]`, transaction_id: tx, provider_id: prov },
     ];
     let lastErr = null;
     for (const params of attempts) {
@@ -1356,6 +1362,8 @@ const API = ((_DB='staging-apr17', SK='cd_session', NOTIFY='eicoopit@gmail.com')
   // updContact: all address fields + image_1920 (for profile photo)
   const getContact  = pid  => GET(`/api/contacts/${pid}`);
   const getContacts = ()   => GET('/api/contacts');
+  const getChildContacts = pid => GET('/api/contacts', { domain:`[('parent_id','=',${pid})]`, limit:20, Offset:0 });
+  const addAddress  = data => GET('/api/contacts/new_address', data);
   const updContact  = (pid,f) => GET(`/api/contacts/${pid}/update`, f);
 
   // Save home address to the logged-in customer AND apply carrier_id to an open order.
@@ -1440,7 +1448,7 @@ const API = ((_DB='staging-apr17', SK='cd_session', NOTIFY='eicoopit@gmail.com')
     getLoyaltyBalance, getOrderDiscountAmount, resolveLoyaltyRewardId,
     normalizeApiErrorMessage, isOdooAccessError,
     // Contacts
-    getContact, getContacts, updContact, saveHomeAddressAndApplyCarrier,
+    getContacts, getContact, getChildContacts, addAddress, updContact, saveHomeAddressAndApplyCarrier,
     // Countries & States
     getCountries, getCountry, getStates,
     // Rider/Delivery

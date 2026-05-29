@@ -35,25 +35,39 @@
     <div id="carrierMsg" style="margin-top:8px;font-size:12px;font-weight:600"></div>
   </div>
 
-  <!-- DELIVERY ADDRESS — Home Address (saved to /api/contacts/{pid}/update) -->
+  <!-- DELIVERY ADDRESS SELECTOR -->
   <div class="fs" id="homeAddrSection">
-    <h3>🏠 Home Delivery Address</h3>
-    <p style="font-size:11px;color:#6b7280;margin-bottom:10px">Enter or edit your home address. We save it to your profile and use it for delivery.</p>
-    <div class="fgrid">
-      <div class="fg"><label class="fl">First Name *</label><input class="fi" id="fn" placeholder="Ahmed"></div>
-      <div class="fg"><label class="fl">Last Name *</label><input class="fi" id="ln" placeholder="Al-Rashid"></div>
-      <div class="fg"><label class="fl">Phone *</label><input class="fi" id="ph" placeholder="+971 55 000 0000" type="tel"></div>
-      <div class="fg"><label class="fl">Email *</label><input class="fi" id="em" placeholder="you@email.com" type="email"></div>
-      <div class="fg full"><label class="fl">Street / Building *</label><input class="fi" id="addr" placeholder="Building No, Street, Area"></div>
-      <div class="fg full"><label class="fl">Street 2 (Apt / Villa)</label><input class="fi" id="addr2" placeholder="Apartment / Villa / Floor"></div>
-      <div class="fg"><label class="fl">City</label><input class="fi" id="city" placeholder="Dubai"></div>
-      <div class="fg"><label class="fl">ZIP / Postal Code</label><input class="fi" id="zip" placeholder="00000"></div>
-      <div class="fg"><label class="fl">Country</label><select class="fsel" id="country"><option value="">Loading...</option></select></div>
-      <div class="fg"><label class="fl">State / Emirate</label><select class="fsel" id="state"><option value="">Loading...</option></select></div>
-      <div class="fg full"><label class="fl">Delivery Notes</label><input class="fi" id="notes" placeholder="Leave at door, building gate code..."></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h3>🏠 Delivery Address</h3>
+      <button onclick="document.getElementById('coNewAddr').style.display='block'" class="sbtn" style="padding:6px 12px;max-width:max-content;font-size:11px">+ Add New</button>
     </div>
-    <div id="addrMsg" style="margin-top:8px;font-size:12px;font-weight:600"></div>
-    <button type="button" onclick="saveHomeAddress()" style="margin-top:10px;background:#fff;border:1.5px solid var(--red);color:var(--red);padding:9px 16px;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer">💾 Save Address & Apply Delivery</button>
+    <p style="font-size:11px;color:#6b7280;margin-bottom:12px">Select an address from your Address Book.</p>
+    
+    <div id="coAddrList" style="display:flex;flex-direction:column;gap:10px;max-height:300px;overflow-y:auto;margin-bottom:14px">
+      <div style="color:#9ca3af;font-size:12px;text-align:center;padding:10px">⏳ Loading addresses...</div>
+    </div>
+
+    <!-- NEW ADDRESS FORM (Hidden by default) -->
+    <div id="coNewAddr" style="display:none;background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:14px">
+      <h4 style="font-size:13px;font-weight:800;margin-bottom:10px">Add New Address</h4>
+      <div class="fgrid">
+        <div class="fg"><label class="fl">Name *</label><input class="fi" id="fn" placeholder="e.g. Home, Office"></div>
+        <div class="fg"><label class="fl">Phone *</label><input class="fi" id="ph" placeholder="+971 55 000 0000" type="tel"></div>
+        <div class="fg full"><label class="fl">Street / Building *</label><input class="fi" id="addr" placeholder="Building No, Street, Area"></div>
+        <div class="fg full"><label class="fl">Street 2 (Apt / Villa)</label><input class="fi" id="addr2" placeholder="Apartment / Villa / Floor"></div>
+        <div class="fg"><label class="fl">City</label><input class="fi" id="city" placeholder="Dubai"></div>
+        <div class="fg"><label class="fl">ZIP / Postal Code</label><input class="fi" id="zip" placeholder="00000"></div>
+        <div class="fg"><label class="fl">Country</label><select class="fsel" id="country"><option value="">Loading...</option></select></div>
+        <div class="fg"><label class="fl">State / Emirate</label><select class="fsel" id="state"><option value="">Loading...</option></select></div>
+        <div class="fg"><label class="fl">Type</label><select class="fsel" id="addrType"><option value="delivery">Delivery</option><option value="invoice">Invoice</option></select></div>
+      </div>
+      <div id="addrMsg" style="margin-top:8px;font-size:12px;font-weight:600"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button type="button" onclick="saveCheckoutAddress()" class="sbtn" style="padding:9px 16px;max-width:140px">💾 Save</button>
+        <button type="button" onclick="document.getElementById('coNewAddr').style.display='none'" style="background:none;border:none;font-weight:700;color:#6b7280;cursor:pointer">Cancel</button>
+      </div>
+    </div>
+    <div class="fg full" style="margin-top:10px"><label class="fl">Delivery Notes</label><input class="fi" id="notes" placeholder="Leave at door, building gate code..."></div>
   </div>
 
   <!-- STORE PICKUP — Store address card (hidden by default) -->
@@ -140,48 +154,15 @@ function syncPickupContactFromHome(){
     if(hv && !pk.value.trim()) pk.value=hv;
   });
 }
-/** Collect checkout contact — merges pickup + hidden home fields + session. */
 async function resolveCheckoutContact(){
   var isStore=(selDeliveryKind==='store');
-  if(isStore) syncPickupContactFromHome();
-  var fn=(isStore?document.getElementById('fnPk'):document.getElementById('fn')).value.trim();
-  var ln=(isStore?document.getElementById('lnPk'):document.getElementById('ln')).value.trim();
-  var ph=(isStore?document.getElementById('phPk'):document.getElementById('ph')).value.trim();
-  var em=(isStore?document.getElementById('emPk'):document.getElementById('em')).value.trim();
-  if(isStore){
-    fn=fn||document.getElementById('fn').value.trim();
-    ln=ln||document.getElementById('ln').value.trim();
-    ph=ph||document.getElementById('ph').value.trim();
-    em=em||document.getElementById('em').value.trim();
+  var pid=API.myPid();
+  if(isStore) {
+    syncPickupContactFromHome();
+    return { isStore:true, pid:pid, fn:document.getElementById('fnPk').value, ph:document.getElementById('phPk').value, em:document.getElementById('emPk').value };
   }
-  var user=API.me();
-  if(user){
-    var parts=(user.name||'').trim().split(/\s+/);
-    if(!fn) fn=parts[0]||'';
-    if(!ln) ln=parts.slice(1).join(' ')||'';
-    if(!em) em=user.username||'';
-  }
-  if((!fn||!ph)&&API.loggedIn()){
-    try{
-      var r=await API.myProfile();
-      var p=Array.isArray(r.data)?r.data[0]:r.data;
-      if(p){
-        if(!fn&&p.name) fn=(p.name||'').trim().split(/\s+/)[0]||'';
-        if(!ln&&p.name) ln=(p.name||'').trim().split(/\s+/).slice(1).join(' ')||'';
-        if(!ph) ph=(p.phone||p.mobile||'').trim();
-        if(!em) em=(p.email||p.email_normalized||'').trim();
-      }
-    }catch(_){}
-  }
-  if(isStore){
-    if(fn) document.getElementById('fnPk').value=fn;
-    if(ln) document.getElementById('lnPk').value=ln;
-    if(ph) document.getElementById('phPk').value=ph;
-    if(em) document.getElementById('emPk').value=em;
-  }
-  var notes=(isStore?document.getElementById('notesPk'):document.getElementById('notes')).value.trim();
-  var addr=isStore?'':document.getElementById('addr').value.trim();
-  return { isStore, fn, ln, ph, em, notes, addr };
+  if(!selDeliveryContact) throw new Error('Please select a delivery address from your Address Book');
+  return { isStore:false, partnerId: selDeliveryContact.id };
 }
 function focusPickupContactMissing(contact){
   var el=document.getElementById('storePickupSection');
@@ -199,12 +180,12 @@ document.addEventListener('DOMContentLoaded', async function(){
     var nm=user.name||'';
     var fnVal=nm.split(' ')[0]||'';
     var lnVal=nm.split(' ').slice(1).join(' ')||'';
-    document.getElementById('fn').value=fnVal;
-    document.getElementById('ln').value=lnVal;
-    document.getElementById('em').value=user.username||'';
-    document.getElementById('fnPk').value=fnVal;
-    document.getElementById('lnPk').value=lnVal;
-    document.getElementById('emPk').value=user.username||'';
+    if(document.getElementById('fn')) document.getElementById('fn').value=nm;
+    if(document.getElementById('ln')) document.getElementById('ln').value=lnVal;
+    if(document.getElementById('em')) document.getElementById('em').value=user.username||'';
+    if(document.getElementById('fnPk')) document.getElementById('fnPk').value=fnVal;
+    if(document.getElementById('lnPk')) document.getElementById('lnPk').value=lnVal;
+    if(document.getElementById('emPk')) document.getElementById('emPk').value=user.username||'';
     await loadCountriesStates();
     try{
       var r=await API.myProfile();
@@ -228,7 +209,7 @@ document.addEventListener('DOMContentLoaded', async function(){
   loadPayProviders();
   loadDeliveryMethods();
 
-  // Auto-fetch best loyalty coupon if logged in
+// Auto-fetch best loyalty coupon if logged in
   var preCoupon = new URLSearchParams(location.search).get('coupon');
   if (!preCoupon && API.loggedIn()) {
     try {
@@ -248,7 +229,59 @@ document.addEventListener('DOMContentLoaded', async function(){
     document.getElementById('couponInput').value = preCoupon;
     if (API.loggedIn()) applyCoupon();
   }
+  
+  if(API.loggedIn()) {
+    loadCheckoutAddresses();
+  } else {
+    document.getElementById('coAddrList').innerHTML = '<div style="color:#e41e26;font-size:12px;text-align:center;padding:10px">Sign in to load your address book.</div>';
+  }
 });
+
+var selDeliveryContact = null;
+
+async function loadCheckoutAddresses(){
+  var pid = API.myPid(); if(!pid) return;
+  var el = document.getElementById('coAddrList');
+  try{
+    var r = await API.getChildContacts(pid);
+    var addrs = r.data || [];
+    if(addrs.length===0){
+      el.innerHTML = '<div style="color:#6b7280;font-size:12px;text-align:center;padding:10px">No saved addresses. Please add a new delivery address.</div>';
+      document.getElementById('coNewAddr').style.display = 'block';
+    } else {
+      el.innerHTML = addrs.map(function(a){
+        var isDel = a.type==='delivery';
+        var isInv = a.type==='invoice';
+        var tLbl = isDel?'🚚 Delivery':isInv?'🧾 Invoice':'Contact';
+        var isSel = selDeliveryContact && selDeliveryContact.id === a.id;
+        return '<div class="co-addr-card" onclick="selectCheckoutAddress('+a.id+')" style="cursor:pointer;border:1.5px solid '+(isSel?'var(--red)':'#e5e7eb')+';border-radius:10px;padding:12px;background:'+(isSel?'#fff5f5':'#f9fafb')+'">' +
+          '<div style="font-size:11px;font-weight:800;color:var(--red);text-transform:uppercase;margin-bottom:6px">'+tLbl+'</div>' +
+          '<div style="font-weight:700;font-size:13px;margin-bottom:2px">'+(a.name||'')+'</div>' +
+          '<div style="font-size:11px;color:#6b7280">'+[a.street,a.street2,a.city,a.zip].filter(Boolean).join(', ')+'</div>' +
+        '</div>';
+      }).join('');
+      // Auto-select first delivery address if none selected
+      if(!selDeliveryContact){
+        var defaultDel = addrs.find(a => a.type==='delivery') || addrs[0];
+        selDeliveryContact = defaultDel;
+        loadCheckoutAddresses(); // re-render to show selection
+      }
+    }
+  }catch(e){
+    el.innerHTML = '<div style="color:var(--red);font-size:12px">❌ Failed to load addresses</div>';
+  }
+}
+
+async function selectCheckoutAddress(id){
+  var pid = API.myPid(); if(!pid) return;
+  var r = await API.getChildContacts(pid);
+  var addrs = r.data || [];
+  var match = addrs.find(a => a.id === id);
+  if(match){
+    selDeliveryContact = match;
+    loadCheckoutAddresses();
+  }
+}
 
 async function loadCountriesStates(){
   try{
@@ -349,15 +382,8 @@ function toggleAddressSection(){
     }
   }
   if(isStore) syncPickupContactFromHome();
-  else {
-    if(!document.getElementById('fn').value.trim()) document.getElementById('fn').value=document.getElementById('fnPk').value;
-    if(!document.getElementById('ln').value.trim()) document.getElementById('ln').value=document.getElementById('lnPk').value;
-    if(!document.getElementById('ph').value.trim()) document.getElementById('ph').value=document.getElementById('phPk').value;
-    if(!document.getElementById('em').value.trim()) document.getElementById('em').value=document.getElementById('emPk').value;
-  }
 }
 
-// Update carrier_id on the order via /api/order/{oid}/update?carrier_id=X
 async function pushCarrierToOrder(){
   var msg=document.getElementById('carrierMsg');
   if(!selCarrierId){ return; }
@@ -374,34 +400,33 @@ async function pushCarrierToOrder(){
   }catch(e){ msg.textContent='❌ Failed to apply carrier: '+e.message; msg.style.color='#e41e26'; }
 }
 
-async function saveHomeAddress(){
-  var msg=document.getElementById('addrMsg');
-  if(!API.loggedIn()){ msg.textContent='❌ Please sign in to save your address'; msg.style.color='#e41e26'; return; }
-  var fn=document.getElementById('fn').value.trim();
-  var ln=document.getElementById('ln').value.trim();
-  var em=document.getElementById('em').value.trim();
-  var ph=document.getElementById('ph').value.trim();
-  var addr=document.getElementById('addr').value.trim();
-  if(!fn||!addr){ msg.textContent='❌ Name and street are required'; msg.style.color='#e41e26'; return; }
+async function saveCheckoutAddress(){
+  var pid = API.myPid(); if(!pid)return;
+  var msg = document.getElementById('addrMsg');
+  var name = document.getElementById('fn').value.trim();
+  var street = document.getElementById('addr').value.trim();
+  if(!name || !street){ msg.textContent='❌ Name and Street are required'; msg.style.color='var(--red)'; return; }
+  
   msg.textContent='⏳ Saving address...'; msg.style.color='#9ca3af';
-  var oid=Cart.oid();
-  if(!oid){ try{ oid=await Cart.ensureOrder(); }catch(_){} }
-  var fields={
-    name: (fn+' '+ln).trim(),
-    email: em,
-    phone: ph,
-    mobile: ph,
-    street: addr,
-    street2: document.getElementById('addr2').value.trim(),
-    city: document.getElementById('city').value.trim(),
-    zip: document.getElementById('zip').value.trim(),
-    country_id: document.getElementById('country').value||'',
-    state_id: document.getElementById('state').value||''
-  };
-  try{
-    await API.saveHomeAddressAndApplyCarrier(fields, oid, selCarrierId);
-    msg.textContent='✅ Address saved & '+selCarrierName+' applied to order';
-    msg.style.color='#065f46';
+  try {
+    var payload = {
+      parent_id: pid,
+      name: name,
+      phone: document.getElementById('ph').value.trim(),
+      street: street,
+      street2: document.getElementById('addr2').value.trim(),
+      city: document.getElementById('city').value.trim(),
+      zip: document.getElementById('zip').value.trim(),
+      type: document.getElementById('addrType').value,
+      country_id: document.getElementById('country').value,
+      state_id: document.getElementById('state').value
+    };
+    await API.addAddress(payload);
+    msg.textContent='✅ Address created! Select it from the list above.'; msg.style.color='#065f46';
+    setTimeout(() => {
+      document.getElementById('coNewAddr').style.display='none';
+      loadCheckoutAddresses();
+    }, 1500);
   }catch(e){ msg.textContent='❌ '+e.message; msg.style.color='#e41e26'; }
 }
 
@@ -487,16 +512,19 @@ async function placeOrder(){
   var errEl=document.getElementById('placeErr'), btn=document.getElementById('placeBtn');
   errEl.style.display='none';
   var contact=await resolveCheckoutContact();
-  var isStore=contact.isStore, fn=contact.fn, ln=contact.ln, ph=contact.ph, em=contact.em, addr=contact.addr;
-  if(isStore){
-    if(!fn||!ph){
-      errEl.textContent='❌ Please enter your name and phone in the pickup contact section below (or sign in so we can use your profile).';
+  if(contact.isStore){
+    if(!contact.fn||!contact.ph){
+      errEl.textContent='❌ Please enter your name and phone in the pickup contact section below.';
       errEl.style.display='flex';
       focusPickupContactMissing(contact);
       return;
     }
   } else {
-    if(!fn||!ph||!em||!addr){errEl.textContent='❌ Please fill in all required fields (Name, Phone, Email, Address)';errEl.style.display='flex';return;}
+    if(!contact.partnerId){
+      errEl.textContent='❌ Please select a Delivery Address from your Address Book.';
+      errEl.style.display='flex';
+      return;
+    }
   }
   if(!Cart.raw().length){errEl.textContent='❌ Your cart is empty';errEl.style.display='flex';return;}
   if(!API.loggedIn()){errEl.textContent='❌ Please sign in to place an order';errEl.style.display='flex';return;}
@@ -572,7 +600,6 @@ async function placeOrder(){
     }
 
     // RE-APPLY COUPON: syncToOrder completely wipes existing lines (including the backend reward line)
-    // We must re-apply the active coupon now so Odoo calculates the discounted amount_total before payment
     if(typeof appliedCoupon !== 'undefined' && appliedCoupon && appliedCoupon.code){
       try {
         log.info('Checkout','re-applying coupon after sync',{orderId:oid,code:appliedCoupon.code});
@@ -582,40 +609,24 @@ async function placeOrder(){
       }
     }
 
-    // 3) Update delivery method (carrier_id) on the order
-    try{await API.updDelivery(parseInt(oid),selCarrierId);}catch(_){}
+    // 3) Update delivery method (carrier_id) on the order AND attach shipping/invoice addresses
+    var updOpts = {};
+    if(!contact.isStore && contact.partnerId){
+      updOpts.partner_shipping_id = contact.partnerId;
+      updOpts.partner_invoice_id = contact.partnerId;
+    }
+    try{await API.updDelivery(parseInt(oid),selCarrierId, updOpts);}catch(_){}
 
-    // 4) Add delivery note (full address) — for store pickup we skip address and tag as PICKUP
-    var cityVal=document.getElementById('city').value.trim();
-    var zipVal=document.getElementById('zip').value.trim();
-    var note=(isStore?'[STORE PICKUP] ':'')+fn+' '+ln+' | '+ph+(em?' | '+em:'');
-    if(!isStore){ note += ' | '+addr+(cityVal?', '+cityVal:'')+(zipVal?' '+zipVal:''); }
-    var notesVal=contact.notes;
-    if(notesVal)note+=' | '+notesVal;
-    await API.updOrder(parseInt(oid),{note:note,origin:'CoopMart Web'}).catch(function(e){
-      log.warn('Checkout','order note update failed',{orderId:oid,message:e.message});
-    });
+    // 4) Add delivery note
+    var note = contact.isStore ? '[STORE PICKUP] ' + contact.fn + ' | ' + contact.ph + (contact.em?' | '+contact.em:'') : '[DELIVERY] Contact ID ' + contact.partnerId;
+    var notesVal = document.getElementById('notes').value.trim();
+    if(notesVal) note+=' | Notes: '+notesVal;
+    await API.updOrder(parseInt(oid),{note:note,origin:'COOPDISCOUNT-WEB'}).catch(function(e){});
 
     // 5–7) Confirm order on server (Postman: createTx → markDone → createInvoice)
     log.info('Checkout','confirming payment',{orderId:oid,providerId:selProvider});
     var payResult=await API.confirmOrderPayment(parseInt(oid), selProvider);
     log.info('Checkout','payment confirmed',{orderId:oid,txId:payResult.txId,providerId:payResult.providerId});
-
-    // 8) Update contact profile with latest contact info.
-    //    For home delivery: also save the full address. For store pickup: only save name/phone/email.
-    var pid=API.myPid();
-    if(pid){
-      var addrFields={ name:(fn+' '+ln).trim(), email:em, phone:ph, mobile:ph };
-      if(!isStore){
-        addrFields.street=addr;
-        addrFields.street2=document.getElementById('addr2').value.trim();
-        addrFields.city=cityVal;
-        addrFields.zip=zipVal;
-        addrFields.country_id=document.getElementById('country').value||'';
-        addrFields.state_id=document.getElementById('state').value||'';
-      }
-      API.updContact(pid, addrFields).catch(function(){});
-    }
 
     Cart.markPlaced(oid);
     Cart.clear();
