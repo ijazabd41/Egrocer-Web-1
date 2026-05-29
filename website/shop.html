@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shop – Coop Discounts Hyper Market</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel{background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:200% 100%;animation:sk 1.5s infinite;border-radius:10px}
+/* Shop specific layout */
+.shop-layout{display:grid;grid-template-columns:220px 1fr;gap:16px;align-items:start}
+.sidebar{background:#fff;border-radius:14px;border:1.5px solid #e5e7eb;overflow:hidden;position:sticky;top:74px;max-height:calc(100vh - 90px);display:flex;flex-direction:column}
+.sb-header{padding:11px 14px;font-size:11px;font-weight:800;background:#e41e26;color:#fff;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.sb-body{padding:4px 8px;overflow-y:auto;flex:1;scrollbar-width:thin}
+.sb-item{display:flex;align-items:center;gap:8px;padding:8px 8px;cursor:pointer;font-size:11px;color:#374151;transition:all .2s;border-bottom:1px solid #f3f4f6;border-radius:8px;margin-bottom:1px;text-decoration:none}
+.sb-item:hover,.sb-item.on{color:#e41e26;font-weight:700;background:#fef2f2;padding-left:12px}
+.sb-img{width:32px;height:32px;border-radius:6px;overflow:hidden;background:#f3f4f6;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.sb-img img{width:100%;height:100%;object-fit:cover;display:block}
+#shopGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.mob-filter-btn{display:none;background:#e41e26;color:#fff;border:none;padding:9px 16px;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;align-items:center;gap:5px;font-family:inherit}
+@media(max-width:900px){
+  .shop-layout{grid-template-columns:1fr}
+  .sidebar{position:static;max-height:none;display:none}
+  .sidebar.mob-open{display:flex}
+  .mob-filter-btn{display:flex}
+  #shopGrid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:600px){#shopGrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:380px){#shopGrid{grid-template-columns:repeat(2,1fr);gap:8px}}
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="ctr" style="padding-top:8px">
+  <div class="bcnav">
+    <a href="index.html">Home</a><span>›</span><span id="shopBc">All Products</span>
+  </div>
+</div>
+
+<section class="sec" style="padding-top:0">
+<div class="ctr">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px">
+    <div>
+      <h1 style="font-size:18px;font-weight:800" id="shopTitle">All Products</h1>
+      <p style="font-size:11px;color:#9ca3af" id="shopCount">Loading products...</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <button class="mob-filter-btn" onclick="toggleSidebar()" id="filterBtn">⚙️ Categories</button>
+      <select id="sortSel" onchange="loadProds()" style="border:1.5px solid #e5e7eb;border-radius:8px;padding:8px 11px;font-size:12px;font-family:inherit;outline:none;background:#fff">
+        <option value="">Default Sort</option>
+        <option value="list_price asc">Price: Low → High</option>
+        <option value="list_price desc">Price: High → Low</option>
+        <option value="name asc">Name A–Z</option>
+        <option value="name desc">Name Z–A</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="shop-layout">
+    <!-- LEFT: Categories -->
+    <aside class="sidebar" id="mobSidebar">
+      <div class="sb-header">🏷️ Categories</div>
+      <div class="sb-body">
+        <div class="sb-item on" id="sbc-all" onclick="filterCat(null,'All Products')">
+          <div class="sb-img" style="font-size:16px;text-align:center">🏠</div>
+          <span style="flex:1">All Products</span>
+        </div>
+        <div id="shopCatList">
+          <div class="skel" style="height:40px;margin:4px 0"></div>
+          <div class="skel" style="height:40px;margin:4px 0"></div>
+          <div class="skel" style="height:40px;margin:4px 0"></div>
+          <div class="skel" style="height:40px;margin:4px 0"></div>
+        </div>
+      </div>
+      <div class="sb-header" style="border-top:1px solid rgba(255,255,255,.2)">💰 Price</div>
+      <div class="sb-body" style="flex:0;padding:6px 8px">
+        <div class="sb-item on" id="pf-all" onclick="setPrice(0,999999,'all')"><span>All Prices</span></div>
+        <div class="sb-item" id="pf-u10" onclick="setPrice(0,10,'u10')"><span>Under AED 10</span></div>
+        <div class="sb-item" id="pf-1050" onclick="setPrice(10,50,'1050')"><span>AED 10 – 50</span></div>
+        <div class="sb-item" id="pf-50100" onclick="setPrice(50,100,'50100')"><span>AED 50 – 100</span></div>
+        <div class="sb-item" id="pf-100+" onclick="setPrice(100,999999,'100+')"><span>AED 100+</span></div>
+      </div>
+    </aside>
+
+    <!-- RIGHT: Products -->
+    <div>
+      <div id="shopGrid">
+        <div class="skel" style="height:260px"></div>
+        <div class="skel" style="height:260px"></div>
+        <div class="skel" style="height:260px"></div>
+        <div class="skel" style="height:260px"></div>
+        <div class="skel" style="height:260px"></div>
+        <div class="skel" style="height:260px"></div>
+        <div class="skel" style="height:260px"></div>
+        <div class="skel" style="height:260px"></div>
+      </div>
+      <div id="pagination" style="display:flex;justify-content:center;gap:7px;margin-top:22px;flex-wrap:wrap"></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<div id="site-footer"></div>
+<script src="js/api.js?v=8.5"></script><script src="js/app.js?v=8.5"></script><script src="js/layout.js"></script>
+<script>
+var PAGE_SIZE = 16;
+var currentPage = 0;
+var currentCatId = null;
+var currentCatPids = null; // product_tmpl_ids from category detail
+var priceMin = 0, priceMax = 999999;
+var allCats = [];
+
+var qp = new URLSearchParams(location.search);
+
+function toggleSidebar() {
+  var sb = document.getElementById('mobSidebar');
+  var btn = document.getElementById('filterBtn');
+  sb.classList.toggle('mob-open');
+  btn.textContent = sb.classList.contains('mob-open') ? '✕ Close' : '⚙️ Categories';
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+  Bar.start();
+  // Read query params
+  var qCat = qp.get('cat_id');
+  var qCatName = qp.get('cat_name') || 'Category';
+  var qSearch = qp.get('q');
+
+  if (qSearch) {
+    document.getElementById('shopTitle').textContent = 'Results: "' + qSearch + '"';
+    document.getElementById('shopBc').textContent = 'Search';
+  } else if (qCat) {
+    document.getElementById('shopTitle').textContent = qCatName;
+    document.getElementById('shopBc').textContent = qCatName;
+    currentCatId = parseInt(qCat);
+  }
+
+  // Load categories for sidebar
+  try {
+    var catR = await API.getCats();
+    allCats = catR.data || [];
+    buildSidebar(allCats);
+    // Mark active category
+    if (qCat) {
+      document.getElementById('sbc-all')?.classList.remove('on');
+      document.getElementById('sbc-' + qCat)?.classList.add('on');
+      // Load category product IDs
+      try {
+        var cd = await API.getCatById(qCat);
+        var cat = Array.isArray(cd.data) ? cd.data[0] : cd.data;
+        if (cat && cat.product_tmpl_ids && cat.product_tmpl_ids.length) {
+          currentCatPids = cat.product_tmpl_ids.map(function(p){ return typeof p === 'object' ? p.id : p; });
+        }
+      } catch(_) {}
+    }
+  } catch(e) {
+    document.getElementById('shopCatList').innerHTML = '<div style="color:#9ca3af;padding:10px;font-size:11px">Could not load categories</div>';
+  }
+
+  await loadProds();
+  Bar.done();
+});
+
+function buildSidebar(cats) {
+  var el = document.getElementById('shopCatList');
+  el.innerHTML = cats.map(function(c) {
+    var imgSrc = c.image_1024 ? API.img(c.image_1024) : API.catImg(c.id);
+    var cnt = c.product_tmpl_ids ? c.product_tmpl_ids.length : 0;
+    return '<div class="sb-item" id="sbc-' + c.id + '" onclick="filterCat(' + c.id + ',\'' + c.name.replace(/'/g,"\\'") + '\')">' +
+      '<div class="sb-img"><img src="' + imgSrc + '" alt="' + c.name + '"' +
+           ' onerror="this.style.display=\'none\';this.parentElement.textContent=\'🏷️\'"></div>' +
+      '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + c.name + '</span>' +
+      (cnt ? '<span style="background:#f3f4f6;font-size:9px;font-weight:700;padding:2px 5px;border-radius:6px;color:#6b7280;flex-shrink:0">' + cnt + '</span>' : '') +
+    '</div>';
+  }).join('');
+}
+
+async function filterCat(catId, catName) {
+  currentCatId = catId;
+  currentCatPids = null;
+  currentPage = 0;
+  document.querySelectorAll('#shopCatList .sb-item,#sbc-all').forEach(function(e){ e.classList.remove('on'); });
+  var activeEl = catId ? document.getElementById('sbc-' + catId) : document.getElementById('sbc-all');
+  if (activeEl) activeEl.classList.add('on');
+  document.getElementById('shopTitle').textContent = catName || 'All Products';
+  document.getElementById('shopBc').textContent = catName || 'All Products';
+  // Close mobile sidebar
+  document.getElementById('mobSidebar').classList.remove('mob-open');
+  document.getElementById('filterBtn').textContent = '⚙️ Categories';
+
+  if (catId) {
+    try {
+      var cd = await API.getCatById(catId);
+      var cat = Array.isArray(cd.data) ? cd.data[0] : cd.data;
+      if (cat && cat.product_tmpl_ids && cat.product_tmpl_ids.length) {
+        currentCatPids = cat.product_tmpl_ids.map(function(p){ return typeof p === 'object' ? p.id : p; });
+      }
+    } catch(_) {}
+  }
+  await loadProds();
+}
+
+function setPrice(min, max, key) {
+  priceMin = min; priceMax = max; currentPage = 0;
+  document.querySelectorAll('[id^="pf-"]').forEach(function(e){ e.classList.remove('on'); });
+  document.getElementById('pf-' + key)?.classList.add('on');
+  loadProds();
+}
+
+async function loadProds() {
+  var el = document.getElementById('shopGrid');
+  el.innerHTML = '<div class="skel" style="height:260px"></div><div class="skel" style="height:260px"></div><div class="skel" style="height:260px"></div><div class="skel" style="height:260px"></div><div class="skel" style="height:260px"></div><div class="skel" style="height:260px"></div><div class="skel" style="height:260px"></div><div class="skel" style="height:260px"></div>';
+  var q = qp.get('q');
+  var sort = document.getElementById('sortSel').value;
+  try {
+    var params = { limit: PAGE_SIZE, Offset: currentPage * PAGE_SIZE };
+    if (sort) params.order = sort;
+    // Build domain filters
+    var domainParts = [];
+    if (currentCatPids && currentCatPids.length) {
+      // Filter by product IDs in category
+      var pageIds = currentCatPids.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
+      if (pageIds.length) domainParts.push("('id','in',[" + pageIds.join(',') + "])");
+    } else if (q) {
+      domainParts.push("('name','ilike','" + q.replace(/'/g,"\\'") + "')");
+    }
+    if (priceMin > 0) domainParts.push("('list_price','>=',"+priceMin+")");
+    if (priceMax < 999999) domainParts.push("('list_price','<=',"+priceMax+")");
+    if (domainParts.length) params.domain = '[' + domainParts.join(',') + ']';
+
+    var r = await API.getProds(params);
+    var prods = (r.data || []).filter(function(p){ return parseFloat(p.list_price||0) > 0; });
+    var total = currentCatPids ? currentCatPids.length : (r.total || prods.length);
+    document.getElementById('shopCount').textContent = 'Showing ' + prods.length + ' products' + (total > PAGE_SIZE ? ' of ' + total : '');
+    el.innerHTML = prods.length ? prods.map(buildCard).join('') :
+      '<div style="grid-column:1/-1;text-align:center;padding:52px;color:#9ca3af"><div style="font-size:40px;margin-bottom:12px">🔍</div><h3 style="font-size:14px;font-weight:700">No products found</h3><a href="shop.html" style="color:#e41e26;font-weight:700;font-size:12px;display:block;margin-top:8px">Clear Filters →</a></div>';
+    buildPagination(total);
+  } catch(e) {
+    el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:52px;color:#e41e26"><div style="font-size:36px;margin-bottom:10px">😕</div><div style="font-size:13px">'+e.message+'</div><button onclick="loadProds()" style="margin-top:14px;background:#e41e26;color:#fff;border:none;padding:10px 22px;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit">Retry</button></div>';
+  }
+}
+
+function buildPagination(total) {
+  var pages = Math.ceil(total / PAGE_SIZE);
+  var el = document.getElementById('pagination');
+  if (pages <= 1) { el.innerHTML = ''; return; }
+  var h = '';
+  var btnStyle = function(active){ return 'padding:7px 12px;border:' + (active?'2px solid #e41e26':'1.5px solid #e5e7eb') + ';border-radius:8px;font-size:12px;font-weight:'+(active?'800':'600')+';cursor:pointer;background:'+(active?'#e41e26':'#fff')+';color:'+(active?'#fff':'inherit')+';font-family:inherit'; };
+  if (currentPage > 0) h += '<button onclick="goPage('+(currentPage-1)+')" style="'+btnStyle(false)+'">← Prev</button>';
+  for (var i = Math.max(0, currentPage-2); i <= Math.min(pages-1, currentPage+2); i++) {
+    (function(pi){ h += '<button onclick="goPage('+pi+')" style="'+btnStyle(pi===currentPage)+'">'+(pi+1)+'</button>'; })(i);
+  }
+  if (currentPage < pages-1) h += '<button onclick="goPage('+(currentPage+1)+')" style="'+btnStyle(false)+'">Next →</button>';
+  el.innerHTML = h;
+}
+
+function goPage(p) {
+  currentPage = p;
+  loadProds();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>

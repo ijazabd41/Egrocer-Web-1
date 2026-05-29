@@ -1,0 +1,19 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wishlist – Coop Discounts</title><link rel="stylesheet" href="css/style.css"></head>
+<body><div id="site-header"></div>
+<div class="phero"><h1>❤️ My Wishlist</h1><p>Products you saved for later</p></div>
+<section class="sec"><div class="w" id="wlGrid"><div style="text-align:center;padding:60px;color:#9ca3af"><div style="font-size:60px;margin-bottom:14px">❤️</div><h3 style="font-size:18px;font-weight:800;color:#374151;margin-bottom:8px">Your wishlist is empty</h3><a href="shop.html" style="display:inline-flex;align-items:center;gap:8px;background:#e41e26;color:#fff;padding:12px 26px;border-radius:50px;font-weight:700;font-size:14px;text-decoration:none">Browse Products →</a></div></div></section>
+<div id="site-footer"></div>
+<script src="js/api.js?v=8.5"></script><script src="js/app.js?v=8.5"></script><script src="js/layout.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',async()=>{
+  Bar.start();
+  const wl=WL.get();
+  if(!wl.length){Bar.done();return;}
+  const el=document.getElementById('wlGrid');
+  el.innerHTML='<div class="pgrid" id="wlProds">'+Array(wl.length).fill('<div style="height:300px;border-radius:14px;background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:200% 100%;animation:sk 1.4s infinite"></div>').join('')+'</div><style>@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}</style>';
+  const prods=[];
+  for(const item of wl){try{const r=await API.getProdById(item.id);if(r.data?.[0])prods.push(r.data[0]);}catch(_){}}
+  document.getElementById('wlProds').innerHTML=prods.length?prods.map(buildCard).join(''):'<div style="grid-column:1/-1;text-align:center;color:#9ca3af">Could not load products</div>';
+  Bar.done();
+});
+</script></body></html>

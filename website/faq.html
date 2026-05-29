@@ -1,0 +1,15 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FAQs – Coop Discounts</title><link rel="stylesheet" href="css/style.css"></head>
+<body><div id="site-header"></div>
+<div class="phero"><h1>❓ Frequently Asked Questions</h1><p>Find answers to common questions</p></div>
+<section class="sec"><div class="w" style="max-width:720px;margin:0 auto">
+${[['How do I place an order?','Browse our products, add items to your cart, and proceed to checkout. You can pay online or choose cash on delivery.'],['What is the delivery time?','We offer same-day delivery for orders placed before 6 PM. Standard delivery takes 1-2 business days.'],['Is free delivery available?','Yes! Free delivery on all orders above AED 50 within Dubai.'],['Can I return a product?','Yes, we accept returns within 7 days of purchase. The product must be unused and in its original packaging.'],['How can I track my order?','Visit the Track Order page and enter your order ID to get real-time updates.'],['Do you offer loyalty points?','Yes! You earn loyalty points on every purchase. Sign in to view your points in My Account.'],['What payment methods do you accept?','We accept VISA, Mastercard, AMEX, Apple Pay, and Cash on Delivery.'],['Are all products halal certified?','Yes, all food products at Coop Discounts are halal certified.']].map(([q,a])=>`
+<div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;margin-bottom:10px;overflow:hidden">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;font-size:14px;font-weight:700" onclick="this.nextSibling.style.display=this.nextSibling.style.display==='none'?'block':'none'">
+    <span style="font-size:16px;color:#e41e26">+</span>
+  </div>
+  <div style="display:none;padding:0 20px 16px;font-size:13px;color:#374151;line-height:1.7"></div>
+</div>`).join('')}
+</div></section>
+<div id="site-footer"></div>
+<script src="js/api.js?v=8.5"></script><script src="js/app.js?v=8.5"></script><script src="js/layout.js"></script>
+</body></html>

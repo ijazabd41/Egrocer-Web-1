@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Panel – Coop Discounts</title>
+<style>
+:root{--r:#e41e26;--rd:#a01820;--y:#f5c518;--dk:#0f172a;--dk2:#1e293b;--dk3:#334155;--g:#86efac}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--dk);color:#e2e8f0;font-size:13px}
+/* AUTH OVERLAY */
+.auth-overlay{position:fixed;inset:0;background:var(--dk);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.auth-box{background:var(--dk2);border:1px solid var(--dk3);border-radius:20px;padding:36px;max-width:420px;width:100%;text-align:center}
+.auth-logo{width:64px;height:64px;background:var(--r);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 16px}
+.auth-inp{width:100%;background:var(--dk);border:1.5px solid var(--dk3);border-radius:10px;padding:11px 14px;font-size:14px;color:#e2e8f0;font-family:inherit;outline:none;transition:border-color .2s;margin-bottom:8px}
+.auth-inp:focus{border-color:var(--r)}
+.auth-btn{width:100%;background:var(--r);color:#fff;border:none;padding:12px;border-radius:10px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;transition:background .2s;margin-top:4px}
+.auth-btn:hover{background:var(--rd)}.auth-btn:disabled{background:#334155;cursor:not-allowed}
+.otp-row{display:flex;gap:8px;justify-content:center;margin:14px 0}
+.otp-inp{width:44px;height:48px;border:2px solid var(--dk3);border-radius:8px;text-align:center;font-size:20px;font-weight:800;background:var(--dk);color:#e2e8f0;outline:none;transition:border-color .2s;font-family:inherit}
+.otp-inp:focus{border-color:var(--r)}
+.auth-msg{font-size:12px;color:#64748b;margin-top:8px}
+.auth-err{color:#ef4444;font-size:12px;margin-top:8px;display:none}
+/* MAIN LAYOUT */
+.al{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.sb{background:var(--dk2);border-right:1px solid var(--dk3);position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.sbh{padding:14px;border-bottom:1px solid var(--dk3);display:flex;align-items:center;gap:9px}
+.sbh-ic{width:34px;height:34px;background:var(--r);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.nvsec{padding:10px 14px 3px;font-size:9px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:1px}
+.nva{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:8px;margin:2px 6px;font-size:12px;font-weight:600;color:#94a3b8;cursor:pointer;text-decoration:none;transition:all .2s;border:none;background:none;font-family:inherit;width:calc(100% - 12px);text-align:left}
+.nva:hover,.nva.on{background:var(--r);color:#fff}
+.main{padding:20px;overflow-y:auto;min-height:100vh}
+.pg{display:none}.pg.on{display:block}
+.card{background:var(--dk2);border:1px solid var(--dk3);border-radius:12px;padding:18px;margin-bottom:14px}
+.ct{font-size:13px;font-weight:800;color:#f1f5f9;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.inp{width:100%;background:var(--dk);border:1.5px solid var(--dk3);border-radius:8px;padding:8px 11px;font-size:11px;color:#e2e8f0;font-family:inherit;outline:none;transition:border-color .2s;margin-bottom:5px}
+.inp:focus{border-color:var(--r)}
+.lbl{font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;display:block}
+.btn{background:var(--r);color:#fff;border:none;padding:8px 14px;border-radius:7px;font-weight:700;font-size:11px;cursor:pointer;font-family:inherit;transition:background .2s;margin:0 4px 4px 0;display:inline-flex;align-items:center;gap:4px}
+.btn:hover{background:var(--rd)}.btn-g{background:var(--dk3);color:#e2e8f0}.btn-g:hover{background:#475569}.btn-y{background:var(--y);color:#111}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:9px}
+.json{background:var(--dk);border:1px solid var(--dk3);border-radius:8px;padding:11px;font-family:'Courier New',monospace;font-size:10px;max-height:320px;overflow-y:auto;white-space:pre-wrap;color:var(--g);line-height:1.5;margin-top:8px;display:none}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.sc{background:var(--dk2);border:1px solid var(--dk3);border-radius:10px;padding:14px;text-align:center}
+.sc-n{font-size:22px;font-weight:900;color:var(--r)}.sc-l{font-size:9px;color:#64748b;font-weight:600;margin-top:2px}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{background:var(--dk);padding:7px 9px;text-align:left;font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;border-bottom:1px solid var(--dk3)}
+td{padding:8px 9px;border-bottom:1px solid #1e293b;color:#cbd5e1;vertical-align:middle}
+tr:hover td{background:#1e293b}
+.badge{padding:2px 8px;border-radius:10px;font-size:9px;font-weight:700}
+.bOk{background:#064e3b;color:var(--g)}.bErr{background:#450a0a;color:#fca5a5}.bW{background:#451a03;color:#fcd34d}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}
+.dOk{background:#22c55e}.dErr{background:#ef4444}.dChk{background:#f59e0b;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:0}}
+@media(max-width:800px){.al{grid-template-columns:1fr}.sb{position:static;height:auto}.stat-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- AUTH OVERLAY -->
+<div id="authOverlay" class="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-logo">⚙️</div>
+    <div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:4px">Admin Panel</div>
+    <div style="font-size:11px;color:#64748b;margin-bottom:22px">Coop Discounts — Secure Access</div>
+
+    <!-- Password Only Auth -->
+    <div id="auth-step1">
+      <label class="lbl" style="text-align:left;display:block;margin-bottom:5px">Admin Password</label>
+      <input class="auth-inp" type="password" id="adminPwd" placeholder="Enter admin password" autocomplete="current-password">
+      <div id="pwd-err" class="auth-err">❌ Incorrect password</div>
+      <button class="auth-btn" onclick="checkPwd()">Enter Admin Panel →</button>
+      <p class="auth-msg" style="margin-top:8px;font-size:10px;color:#475569">Secure admin access — password only</p>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN PANEL (hidden until auth) -->
+<div class="al" id="mainPanel" style="display:none">
+<div class="sb">
+  <div class="sbh">
+    <div class="sbh-ic">⚙️</div>
+    <div><div style="font-size:12px;font-weight:800;color:#fff">Coop Discounts</div><div style="font-size:9px;color:#64748b">Admin v6</div></div>
+  </div>
+  <div style="padding:5px 0;flex:1">
+    <div class="nvsec">Overview</div>
+    <button class="nva on" onclick="pg('dash',this)">📊 Dashboard</button>
+    <div class="nvsec">API Tests</div>
+    <button class="nva" onclick="pg('startup',this)">🚀 Sliders & Banners</button>
+    <button class="nva" onclick="pg('auth',this)">🔐 Login & Register</button>
+    <button class="nva" onclick="pg('cats',this)">🏷️ Categories</button>
+    <button class="nva" onclick="pg('products',this)">📦 Products</button>
+    <button class="nva" onclick="pg('orders',this)">🛒 Orders</button>
+    <button class="nva" onclick="pg('cart',this)">🛍️ Cart / Lines</button>
+    <button class="nva" onclick="pg('checkout',this)">💳 Checkout</button>
+    <button class="nva" onclick="pg('invoices',this)">🧾 Invoices</button>
+    <button class="nva" onclick="pg('delivery',this)">🚚 Delivery</button>
+    <button class="nva" onclick="pg('loyalty',this)">⭐ Loyalty</button>
+    <button class="nva" onclick="pg('contacts',this)">👥 Contacts</button>
+    <button class="nva" onclick="pg('rider',this)">🚴 Rider Delivery</button>
+    <div class="nvsec">Tools</div>
+    <button class="nva" onclick="pg('tester',this)">🧪 Live API Tester</button>
+    <button class="nva" onclick="window.open('../index.html','_blank')">🌐 View Website</button>
+    <button class="nva" style="color:#ef4444" onclick="adminLogout()">🚪 Logout</button>
+  </div>
+</div>
+<div class="main">
+
+<!-- DASHBOARD -->
+<div class="pg on" id="pg-dash">
+  <h1 style="font-size:18px;font-weight:900;color:#f1f5f9;margin-bottom:4px">Dashboard</h1>
+  <p style="font-size:11px;color:#64748b;margin-bottom:16px">Coop Discounts Admin & API Control Panel</p>
+  <div class="stat-grid">
+    <div class="sc"><div class="sc-n" id="st-px">–</div><div class="sc-l">Proxy</div></div>
+    <div class="sc"><div class="sc-n" id="st-pr">–</div><div class="sc-l">Products</div></div>
+    <div class="sc"><div class="sc-n" id="st-ct">–</div><div class="sc-l">Categories</div></div>
+    <div class="sc"><div class="sc-n" id="st-or">–</div><div class="sc-l">Orders</div></div>
+  </div>
+  <div class="card">
+    <div class="ct">🔌 Connection Status</div>
+    <div style="background:var(--dk);border-radius:8px;padding:12px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px"><span class="dot dChk" id="d-px"></span><span id="t-px">Checking proxy...</span></div>
+      <div style="display:flex;align-items:center;gap:7px"><span class="dot dChk" id="d-api"></span><span id="t-api">Checking backend API...</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px" id="apiChecks"></div>
+    <div style="margin-top:10px">
+      <button class="btn" onclick="checkAll()">🔄 Recheck</button>
+      <button class="btn btn-y" onclick="loadDashStats()">📊 Load Stats</button>
+      <button class="btn btn-g" onclick="pg('tester',null)">🧪 Tester</button>
+    </div>
+  </div>
+  <div class="card"><div class="ct">📋 Current Session</div><div class="json" id="sessInfo" style="display:block">No session</div></div>
+</div>
+
+<!-- SLIDERS/BANNERS -->
+<div class="pg" id="pg-startup">
+  <h1 style="font-size:16px;font-weight:900;color:#f1f5f9;margin-bottom:14px">🚀 Sliders & Banners</h1>
+  <div class="card">
+    <div style="background:var(--dk);border:1px solid #f59e0b;border-radius:8px;padding:10px;margin-bottom:12px;font-size:10px;color:#fcd34d">
+      ⚠️ <strong>Slider Images:</strong> Each item in <code>image_ids[]</code> has an <code>.id</code> field.<br>
+      URL: <code style="color:var(--g)">/proxy/web/image/slider.image/{id}/image</code>
+    </div>
+    <div style="font-size:10px;color:#94a3b8;line-height:2;margin-bottom:12px">
+      <strong style="color:#e2e8f0">ID 12</strong>=Logo &nbsp; <strong style="color:#e2e8f0">9</strong>=Home Sliders &nbsp; <strong style="color:#e2e8f0">2</strong>=Deal Day &nbsp; <strong style="color:#e2e8f0">1</strong>=Best Seller &nbsp;
+      <strong style="color:#e2e8f0">3</strong>=Recommended &nbsp; <strong style="color:#e2e8f0">4</strong>=Featured &nbsp; <strong style="color:#e2e8f0">5</strong>=Fresh Pick &nbsp; <strong style="color:#e2e8f0">8</strong>=Brands
+    </div>
+    ${[['12','Logo (banner_image field)'],['9','Home Sliders (image_ids[].id)'],['2','Deal of Day'],['1','Best Sellers'],['3','Recommended'],['4','Featured'],['5','Fresh Pick'],['8','Shop By Brand']]
+      .map(([id,nm])=>`<div style="background:var(--dk);border:1px solid var(--dk3);border-radius:8px;padding:9px 12px;margin-bottom:7px;display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+        <span style="background:#164e63;color:#67e8f9;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;font-family:monospace">GET</span>
+        <code style="font-size:10px;color:#67e8f9;flex:1">/proxy/api/deal-day-slider/${id}</code>
+        <span style="font-size:10px;color:#94a3b8">${nm}</span>
+        <button class="btn btn-g" style="padding:4px 10px;font-size:10px" onclick="qtest('/api/deal-day-slider/${id}')">Test</button>
+      </div>`).join('')}
+    <div class="json" id="startup-res"></div>
+  </div>
+</div>
+
+<!-- AUTH -->
+<div class="pg" id="pg-auth">
+  <h1 style="font-size:16px;font-weight:900;color:#f1f5f9;margin-bottom:14px">🔐 Login & Register</h1>
+  <div class="card"><div class="ct">Test Login</div>
+    <div class="r2"><div><label class="lbl">Email</label><input class="inp" id="a-em" value="itcom1020@gmail.com"></div><div><label class="lbl">Password</label><input class="inp" type="password" id="a-pw" value="dds@123"></div></div>
+    <button class="btn" onclick="testLogin()">🔐 Test Login</button>
+    <div class="json" id="a-res"></div>
+  </div>
+  <div class="card"><div class="ct">Session Info</div><div class="json" id="a-sess" style="display:block">No session</div>
+    <button class="btn btn-g" style="margin-top:8px" onclick="API.clearSess();document.getElementById('a-sess').textContent='Cleared'">🗑️ Clear Session</button></div>
+  <div class="card"><div class="ct">Register User</div>
+    <div class="r2"><div><label class="lbl">Name</label><input class="inp" id="rg-n" placeholder="Test User"></div><div><label class="lbl">Email</label><input class="inp" id="rg-e" placeholder="test@email.com"></div></div>
+    <div class="r2"><div><label class="lbl">Phone</label><input class="inp" id="rg-p" placeholder="+971500000000"></div><div><label class="lbl">Password</label><input class="inp" id="rg-pw" placeholder="password123" type="password"></div></div>
+    <button class="btn btn-g" onclick="testRegister()">Register</button>
+    <div class="json" id="rg-res"></div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="pg" id="pg-cats">
+  <h1 style="font-size:16px;font-weight:900;color:#f1f5f9;margin-bottom:14px">🏷️ Categories</h1>
+  <div class="card">
+    <div style="background:var(--dk);border:1px solid #f59e0b;border-radius:8px;padding:10px;margin-bottom:12px;font-size:10px;color:#fcd34d">⚠️ <code>image_1024</code> is a PATH like <code style="color:var(--g)">/web/image/product.public.category/15/image_1024</code> — must prepend <code>/proxy</code></div>
+    <button class="btn" onclick="loadCats()">🔄 Load Website Categories</button>
+    <button class="btn btn-g" onclick="qtest('/api/product-category')">Product Categories</button>
+    <div id="catsTable" style="margin-top:10px"><div style="text-align:center;padding:18px;color:#64748b">Click Load</div></div>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<div class="pg" id="pg-products">
+  <h1 style="font-size:16px;font-weight:900;color:#f1f5f9;margin-bottom:14px">📦 Products</h1>
+  <div class="card">
+    <div style="background:var(--dk);border:1px solid #f59e0b;border-radius:8px;padding:10px;margin-bottom:12px;font-size:10px;color:#fcd34d">⚠️ <code>image_1024</code> is a PATH — prepend <code>/proxy</code> to display<br><code>product_variant_id[].id</code> = variant ID for order lines</div>
+    <div class="r2"><div><label class="lbl">Search Name</label><input class="inp" id="ps-q" placeholder="rice, milk..."></div><div><label class="lbl">Barcode</label><input class="inp" id="ps-bc" placeholder="8801073143203"></div></div>
+    <button class="btn" onclick="loadProds2()">🔍 Search</button>
+    <button class="btn btn-g" onclick="loadProds2(true)">📋 Load 20</button>
+    <div id="prodsTable" style="margin-top:10px"><div style="text-align:center;padding:18px;color:#64748b">Click to load</div></div>
+  </div>
+</div>
+
+<!-- ORDERS -->
+<div class="pg" id="pg-orders">
+  <h1 style="font-size:16px;font-weight:900;color:#f1f5f9;margin-bottom:14px">🛒 Orders</h1>
+  <div class="card"><div class="ct">Create Order</div>
+    <div style="background:var(--dk);border:1px solid #f59e0b;border-radius:8px;padding:10px;margin-bottom:10px;font-size:10px;color:#fcd34d">⚠️ NO partner_id — session identifies user<br>Response: <code style="color:var(--g)">response[0].id</code> (NOT data.rec_id)</div>
+    <button class="btn" onclick="testCreateOrder()">Create Order (Session)</button>
+    <div class="json" id="ord-c-res"></div>
+  </div>
+  <div class="card"><div class="ct">View Orders</div>
+    <button class="btn btn-g" onclick="loadOrders()">🔄 Load Orders</button>
+    <div style="display:flex;gap:7px;margin-top:8px">
+      <input class="inp" id="ord-id" placeholder="Order ID" style="flex:1">
+      <button class="btn btn-g" onclick="viewOrder()">View</button>
+    </div>
+    <div id="ordersTable" style="margin-top:10px"><div style="text-align:center;padding:18px;color:#64748b">Click Load</div></div>
+  </div>
+</div>
+
+<!-- CART -->
+<div class="pg" id="pg-cart">
+  <h1 style="font-size:16px;font-weight:900;color:#f1f5f9;margin-bottom:14px">🛍️ Cart / Order Lines</h1>
+  <div class="card"><div class="ct">Add Order Line</div>
+    <div class="r3"><div><label class="lbl">Order ID</label><input class="inp" id="ol-oid" placeholder="45"></div><div><label class="lbl">Product Variant ID</label><input class="inp" id="ol-pid" placeholder="76944"></div><div><label class="lbl">Qty</label><input class="inp" id="ol-qty" placeholder="1" type="number"></div></div>
+    <button class="btn" onclick="testAddLine()">Add Line</button>
+    <button class="btn btn-g" onclick="testViewLines()">View Lines</button>
+    <div class="json" id="ol-res"></div>
+  </div>
+  <div class="card"><div class="ct">Update / Remove</div>
+    <div class="r3"><div><label class="lbl">Order ID (remove)</label><input class="inp" id="rm-oid" placeholder="27"></div><div><label class="lbl">Line ID</label><input class="inp" id="ol-lid" placeholder="3"></div><div><label class="lbl">New Qty</label><input class="inp" id="ol-nq" placeholder="2" type="number"></div></div>
+    <button class="btn btn-g" onclick="testUpdLine()">Update Line</button>
+    <label class="lbl" style="margin-top:6px">Line IDs to remove (comma)</label>
+    <input class="inp" id="rm-lids" placeholder="1,2">
+    <button class="btn btn-g" style="margin-top:4px" onclick="testRmLines()">Remove Lines</button>
+    <div class="json" id="rm-res"></div>
+  </div>
+</div>
+
+<!-- CHECKOUT -->
+<div class="pg" id="pg-checkout">
+  <h1 style="font-size:16px;font-weight:900;color:#f1f5f9;margin-bottom:14px">💳 Checkout & Payment</h1>
+  <div class="card"><button class="btn btn-g" onclick="qtest('/api/payment-provider',&quot;domain=[('state','in',['enabled','test'])]&quot;)">Get Payment Providers</button><div class="json" id="pay-res"></div></div>
+  <div class="card"><div class="ct">Create Transaction</div>
+    <div class="r2"><div><label class="lbl">Order ID</label><input class="inp" id="tx-oid" placeholder="61"></div><div><label class="lbl">Provider ID</label><input class="inp" id="tx-prov" placeholder="22"></div></div>
+    <button class="btn" onclick="testTx()">Create TX</button>
+    <div class="json" id="tx-res"></div>
+  </div>
+  <div class="card"><div class="ct">Mark Done (needs txId + provId)</div>
+    <div class="r3"><div><label class="lbl">Order ID</label><input class="inp" id="md-oid" placeholder="61"></div><div><label class="lbl">Transaction ID</label><input class="inp" id="md-tx" placeholder="29"></div><div><label class="lbl">Provider ID</label><input class="inp" id="md-prov" placeholder="22"></div></div>
+    <button class="btn btn-y" onclick="testMarkDone()">Mark Done → Invoice</button>
+    <div class="json" id="md-res"></div>
+  </div>
+</div>
+
+<!-- INVOICES -->
+<div class="pg" id="pg-invoices">
+  <h1 style="font-size:16px;font-weight:900;color:#f1f5f9;margin-bottom:14px">🧾 Invoices</h1>
+  <div class="card">
+    <div style="display:flex;gap:7px;margin-bottom:8px"><input class="inp" id="inv-oid" placeholder="Order ID" style="max-width:140px"><button class="btn" onclick="testCreateInv()">Create Invoice</button></div>
+    <div class="json" id="inv-c-res"></div>
+  </div>
+  <div class="card"><button class="btn btn-g" onclick="loadInvoices()">🔄 Load Invoices</button><div id="invTable" style="margin-top:10px"><div style="text-align:center;padding:18px;color:#64748b">Click Load</div></div></div>
+</div>
+
+<!-- DELIVERY -->
+<div class="pg" id="pg-delivery">
+  <h1 style="font-size:16px;font-weight:900;color:#f1f5f9;margin-bottom:14px">🚚 Delivery / Stock</h1>
+  <div class="card">
+    <button class="btn" onclick="loadDeliveries()">🔄 Load Delivery Orders</button>
+    <button class="btn btn-g" onclick="qtest('/api/delivery-method/',&quot;user_id=2&quot;)">Delivery Methods</button>
+    <div id="delivTable" style="margin-top:10px"><div style="text-align:center;padding:18px;color:#64748b">Click Load</div></div>
+  </div>
+</div>
+
+<!-- LOYALTY -->
+<div class="pg" id="pg-loyalty">
+  <h1 style="font-size:16px;font-weight:900;color:#f1f5f9;margin-bottom:14px">⭐ Loyalty</h1>
+  <div class="card">
+    <div style="display:flex;gap:7px;margin-bottom:8px"><input class="inp" id="loy-pid" placeholder="Partner ID e.g.4610" style="max-width:180px"><button class="btn" onclick="testLoyalty()">Load Coupons</button></div>
+    <button class="btn btn-g" onclick="qtest('/api/loyalty-card')">My Cards</button>
+    <button class="btn btn-g" onclick="qtest('/api/loyalty-program')">Programs</button>
+    <div class="json" id="loy-res"></div>
+  </div>
+  <div class="card"><div class="ct">Apply Loyalty</div>
+    <div class="r3"><div><label class="lbl">Order ID</label><input class="inp" id="loy-oid" placeholder="20"></div><div><label class="lbl">Reward ID</label><input class="inp" id="loy-rid" placeholder="6"></div><div><label class="lbl">Cart ID</label><input class="inp" id="loy-cid" placeholder="702"></div></div>
+    <button class="btn btn-g" onclick="testApplyLoyalty()">Apply</button>
+    <div class="json" id="loy-a-res"></div>
+  </div>
+</div>
+
+<!-- CONTACTS -->
+<div class="pg" id="pg-contacts">
+  <h1 style="font-size:16px;font-weight:900;color:#f1f5f9;margin-bottom:14px">👥 Contacts</h1>
+  <div class="card">
+    <button class="btn" onclick="loadContacts()">🔄 Load Contacts</button>
+    <button class="btn btn-g" onclick="qtest('/api/country')">Countries</button>
+    <div style="display:flex;gap:7px;margin-top:8px"><input class="inp" id="ct-id" placeholder="Partner ID" style="max-width:140px"><button class="btn btn-g" onclick="viewContact()">View</button></div>
+    <div id="ctTable" style="margin-top:10px"><div style="text-align:center;padding:18px;color:#64748b">Click Load</div></div>
+  </div>
+</div>
+
+<!-- LIVE TESTER -->
+<div class="pg" id="pg-tester">
+  <h1 style="font-size:16px;font-weight:900;color:#f1f5f9;margin-bottom:14px">🧪 Live API Tester</h1>
+  <div class="card">
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px">
+      ${[['Logo','/api/deal-day-slider/12',''],['HomeSliders','/api/deal-day-slider/9',''],['DealDay','/api/deal-day-slider/2',''],['BestSeller','/api/deal-day-slider/1',''],['Recommended','/api/deal-day-slider/3',''],['Featured','/api/deal-day-slider/4',''],['FreshPick','/api/deal-day-slider/5',''],['Brands','/api/deal-day-slider/8',''],['WebSettings','/api/config-settings','user_id=2'],['Categories','/api/website-category',''],['Products','/api/product-template','limit=10'],['Orders','/api/order',''],['PayProviders','/api/payment-provider','domain=[(\'state\',\'in\',[\'enabled\',\'test\'])]'],['Invoices','/api/invoice/',''],['Deliveries','/api/delivery-order',''],['LoyaltyCards','/api/loyalty-card',''],['Contacts','/api/contacts',''],['OrderLines','/api/order-line',''],['DelivMethods','/api/delivery-method','user_id=2'],['Countries','/api/country',''],['States','/api/country-state',''],['LineQty','/api/order-line-qty/1',''],]
+        .map(([l,p,q])=>`<button class="btn btn-g" style="padding:4px 8px;font-size:10px" onclick="preset('${p}','${q}')">${l}</button>`).join('')}
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:6px">
+      <div style="flex:1"><label class="lbl">Endpoint Path</label><input class="inp" id="t-ep" placeholder="/api/product-template"></div>
+      <div><label class="lbl">Method</label><select class="inp" id="t-meth" style="width:80px"><option>GET</option><option>POST</option></select></div>
+    </div>
+    <label class="lbl">Extra Params</label><input class="inp" id="t-params" placeholder="limit=10&domain=[('name','ilike','milk')]">
+    <div id="t-body-w" style="display:none;margin-top:6px"><label class="lbl">POST Body (JSON)</label><textarea class="inp" id="t-body" rows="4" style="resize:vertical"></textarea></div>
+    <div style="display:flex;gap:7px;margin-top:8px">
+      <button class="btn" onclick="runTest()" id="run-btn">▶ Run</button>
+      <button class="btn btn-g" onclick="document.getElementById('t-res-w').style.display='none'">🗑️ Clear</button>
+    </div>
+  </div>
+  <div class="card" id="t-res-w" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="font-size:13px;font-weight:800;color:#f1f5f9">Response</div>
+      <div style="display:flex;align-items:center;gap:9px"><span id="t-status"></span><span id="t-time" style="font-size:10px;color:#64748b"></span></div>
+    </div>
+    <div class="json" id="t-res" style="display:block"></div>
+  </div>
+</div>
+
+
+<!-- RIDER DELIVERY -->
+<div class="pg" id="pg-rider">
+  <h1 style="font-size:16px;font-weight:900;color:#f1f5f9;margin-bottom:14px">🚴 Rider Delivery</h1>
+  <div class="card">
+    <div class="ct">Unassigned Deliveries</div>
+    <button class="btn" onclick="loadRiderDeliveries()">🔄 Load Unassigned</button>
+    <div id="riderTable" style="margin-top:10px"><div style="text-align:center;padding:18px;color:#64748b">Click Load</div></div>
+  </div>
+  <div class="card"><div class="ct">Accept Delivery</div>
+    <div class="r2"><div><label class="lbl">Delivery ID</label><input class="inp" id="rd-id" placeholder="4149"></div><div><label class="lbl">Rider User ID</label><input class="inp" id="rd-uid" placeholder="34"></div></div>
+    <button class="btn" onclick="testAcceptRider()">Accept Delivery</button>
+    <div class="json" id="rd-res"></div>
+  </div>
+</div>
+</div><!-- /main -->
+</div><!-- /al -->
+
+<script src="../js/api.js"></script>
+<script>
+function toast(m,t){let e=document.getElementById('cd-toast');if(!e){e=document.createElement('div');e.id='cd-toast';e.style.cssText='position:fixed;bottom:16px;right:16px;padding:10px 14px;border-radius:8px;font-size:11px;font-weight:600;z-index:9999;transition:all .3s;transform:translateY(60px);opacity:0;font-family:inherit';document.body.appendChild(e);}e.style.background=t==='err'?'#e41e26':t==='warn'?'#d4a800':'#1c1c2e';e.style.color='#fff';e.textContent=m;requestAnimationFrame(()=>{e.style.transform='translateY(0)';e.style.opacity='1';});setTimeout(()=>{e.style.transform='translateY(60px)';e.style.opacity='0';},2800);}
+
+// ADMIN AUTH — password dds@1234, OTP to eicoopit@gmail.com
+const ADMIN_PW='dds@1234',ADMIN_EMAIL='eicoopit@gmail.com';
+const AK='cd_adm_v6';
+var _adminOtp='';
+
+function initOtps(sel){
+  const inputs=[...document.querySelectorAll(`${sel} .otp-inp`)];
+  inputs.forEach((inp,i)=>{
+    inp.addEventListener('input',e=>{const v=e.target.value.replace(/\D/g,'');inp.value=v.slice(0,1);if(v&&i<inputs.length-1)inputs[i+1].focus();});
+    inp.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!inp.value&&i>0)inputs[i-1].focus();});
+    inp.addEventListener('paste',e=>{e.preventDefault();const p=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'');p.split('').forEach((c,j)=>{if(inputs[i+j])inputs[i+j].value=c;});});
+  });
+}
+function getOtpVal(sel){return[...document.querySelectorAll(`${sel} .otp-inp`)].map(i=>i.value).join('');}
+
+(()=>{
+  initOtps('#adminOtpRow');
+  if(localStorage.getItem(AK)==='ok'){document.getElementById('authOverlay').style.display='none';document.getElementById('mainPanel').style.display='grid';checkAll();loadDashSession();}
+  document.getElementById('adminPwd')?.addEventListener('keydown',e=>{if(e.key==='Enter')checkPwd();});
+})();
+
+function checkPwd(){
+  const pw=document.getElementById('adminPwd').value;
+  const err=document.getElementById('pwd-err');
+  if(pw!==ADMIN_PW){err.style.display='block';return;}
+  err.style.display='none';
+  // Direct password-only auth — no OTP required
+  localStorage.setItem(AK,'ok');
+  document.getElementById('authOverlay').style.display='none';
+  document.getElementById('mainPanel').style.display='grid';
+  toast('✅ Welcome to Admin Panel!');
+  checkAll();loadDashSession();
+}
+
+function verifyAdminOtp(){
+  const input=getOtpVal('#adminOtpRow');
+  const stored=sessionStorage.getItem('_adm_otp');
+  const ts=parseInt(sessionStorage.getItem('_adm_ts')||'0');
+  const err=document.getElementById('otp-err');
+  if(Date.now()-ts>600000||!stored||stored!==input){err.style.display='block';return;}
+  err.style.display='none';
+  localStorage.setItem(AK,'ok');
+  document.getElementById('authOverlay').style.display='none';
+  document.getElementById('mainPanel').style.display='grid';
+  toast('✅ Welcome to Admin Panel!');
+  checkAll();loadDashSession();
+}
+
+function resendAdminOtp(){
+  _adminOtp=Math.floor(100000+Math.random()*900000).toString();
+  sessionStorage.setItem('_adm_otp',_adminOtp);sessionStorage.setItem('_adm_ts',Date.now().toString());
+  console.log(`Admin OTP resent: ${_adminOtp}`);
+  toast('OTP resent (check console)','warn');
+  document.querySelectorAll('#adminOtpRow .otp-inp').forEach(i=>i.value='');
+  document.querySelectorAll('#adminOtpRow .otp-inp')[0]?.focus();
+}
+
+function adminLogout(){localStorage.removeItem(AK);location.reload();}
+
+function pg(id,el){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nva').forEach(a=>a.classList.remove('on'));
+  document.getElementById('pg-'+id)?.classList.add('on');
+  if(el)el.classList.add('on');
+  if(id==='dash')checkAll();
+}
+function showJ(el,data){const e=document.getElementById(el);if(!e)return;e.style.display='block';e.textContent=typeof data==='string'?data:JSON.stringify(data,null,2);}
+
+async function checkAll(){
+  loadDashSession();
+  try{const r=await fetch(API.PX+'/health');const d=await r.json();document.getElementById('d-px').className='dot dOk';document.getElementById('t-px').textContent='✅ Proxy → '+d.odoo;document.getElementById('st-px').textContent='✅';}
+  catch{document.getElementById('d-px').className='dot dErr';document.getElementById('t-px').textContent='❌ Proxy not running';document.getElementById('st-px').textContent='❌';}
+  const checks=[{n:'Categories',e:'/api/website-category'},{n:'Products',e:'/api/product-template?limit=1'},{n:'Sliders',e:'/api/deal-day-slider/9'},{n:'Orders',e:'/api/order'}];
+  const res=await Promise.all(checks.map(async c=>{try{const d=await API.GET(c.e);return{n:c.n,ok:true,cnt:d.data?.length};}catch(e){return{n:c.n,ok:false,err:e.message};}}));
+  if(res[0]?.ok){document.getElementById('d-api').className='dot dOk';document.getElementById('t-api').textContent='✅ Backend API connected';}
+  else{document.getElementById('d-api').className='dot dErr';document.getElementById('t-api').textContent='❌ Backend unreachable';}
+  document.getElementById('apiChecks').innerHTML=res.map(r=>`<div style="background:var(--dk);border:1px solid ${r.ok?'#166534':'#450a0a'};border-radius:8px;padding:9px;text-align:center"><div style="font-size:15px">${r.ok?'✅':'❌'}</div><div style="font-size:10px;font-weight:700;color:#e2e8f0;margin-top:2px">${r.n}</div><div style="font-size:9px;color:${r.ok?'#6ee7b7':'#fca5a5'}">${r.ok?(r.cnt!=null?r.cnt+' records':'OK'):'Failed'}</div></div>`).join('');
+}
+function loadDashSession(){document.getElementById('sessInfo').textContent=API._s()?JSON.stringify(API._s(),null,2):'No session stored';}
+async function loadDashStats(){
+  try{const r=await API.getProds({limit:1});document.getElementById('st-pr').textContent=r.total||r.data?.length||'?';}catch(_){}
+  try{const r=await API.getCats();document.getElementById('st-ct').textContent=r.data?.length||0;}catch(_){}
+  try{const r=await API.getOrders();document.getElementById('st-or').textContent=r.data?.length||0;}catch(_){}
+}
+
+async function testLogin(){const res=document.getElementById('a-res');res.style.display='block';res.textContent='⏳...';try{const r=await API.login(document.getElementById('a-em').value,document.getElementById('a-pw').value);showJ('a-res',r);document.getElementById('a-sess').textContent=JSON.stringify(API._s(),null,2);toast('Login '+(r.ok?'OK':'Failed'),r.ok?'ok':'err');}catch(e){showJ('a-res','❌ '+e.message);}}
+async function testRegister(){const res=document.getElementById('rg-res');res.style.display='block';res.textContent='⏳...';try{const r=await API.register(document.getElementById('rg-n').value,document.getElementById('rg-e').value,document.getElementById('rg-p').value,document.getElementById('rg-pw').value);showJ('rg-res',r);}catch(e){showJ('rg-res','❌ '+e.message);}}
+
+async function loadCats(){const el=document.getElementById('catsTable');el.innerHTML='⏳...';try{const r=await API.getCats();const cats=r.data||[];el.innerHTML=cats.length?`<table><thead><tr><th>ID</th><th>Image</th><th>Name</th><th>Products</th></tr></thead><tbody>${cats.map(c=>`<tr><td style="color:#64748b">#${c.id}</td><td>${c.image_1024?`<img src="${API.img(c.image_1024)}" style="width:34px;height:34px;object-fit:cover;border-radius:6px;display:block" onerror="this.src=''">`:'–'}</td><td style="font-weight:700;color:#e2e8f0">${c.name}</td><td>${c.product_tmpl_ids?.length||0}</td></tr>`).join('')}</tbody></table>`:'No categories';}catch(e){el.innerHTML='❌ '+e.message;}}
+
+async function loadProds2(all){const q=document.getElementById('ps-q').value.trim(),bc=document.getElementById('ps-bc').value.trim();const el=document.getElementById('prodsTable');el.innerHTML='⏳...';try{let r;if(bc)r=await API.byBarcode(bc);else if(q)r=await API.searchProds(q);else r=await API.getProds({limit:all?20:10});const prods=(r.data||[]).filter(p=>p.type?.[0]!=='service');el.innerHTML=prods.length?`<table><thead><tr><th>ID</th><th>Img</th><th>Name</th><th>Barcode</th><th>Price</th><th>Stock</th></tr></thead><tbody>${prods.map(p=>{const nm=(p.name||'').replace(/^\[.*?\]\s*/,'').trim();const qty=p.qty_available!==undefined?parseFloat(p.qty_available):-1;return`<tr><td style="color:#64748b">#${p.id}</td><td>${p.image_1024?`<img src="${API.img(p.image_1024)}" style="width:38px;height:38px;object-fit:contain;border-radius:6px;background:#fff;padding:2px;display:block" onerror="this.src=''">`:'📦'}</td><td style="font-weight:700;color:#e2e8f0;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${nm}</td><td style="color:#64748b;font-size:9px">${p.barcode||'–'}</td><td style="color:var(--g);font-weight:700">${parseFloat(p.list_price||0).toFixed(2)}</td><td><span class="badge ${qty===0?'bErr':qty>0?'bOk':'bW'}">${qty===0?'OOS':qty>0?qty:'–'}</span></td></tr>`;}).join('')}</tbody></table>`:'No products';}catch(e){el.innerHTML='❌ '+e.message;}}
+
+async function testCreateOrder(){const res=document.getElementById('ord-c-res');res.style.display='block';res.textContent='⏳...';try{const r=await API.createOrder();showJ('ord-c-res',r);toast('Order #'+r.id+' created!');}catch(e){showJ('ord-c-res','❌ '+e.message);}}
+async function loadOrders(){const el=document.getElementById('ordersTable');el.innerHTML='⏳...';try{const r=await API.getOrders();const orders=r.data||[];el.innerHTML=orders.length?`<table><thead><tr><th>Order</th><th>Partner</th><th>State</th><th>Total</th></tr></thead><tbody>${orders.map(o=>{const state=Array.isArray(o.state)?o.state[1]:o.state||'Draft';return`<tr><td style="font-weight:800;color:#e2e8f0">${o.name}</td><td>${Array.isArray(o.partner_id)?o.partner_id[1]:'–'}</td><td><span class="badge ${state.includes('Sale')||state==='sale'?'bOk':state.includes('cancel')?'bErr':'bW'}">${state}</span></td><td style="color:var(--g);font-weight:700">AED ${parseFloat(o.amount_total||0).toFixed(2)}</td></tr>`;}).join('')}</tbody></table>`:'No orders';}catch(e){el.innerHTML='❌ '+e.message;}}
+async function viewOrder(){const id=document.getElementById('ord-id').value.trim();if(!id)return;try{const r=await API.getOrder(parseInt(id));document.getElementById('ordersTable').innerHTML=`<div class="json" style="display:block">${JSON.stringify(r,null,2)}</div>`;}catch(e){document.getElementById('ordersTable').innerHTML='❌ '+e.message;}}
+
+async function testAddLine(){const res=document.getElementById('ol-res');res.style.display='block';res.textContent='⏳...';try{const r=await API.addLine(parseInt(document.getElementById('ol-oid').value),parseInt(document.getElementById('ol-pid').value),parseInt(document.getElementById('ol-qty').value)||1);showJ('ol-res',r);}catch(e){showJ('ol-res','❌ '+e.message);}}
+async function testViewLines(){const res=document.getElementById('ol-res');res.style.display='block';res.textContent='⏳...';try{const r=await API.getLines(parseInt(document.getElementById('ol-oid').value));showJ('ol-res',r);}catch(e){showJ('ol-res','❌ '+e.message);}}
+async function testUpdLine(){const res=document.getElementById('rm-res');res.style.display='block';res.textContent='⏳...';try{const r=await API.updLine(parseInt(document.getElementById('ol-lid').value),parseInt(document.getElementById('ol-nq').value)||1);showJ('rm-res',r);}catch(e){showJ('rm-res','❌ '+e.message);}}
+async function testRmLines(){const res=document.getElementById('rm-res');res.style.display='block';res.textContent='⏳...';try{const ids=document.getElementById('rm-lids').value.split(',').map(Number).filter(Boolean);const r=await API.rmLines(parseInt(document.getElementById('rm-oid').value),ids);showJ('rm-res',r);}catch(e){showJ('rm-res','❌ '+e.message);}}
+
+async function testTx(){const res=document.getElementById('tx-res');res.style.display='block';res.textContent='⏳...';try{const r=await API.createTx(parseInt(document.getElementById('tx-oid').value),parseInt(document.getElementById('tx-prov').value));showJ('tx-res',r);}catch(e){showJ('tx-res','❌ '+e.message);}}
+async function testMarkDone(){const res=document.getElementById('md-res');res.style.display='block';res.textContent='⏳...';try{const r=await API.markDone(parseInt(document.getElementById('md-oid').value),parseInt(document.getElementById('md-tx').value),parseInt(document.getElementById('md-prov').value));showJ('md-res',r);}catch(e){showJ('md-res','❌ '+e.message);}}
+
+async function testCreateInv(){const res=document.getElementById('inv-c-res');res.style.display='block';res.textContent='⏳...';try{const r=await API.createInvoice(parseInt(document.getElementById('inv-oid').value));showJ('inv-c-res',r);}catch(e){showJ('inv-c-res','❌ '+e.message);}}
+async function loadInvoices(){const el=document.getElementById('invTable');el.innerHTML='⏳...';try{const r=await API.getInvoices();const items=r.data||[];el.innerHTML=items.length?`<table><thead><tr><th>Invoice</th><th>State</th><th>Amount</th><th>Date</th><th>PDF</th></tr></thead><tbody>${items.map(i=>{const state=Array.isArray(i.state)?i.state[1]:i.state||'Draft';return`<tr><td style="font-weight:800;color:#e2e8f0">${i.name||'–'}</td><td>${state}</td><td style="color:var(--g);font-weight:700">AED ${parseFloat(i.amount_total||0).toFixed(2)}</td><td style="color:#64748b;font-size:10px">${(i.date||'').slice(0,10)}</td><td>${i.access_token?`<a href="${API.invPdfUrl(i.id,i.access_token)}" target="_blank" style="color:#67e8f9;font-size:10px">PDF</a>`:'–'}</td></tr>`;}).join('')}</tbody></table>`:'No invoices';}catch(e){el.innerHTML='❌ '+e.message;}}
+
+async function loadDeliveries(){const el=document.getElementById('delivTable');el.innerHTML='⏳...';try{const r=await API.getDeliveries();const items=r.data||[];el.innerHTML=items.length?`<table><thead><tr><th>Name</th><th>State</th><th>Date</th></tr></thead><tbody>${items.map(d=>`<tr><td style="font-weight:700;color:#e2e8f0">${d.name||'–'}</td><td>${Array.isArray(d.state)?d.state[1]:d.state||'–'}</td><td style="color:#64748b;font-size:10px">${(d.scheduled_date||d.date_done||'').slice(0,10)}</td></tr>`).join('')}</tbody></table>`:'No deliveries';}catch(e){el.innerHTML='❌ '+e.message;}}
+
+async function testLoyalty(){const res=document.getElementById('loy-res');res.style.display='block';res.textContent='⏳...';try{const r=await API.getLoyaltyCoupons(parseInt(document.getElementById('loy-pid').value)||4610);showJ('loy-res',r);}catch(e){showJ('loy-res','❌ '+e.message);}}
+async function testApplyLoyalty(){const res=document.getElementById('loy-a-res');res.style.display='block';res.textContent='⏳...';try{const r=await API.applyLoyalty(document.getElementById('loy-oid').value,document.getElementById('loy-rid').value,document.getElementById('loy-cid').value);showJ('loy-a-res',r);}catch(e){showJ('loy-a-res','❌ '+e.message);}}
+
+async function loadContacts(){const el=document.getElementById('ctTable');el.innerHTML='⏳...';try{const r=await API.getContacts();const items=r.data||[];el.innerHTML=items.length?`<table><thead><tr><th>ID</th><th>Img</th><th>Name</th><th>Email</th><th>Phone</th></tr></thead><tbody>${items.map(c=>`<tr><td style="color:#64748b">#${c.id}</td><td>${c.image_1024?`<img src="${API.img(c.image_1024)}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;display:block" onerror="this.src=''">`:'👤'}</td><td style="font-weight:700;color:#e2e8f0">${c.name||'–'}</td><td style="color:#64748b;font-size:10px">${c.email_normalized||'–'}</td><td style="color:#64748b;font-size:10px">${c.phone||c.mobile||'–'}</td></tr>`).join('')}</tbody></table>`:'No contacts';}catch(e){el.innerHTML='❌ '+e.message;}}
+async function viewContact(){const id=document.getElementById('ct-id').value.trim();if(!id)return;try{const r=await API.getContact(parseInt(id));document.getElementById('ctTable').innerHTML=`<div class="json" style="display:block">${JSON.stringify(r,null,2)}</div>`;}catch(e){document.getElementById('ctTable').innerHTML='❌ '+e.message;}}
+
+function preset(ep,params){document.getElementById('t-ep').value=ep;document.getElementById('t-params').value=params||'';}
+function qtest(ep,params){preset(ep,params||'');pg('tester',null);runTest();}
+document.getElementById('t-meth')?.addEventListener('change',function(){document.getElementById('t-body-w').style.display=this.value==='POST'?'block':'none';});
+async function runTest(){
+  const ep=document.getElementById('t-ep').value.trim(),method=document.getElementById('t-meth').value,params=document.getElementById('t-params').value.trim();
+  if(!ep){toast('Enter endpoint','err');return;}
+  const btn=document.getElementById('run-btn');btn.disabled=true;btn.textContent='⏳...';
+  document.getElementById('t-res-w').style.display='block';
+  const t0=Date.now();
+  try{
+    let url=API.PX+ep+(ep.includes('?')?'&':'?')+'by_AJR=1';if(params)url+='&'+params;
+    const h={'Content-Type':'application/json'};const s=API.mySessionId();if(s)h['X-Session-Token']=s;
+    const opts={method,credentials:'include',headers:h};
+    if(method==='POST')opts.body=document.getElementById('t-body').value||'{}';
+    const res=await fetch(url,opts);const data=await res.json();const t=Date.now()-t0;
+    document.getElementById('t-status').innerHTML=`<span class="badge ${res.ok?'bOk':'bErr'}">${res.status}</span>`;
+    document.getElementById('t-time').textContent=t+'ms';
+    document.getElementById('t-res').textContent=JSON.stringify(data,null,2);
+  }catch(e){document.getElementById('t-status').innerHTML=`<span class="badge bErr">Error</span>`;document.getElementById('t-res').textContent='❌ '+e.message;}
+  btn.disabled=false;btn.textContent='▶ Run';
+}
+</script>
+</body>
+</html>

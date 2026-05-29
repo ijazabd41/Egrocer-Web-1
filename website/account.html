@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Account – Coop Discounts</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+.acct-lay{display:grid;grid-template-columns:250px 1fr;gap:20px;align-items:start}
+.pg-tab{display:none}.pg-tab.on{display:block}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.sc{background:#fff;border-radius:14px;border:1.5px solid #e5e7eb;padding:18px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.sc-n{font-size:26px;font-weight:900;color:var(--red)}.sc-l{font-size:10px;color:#6b7280;font-weight:600;margin-top:3px}
+.order-card{background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:18px;margin-bottom:12px;transition:box-shadow .2s}
+.order-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.lcard{background:linear-gradient(135deg,var(--red-d) 0%,var(--red) 100%);border-radius:16px;padding:24px;color:#fff;position:relative;overflow:hidden;margin-bottom:14px}
+.lcard::before{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:rgba(245,200,0,.12);border-radius:50%}
+@media(max-width:900px){.acct-lay{grid-template-columns:1fr}.sgrid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<section class="sec">
+<div class="ctr">
+  <div class="acct-lay">
+
+    <!-- SIDEBAR -->
+    <div class="acct-sb">
+      <div class="acct-usr">
+        <div class="acct-av" id="acctAv"><span id="acctAvLetter">👤</span></div>
+        <div class="acct-nm" id="acctName">Loading...</div>
+        <div class="acct-em" id="acctEmail"></div>
+      </div>
+      <nav class="acct-nav">
+        <a href="#" class="on" onclick="showTab('dashboard',this)">📊 Dashboard</a>
+        <a href="#" onclick="showTab('profile',this)">👤 My Profile</a>
+        <a href="#" onclick="showTab('orders',this)">🛒 My Orders</a>
+        <a href="#" onclick="showTab('invoices',this)">🧾 My Invoices</a>
+        <a href="#" onclick="showTab('loyalty',this)">⭐ Loyalty & Rewards</a>
+        <a href="#" onclick="showTab('address',this)">📍 My Address</a>
+        <a href="#" onclick="doLogout()" style="color:var(--red)">🚪 Sign Out</a>
+      </nav>
+    </div>
+
+    <!-- CONTENT -->
+    <div>
+
+      <!-- DASHBOARD -->
+      <div class="pg-tab on" id="tab-dashboard">
+        <div class="sgrid">
+          <div class="sc"><div class="sc-n" id="stOrders">–</div><div class="sc-l">Orders</div></div>
+          <div class="sc"><div class="sc-n" id="stInvoices">–</div><div class="sc-l">Invoices</div></div>
+          <div class="sc"><div class="sc-n" id="stPoints">–</div><div class="sc-l">Loyalty Pts</div></div>
+          <div class="sc"><div class="sc-n" id="stCart">–</div><div class="sc-l">Cart Items</div></div>
+        </div>
+        <div class="fs">
+          <h3>👋 Welcome back, <span id="dashName">–</span>!</h3>
+          <p style="font-size:13px;color:#6b7280;margin-bottom:16px">Manage your orders, invoices, loyalty rewards and account settings.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <a href="shop.html" style="background:var(--red);color:#fff;padding:10px 20px;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">🛍️ Continue Shopping</a>
+            <button onclick="showTab('orders',null)" style="background:#f3f4f6;color:#374151;padding:10px 20px;border-radius:8px;font-weight:700;font-size:13px;border:none;cursor:pointer">📦 My Orders</button>
+          </div>
+        </div>
+        <div class="fs">
+          <h3 style="margin-bottom:14px">Recent Orders</h3>
+          <div id="recentOrders"><div style="color:#9ca3af;font-size:13px;text-align:center;padding:20px">⏳ Loading...</div></div>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="pg-tab" id="tab-profile">
+        <div class="fs">
+          <h3>👤 My Profile</h3>
+          <div class="fgrid">
+            <div class="fg"><label class="fl">Full Name</label><input class="fi" id="pName"></div>
+            <div class="fg"><label class="fl">Arabic Name</label><input class="fi" id="pNameAr" placeholder="الاسم بالعربي"></div>
+            <div class="fg"><label class="fl">Email</label><input class="fi" id="pEmail" type="email"></div>
+            <div class="fg"><label class="fl">Phone</label><input class="fi" id="pPhone" type="tel"></div>
+            <div class="fg"><label class="fl">Mobile</label><input class="fi" id="pMobile" type="tel"></div>
+            <div class="fg"><label class="fl">Gender</label>
+              <select class="fsel" id="pGender"><option value="">Select</option><option value="male">Male</option><option value="female">Female</option></select>
+            </div>
+            <div class="fg full"><label class="fl">Street</label><input class="fi" id="pStreet"></div>
+            <div class="fg"><label class="fl">City</label><input class="fi" id="pCity"></div>
+            <div class="fg"><label class="fl">ZIP</label><input class="fi" id="pZip"></div>
+          </div>
+          <div id="profMsg" style="display:none;margin-top:10px" class="alert"></div>
+          <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+            <button onclick="saveProfile()" class="sbtn" style="max-width:180px">Save Profile</button>
+            <button onclick="document.getElementById('pwdSec').style.display='block'" style="background:#f3f4f6;color:#374151;border:none;padding:12px 20px;border-radius:8px;font-weight:700;cursor:pointer">Change Password</button>
+          </div>
+        </div>
+        <div class="fs" id="pwdSec" style="display:none">
+          <h3>🔑 Change Password</h3>
+          <div class="fg" style="max-width:320px"><label class="fl">New Password</label><input class="fi" id="newPwd" type="password" placeholder="Min 6 characters"></div>
+          <div id="pwdMsg" style="margin-top:8px;font-size:12px;font-weight:600"></div>
+          <button onclick="changePwd()" class="sbtn" style="margin-top:12px;max-width:180px">Update</button>
+        </div>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="pg-tab" id="tab-orders">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <h2 style="font-size:17px;font-weight:800">🛒 My Orders</h2>
+          <a href="shop.html" style="background:var(--red);color:#fff;padding:8px 16px;border-radius:8px;font-weight:700;font-size:12px;text-decoration:none">+ Shop More</a>
+        </div>
+        <div id="ordersTable"><div style="text-align:center;padding:40px;color:#9ca3af">⏳ Loading...</div></div>
+        <!-- ORDER DETAIL DRAWER -->
+        <div id="orderDetailEl" style="display:none;background:#fff;border:1.5px solid #e5e7eb;border-radius:16px;padding:22px;margin-top:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <h3 id="orderDetailTitle" style="font-size:15px;font-weight:800">Order Detail</h3>
+            <button onclick="document.getElementById('orderDetailEl').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b7280">✕</button>
+          </div>
+          <div id="orderDetailContent"></div>
+        </div>
+      </div>
+
+      <!-- INVOICES -->
+      <div class="pg-tab" id="tab-invoices">
+        <h2 style="font-size:17px;font-weight:800;margin-bottom:16px">🧾 My Invoices</h2>
+        <div id="invoicesTable"><div style="text-align:center;padding:40px;color:#9ca3af">⏳ Loading...</div></div>
+      </div>
+
+      <!-- LOYALTY -->
+      <div class="pg-tab" id="tab-loyalty">
+        <h2 style="font-size:17px;font-weight:800;margin-bottom:16px">⭐ Loyalty & Rewards</h2>
+        <div id="loyaltyContent"><div style="text-align:center;padding:40px;color:#9ca3af">⏳ Loading...</div></div>
+      </div>
+
+      <!-- ADDRESS -->
+      <div class="pg-tab" id="tab-address">
+        <h2 style="font-size:17px;font-weight:800;margin-bottom:16px">📍 My Home Address</h2>
+        <div class="fs">
+          <h3>🏠 Home Delivery Address</h3>
+          <p style="font-size:12px;color:#6b7280;margin-bottom:12px">Add or update your home address. We use it for delivery on every order.</p>
+          <div class="fgrid">
+            <div class="fg full"><label class="fl">Street / Building *</label><input class="fi" id="aStreet" placeholder="Building No, Street, Area"></div>
+            <div class="fg full"><label class="fl">Street 2 (Apt / Villa)</label><input class="fi" id="aStreet2" placeholder="Apartment / Villa / Floor"></div>
+            <div class="fg"><label class="fl">City</label><input class="fi" id="aCity" placeholder="Dubai"></div>
+            <div class="fg"><label class="fl">ZIP / Postal Code</label><input class="fi" id="aZip" placeholder="00000"></div>
+            <div class="fg">
+              <label class="fl">Country</label>
+              <select class="fsel" id="aCountry"></select>
+            </div>
+            <div class="fg">
+              <label class="fl">State / Emirate</label>
+              <select class="fsel" id="aState"></select>
+            </div>
+          </div>
+          <div id="addrMsg" style="margin-top:8px;font-size:12px;font-weight:600"></div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+            <button onclick="saveAddress()" class="sbtn" style="max-width:220px">💾 Save Home Address</button>
+            <a href="javascript:void(0)" onclick="if(Cart.count()===0){ toast('Your cart is empty', 'warn'); return; } location.href='checkout.html';" style="background:#f3f4f6;color:#374151;padding:11px 18px;border-radius:8px;font-weight:700;font-size:12px;text-decoration:none;display:inline-flex;align-items:center">🛒 Go to Checkout</a>
+          </div>
+          <div style="margin-top:14px;font-size:11px;color:#9ca3af">Saved via <code>/api/contacts/{partner_id}/update</code>. On checkout this address is used along with your chosen carrier (delivery method).</div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div>
+</div>
+</section>
+<div id="site-footer"></div>
+<script src="js/api.js?v=8.5"></script><script src="js/app.js?v=8.5"></script><script src="js/layout.js"></script>
+<script>
+if(!API.loggedIn()){ location.href='login.html?next=account.html'; }
+
+function showTab(name, el){
+  document.querySelectorAll('.pg-tab').forEach(function(t){ t.classList.remove('on'); t.style.display='none'; });
+  var t = document.getElementById('tab-'+name);
+  if(t){ t.classList.add('on'); t.style.display='block'; }
+  document.querySelectorAll('.acct-nav a').forEach(function(a){ a.classList.remove('on'); });
+  if(el) el.classList.add('on');
+  document.getElementById('orderDetailEl').style.display='none';
+  if(name==='orders') loadOrders();
+  else if(name==='invoices') loadInvoices();
+  else if(name==='loyalty') loadLoyalty();
+  else if(name==='address') loadAddress();
+  else if(name==='profile') loadProfile();
+}
+
+document.addEventListener('DOMContentLoaded', async function(){
+  Bar.start();
+  var user = API.me();
+  if(user){
+    document.getElementById('acctName').textContent = user.name||'Account';
+    document.getElementById('acctEmail').textContent = user.username||'';
+    document.getElementById('dashName').textContent = (user.name||'').split(' ')[0]||'there';
+    var letter = (user.name||'A').charAt(0).toUpperCase();
+    document.getElementById('acctAvLetter').textContent = letter;
+    document.getElementById('acctAv').style.cssText = 'background:var(--red);color:#fff;border-radius:50%;width:62px;height:62px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;margin:0 auto 10px;border:3px solid rgba(255,255,255,.3)';
+  }
+  document.getElementById('stCart').textContent = Cart.count();
+  await loadDashboard();
+  Bar.done();
+});
+
+async function loadDashboard(){
+  try{
+    var [ordR, invR, loyBalR] = await Promise.allSettled([API.myOrders(), API.myInvoices(), API.getLoyaltyBalance()]);
+    var orders = ordR.status==='fulfilled' ? (ordR.value.data||[]) : [];
+    var invoices = invR.status==='fulfilled' ? (invR.value.data||[]) : [];
+    var loyBal = loyBalR.status==='fulfilled' ? loyBalR.value : { points:0 };
+    document.getElementById('stOrders').textContent = orders.length;
+    document.getElementById('stInvoices').textContent = invoices.length;
+    document.getElementById('stPoints').textContent = (loyBal.points||0).toFixed(0);
+
+    // Recent 5 orders
+    var recent = orders.slice(0,5);
+    document.getElementById('recentOrders').innerHTML = recent.length ? recent.map(function(o){
+      var state = Array.isArray(o.state)?o.state[1]:o.state||'Draft';
+      var cls = state.toLowerCase().includes('sale')||state.toLowerCase().includes('done')?'os-ok':state.toLowerCase().includes('cancel')?'os-cancel':'os-draft';
+      return '<div class="order-card">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">'
+        +'<div><div style="font-weight:800;font-size:14px">'+o.name+'</div><div style="font-size:11px;color:#6b7280;margin-top:2px">'+(o.date_order||'').slice(0,10)+'</div></div>'
+        +'<div style="display:flex;align-items:center;gap:10px">'
+        +'<span class="os '+cls+'">'+state+'</span>'
+        +'<span style="font-weight:800;color:var(--red-d)">AED '+parseFloat(o.amount_total||0).toFixed(2)+'</span>'
+        +'<button onclick="showTab(\'orders\',null);viewOrderDetail('+o.id+')" style="background:var(--red);color:#fff;border:none;padding:5px 11px;border-radius:6px;font-weight:700;font-size:11px;cursor:pointer">Details</button>'
+        +'</div></div></div>';
+    }).join('') : '<div style="text-align:center;padding:20px;color:#9ca3af;font-size:13px">No orders yet. <a href="shop.html" style="color:var(--red);font-weight:700">Start shopping →</a></div>';
+  }catch(e){ document.getElementById('recentOrders').innerHTML='<div style="color:var(--red);font-size:13px">Could not load orders</div>'; }
+}
+
+async function loadProfile(){
+  try{
+    var r = await API.myProfile();
+    var p = Array.isArray(r.data)?r.data[0]:r.data;
+    if(!p) return;
+    document.getElementById('pName').value = p.name||'';
+    document.getElementById('pNameAr').value = p.arabic_name||'';
+    document.getElementById('pEmail').value = p.email_normalized||p.email||'';
+    document.getElementById('pPhone').value = p.phone||'';
+    document.getElementById('pMobile').value = p.mobile||'';
+    document.getElementById('pGender').value = p.gender||'';
+    document.getElementById('pStreet').value = p.street||'';
+    document.getElementById('pCity').value = p.city||'';
+    document.getElementById('pZip').value = p.zip||'';
+    if(p.image_1024){ var av=document.getElementById('acctAv'); av.innerHTML='<img src="'+API.img(p.image_1024)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.innerHTML=\'<span>'+p.name.charAt(0)+'</span>\'">'; }
+  }catch(e){}
+}
+
+async function saveProfile(){
+  var msg = document.getElementById('profMsg');
+  msg.style.display='none';
+  var pid = API.myPid(); if(!pid) return;
+  try{
+    await API.updContact(pid, {
+      name: document.getElementById('pName').value,
+      arabic_name: document.getElementById('pNameAr').value,
+      email: document.getElementById('pEmail').value,
+      phone: document.getElementById('pPhone').value,
+      mobile: document.getElementById('pMobile').value,
+      gender: document.getElementById('pGender').value,
+      street: document.getElementById('pStreet').value,
+      city: document.getElementById('pCity').value,
+      zip: document.getElementById('pZip').value
+    });
+    var nm = document.getElementById('pName').value;
+    document.querySelectorAll('.u-name').forEach(function(e){ e.textContent=nm.split(' ')[0]; });
+    document.getElementById('acctName').textContent = nm;
+    var sess=API.sess(); if(sess){ sess.name=nm; API.saveSess(sess); }
+    msg.className='alert alert-ok'; msg.textContent='✅ Profile saved!'; msg.style.display='flex';
+    setTimeout(function(){ msg.style.display='none'; }, 3000);
+  }catch(e){ msg.className='alert alert-err'; msg.textContent='❌ '+e.message; msg.style.display='flex'; }
+}
+
+async function changePwd(){
+  var pw = document.getElementById('newPwd').value.trim();
+  var msg = document.getElementById('pwdMsg');
+  if(!pw||pw.length<6){ msg.textContent='Minimum 6 characters'; msg.style.color='var(--red)'; return; }
+  try{ await API.updatePassword(API.myUserId(), pw); msg.textContent='✅ Password updated!'; msg.style.color='#065f46'; document.getElementById('newPwd').value=''; }
+  catch(e){ msg.textContent='❌ '+e.message; msg.style.color='var(--red)'; }
+}
+
+async function loadOrders(){
+  var el = document.getElementById('ordersTable');
+  el.innerHTML='<div style="text-align:center;padding:40px;color:#9ca3af">⏳ Loading...</div>';
+  try{
+    var r = await API.myOrders();
+    var orders = r.data||[];
+    if(!orders.length){
+      el.innerHTML='<div style="text-align:center;padding:52px 20px"><div style="font-size:52px;margin-bottom:14px">📦</div><h3 style="font-weight:800;color:#374151">No orders yet</h3><a href="shop.html" style="color:var(--red);font-weight:700;text-decoration:none;font-size:13px">Start shopping →</a></div>';
+      return;
+    }
+    el.innerHTML = orders.map(function(o){
+      var state = Array.isArray(o.state)?o.state[1]:o.state||'Draft';
+      var stateKey = Array.isArray(o.state)?o.state[0]:o.state||'draft';
+      var cls = stateKey==='sale'||stateKey==='done'?'os-ok':stateKey==='cancel'?'os-cancel':'os-draft';
+      var hasInvoice = Array.isArray(o.invoice_ids)?o.invoice_ids.length>0:!!o.invoice_ids;
+      var hasDelivery = Array.isArray(o.picking_ids)?o.picking_ids.length>0:!!o.picking_ids;
+      return '<div class="order-card">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">'
+        +'<div><div style="font-size:15px;font-weight:900">'+o.name+'</div>'
+        +'<div style="font-size:11px;color:#6b7280;margin-top:3px">Placed: '+(o.date_order||'').slice(0,10)+'</div>'
+        +(Array.isArray(o.partner_id)?'<div style="font-size:11px;color:#6b7280">Customer: '+o.partner_id[1]+'</div>':'')
+        +'</div>'
+        +'<div style="text-align:right">'
+        +'<span class="os '+cls+'" style="display:block;margin-bottom:5px">'+state+'</span>'
+        +'<div style="font-size:17px;font-weight:900;color:var(--red-d)">AED '+parseFloat(o.amount_total||0).toFixed(2)+'</div>'
+        +'</div></div>'
+        +'<div style="display:flex;gap:7px;margin-top:12px;flex-wrap:wrap;align-items:center">'
+        +'<button onclick="viewOrderDetail('+o.id+')" style="background:var(--red);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-weight:700;font-size:11px;cursor:pointer">📋 View Details</button>'
+        +'<a href="track-order.html?oid='+o.id+'" style="background:#f3f4f6;color:#374151;padding:7px 14px;border-radius:8px;font-weight:700;font-size:11px;text-decoration:none">📍 Track</a>'
+        +(hasInvoice?'<button onclick="loadOrderInvoice('+o.id+')" style="background:#f0fdf4;color:#065f46;border:1px solid #6ee7b7;padding:7px 14px;border-radius:8px;font-weight:700;font-size:11px;cursor:pointer">🧾 Invoice</button>':'')
+        +(hasDelivery?'<span style="font-size:10px;background:#e0e7ff;color:#3730a3;padding:3px 8px;border-radius:6px;font-weight:700">🚚 Shipped</span>':'')
+        +'</div></div>';
+    }).join('');
+  }catch(e){ el.innerHTML='<div style="color:var(--red);font-size:13px;padding:20px">❌ '+e.message+'</div>'; }
+}
+
+async function viewOrderDetail(oid){
+  var el = document.getElementById('orderDetailEl');
+  var cont = document.getElementById('orderDetailContent');
+  el.style.display='block';
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+  cont.innerHTML='<div style="text-align:center;padding:20px;color:#9ca3af">⏳ Loading order #'+oid+'...</div>';
+  try{
+    var r = await API.getOrder(oid);
+    var o = Array.isArray(r.data)?r.data[0]:r.data;
+    if(!o){ cont.innerHTML='<div style="color:var(--red)">Order not found</div>'; return; }
+    document.getElementById('orderDetailTitle').textContent = 'Order: '+(o.name||'#'+oid);
+    var state = Array.isArray(o.state)?o.state[1]:o.state||'Draft';
+    var stateKey = Array.isArray(o.state)?o.state[0]:o.state||'draft';
+    // Lines may come back as `order_line` OR `order_lines` depending on backend
+    var lines = o.order_line || o.order_lines || [];
+    if(lines.length && typeof lines[0] === 'number'){
+      try{
+        var lr=await API.getLines(parseInt(oid));
+        lines=lr.data||[];
+      }catch(e){}
+    }
+    // Normalize invoice_ids[] → [{id:..}] OR [12,34] → array of numeric IDs
+    var invoiceIds = (Array.isArray(o.invoice_ids)?o.invoice_ids:(o.invoice_ids?[o.invoice_ids]:[]))
+      .map(function(x){ return typeof x==='object'?x.id:x; });
+    var pickingIds = (Array.isArray(o.picking_ids)?o.picking_ids:(o.picking_ids?[o.picking_ids]:[]))
+      .map(function(x){ return typeof x==='object'?x.id:x; });
+    var carrier = Array.isArray(o.carrier_id)?o.carrier_id[1]:(o.carrier_id||'');
+    var partner = Array.isArray(o.partner_id)?o.partner_id[1]:'';
+
+    var summaryHtml = ''
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">'
+      +'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Order #</div><div style="font-weight:800">'+(o.name||oid)+'</div></div>'
+      +'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Status</div><span class="os '+(stateKey==='sale'||stateKey==='done'?'os-ok':stateKey==='cancel'?'os-cancel':'os-draft')+'">'+state+'</span></div>'
+      +'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Date</div><div style="font-size:12px">'+(o.date_order||'').slice(0,16)+'</div></div>'
+      +'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Total</div><div style="font-weight:900;color:var(--red-d);font-size:16px">AED '+parseFloat(o.amount_total||0).toFixed(2)+'</div></div>'
+      +(carrier?'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Delivery Method</div><div style="font-size:12px">🚚 '+carrier+'</div></div>':'')
+      +(partner?'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Customer</div><div style="font-size:12px">'+partner+'</div></div>':'')
+      +'</div>'
+      +(o.note?'<div style="font-size:11px;color:#6b7280;margin-bottom:12px;padding:10px;background:#f9fafb;border-radius:8px;line-height:1.5"><strong>📝 Delivery Note:</strong><br>'+o.note+'</div>':'')
+      +(lines.length?'<div style="border-top:1.5px solid #f3f4f6;padding-top:12px;margin-bottom:12px">'
+        +'<div style="font-size:12px;font-weight:800;margin-bottom:8px">Order Items ('+lines.length+')</div>'
+        +lines.map(function(l){
+          var pnm=(Array.isArray(l.product_id)?l.product_id[1]:l.name||l.display_name||'–');
+          if(typeof pnm==='object'&&pnm) pnm = pnm.name || pnm.display_name || '–';
+          pnm = (pnm||'').replace(/^\[.*?\]\s*/,'').trim();
+          return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f9fafb;gap:8px">'
+            +'<div style="flex:1"><div style="font-size:12px;font-weight:700">'+pnm+'</div>'
+            +'<div style="font-size:10px;color:#9ca3af">Qty: '+(l.product_uom_qty||l.qty||1)+' × AED '+parseFloat(l.price_unit||0).toFixed(2)+'</div></div>'
+            +'<div style="font-weight:700;color:var(--red-d);font-size:13px">AED '+parseFloat(l.price_subtotal||l.price_total||0).toFixed(2)+'</div>'
+            +'</div>';}).join('')
+        +'<div style="display:flex;justify-content:space-between;font-size:14px;font-weight:800;padding-top:10px;border-top:2px solid #e5e7eb"><span>Total</span><span style="color:var(--red-d)">AED '+parseFloat(o.amount_total||0).toFixed(2)+'</span></div>'
+        +'</div>' : '<div style="text-align:center;padding:14px;color:#9ca3af;font-size:12px">No items found on this order</div>')
+      // Reserve slots so we can fill them after async calls finish
+      +'<div id="ord-invoice-'+oid+'" style="margin-top:8px"></div>'
+      +'<div id="ord-deliv-'+oid+'" style="margin-top:8px"></div>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">'
+      +'<a href="track-order.html?oid='+oid+'" style="background:#f3f4f6;color:#374151;padding:7px 14px;border-radius:8px;font-weight:700;font-size:11px;text-decoration:none">📍 Track Delivery</a>'
+      +'</div>';
+    cont.innerHTML = summaryHtml;
+
+    // INVOICE block — fetch each invoice by id so we get access_token for the PDF
+    var invEl = document.getElementById('ord-invoice-'+oid);
+    if(invoiceIds.length){
+      invEl.innerHTML='<div style="background:#fffbea;border:1px solid #f5c518;border-radius:10px;padding:12px"><div style="font-size:12px;font-weight:800;margin-bottom:8px">🧾 Invoice ('+invoiceIds.length+')</div><div style="font-size:11px;color:#9ca3af">Loading invoice details...</div></div>';
+      try{
+        var invHtml='';
+        for(var i=0;i<invoiceIds.length;i++){
+          var iid=invoiceIds[i];
+          try{
+            var ir=await API.getInvoice(iid);
+            var inv=Array.isArray(ir.data)?ir.data[0]:ir.data;
+            if(!inv) continue;
+            var istate=Array.isArray(inv.state)?inv.state[1]:inv.state||'Draft';
+            var pdfUrl=inv.access_token?API.invPdfUrl(inv.id,inv.access_token):(inv.access_url?API.PX+inv.access_url:'');
+            invHtml += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6;flex-wrap:wrap">'
+              +'<div><div style="font-size:13px;font-weight:800">'+(inv.name||'Invoice #'+inv.id)+'</div>'
+              +'<div style="font-size:10px;color:#6b7280">Invoice ID: <strong>'+inv.id+'</strong></div>'
+              +'<div style="font-size:10px;color:#6b7280">Date: '+(inv.invoice_date||inv.date||'').slice(0,10)+(inv.invoice_date_due?' · Due: '+(inv.invoice_date_due||'').slice(0,10):'')+'</div>'
+              +'</div>'
+              +'<div style="text-align:right">'
+              +'<span class="os '+(istate.toLowerCase().includes('post')?'os-ok':istate.toLowerCase().includes('cancel')?'os-cancel':'os-draft')+'" style="display:block;margin-bottom:4px">'+istate+'</span>'
+              +'<div style="font-weight:800;color:var(--red-d);font-size:13px">AED '+parseFloat(inv.amount_total||0).toFixed(2)+'</div>'
+              +(inv.amount_residual&&parseFloat(inv.amount_residual)>0?'<div style="font-size:10px;color:#9ca3af">Due: AED '+parseFloat(inv.amount_residual).toFixed(2)+'</div>':'')
+              +'</div>'
+              +(pdfUrl?'<div style="width:100%;margin-top:6px"><a href="'+pdfUrl+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;background:var(--red);color:#fff;padding:7px 14px;border-radius:8px;font-weight:700;font-size:11px;text-decoration:none">📄 Get Invoice PDF</a></div>':'<div style="width:100%;margin-top:6px;font-size:10px;color:#9ca3af">PDF available once invoice is posted</div>')
+              +'</div>';
+          }catch(_){
+            invHtml += '<div style="padding:6px 0;font-size:11px;color:#9ca3af">Invoice #'+iid+' — could not load details</div>';
+          }
+        }
+        invEl.innerHTML = '<div style="background:#fffbea;border:1px solid #f5c518;border-radius:10px;padding:12px">'
+          +'<div style="font-size:12px;font-weight:800;margin-bottom:8px">🧾 Invoice'+(invoiceIds.length>1?'s':'')+' ('+invoiceIds.length+')</div>'
+          + (invHtml||'<div style="font-size:11px;color:#9ca3af">No invoice details</div>')
+          +'</div>';
+      }catch(e){
+        invEl.innerHTML = '<div style="font-size:11px;color:var(--red)">Invoice load failed: '+e.message+'</div>';
+      }
+    }
+
+    // DELIVERY block — picking_ids → /api/delivery-order/{id}
+    var delEl = document.getElementById('ord-deliv-'+oid);
+    if(pickingIds.length){
+      delEl.innerHTML='<div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:10px;padding:12px"><div style="font-size:12px;font-weight:800;margin-bottom:8px">🚚 Delivery</div><div style="font-size:11px;color:#9ca3af">Loading delivery details...</div></div>';
+      try{
+        var delHtml='';
+        for(var j=0;j<pickingIds.length;j++){
+          var pid2=pickingIds[j];
+          try{
+            var dR = await API.getDelivery(pid2);
+            var del = Array.isArray(dR.data)?dR.data[0]:dR.data;
+            if(!del) continue;
+            var dstate = Array.isArray(del.state)?del.state[1]:del.state||'Processing';
+            var dstateKey=Array.isArray(del.state)?del.state[0]:del.state||'';
+            var hasGeo = del.partner_latitude && del.partner_longitude;
+            var mapUrl = hasGeo?'https://maps.google.com/?q='+del.partner_latitude+','+del.partner_longitude:'';
+            var dcarrier = Array.isArray(del.carrier_id)?del.carrier_id[1]:(del.carrier_id||carrier||'');
+            delHtml += '<div style="padding:8px 0;border-bottom:1px solid #dbeafe">'
+              +'<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:5px">'
+              +'<div><div style="font-size:13px;font-weight:800">'+(del.name||'Picking #'+del.id)+'</div>'
+              +'<div style="font-size:10px;color:#6b7280">Delivery ID: <strong>'+del.id+'</strong></div></div>'
+              +'<span class="os '+(dstateKey==='done'?'os-ok':dstateKey==='cancel'?'os-cancel':'os-proc')+'">'+dstate+'</span>'
+              +'</div>'
+              +(dcarrier?'<div style="font-size:11px;color:#374151;margin-top:3px">Carrier: <strong>'+dcarrier+'</strong></div>':'')
+              +(del.scheduled_date?'<div style="font-size:11px;color:#6b7280">Scheduled: '+(del.scheduled_date||'').slice(0,16)+'</div>':'')
+              +(del.date_done?'<div style="font-size:11px;color:#6b7280">Delivered: '+(del.date_done||'').slice(0,16)+'</div>':'')
+              +(del.origin?'<div style="font-size:11px;color:#6b7280">Source: '+del.origin+'</div>':'')
+              +(mapUrl?'<a href="'+mapUrl+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;background:#fff;border:1px solid #93c5fd;color:#1e40af;padding:5px 10px;border-radius:6px;font-weight:700;font-size:10px;text-decoration:none">📍 Map Directions</a>':'')
+              +'</div>';
+          }catch(_){
+            delHtml += '<div style="padding:6px 0;font-size:11px;color:#9ca3af">Picking #'+pid2+' — could not load</div>';
+          }
+        }
+        delEl.innerHTML = '<div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:10px;padding:12px">'
+          +'<div style="font-size:12px;font-weight:800;margin-bottom:8px">🚚 Delivery'+(pickingIds.length>1?' Shipments':'')+' ('+pickingIds.length+')</div>'
+          + (delHtml||'<div style="font-size:11px;color:#9ca3af">No delivery details</div>')
+          +'</div>';
+      }catch(e){
+        delEl.innerHTML='<div style="font-size:11px;color:var(--red)">Delivery load failed: '+e.message+'</div>';
+      }
+    }
+  }catch(e){ cont.innerHTML='<div style="color:var(--red);font-size:13px">❌ '+e.message+'</div>'; }
+}
+
+// Open the most relevant invoice PDF for an order (used by the Invoice quick-button on the order card)
+async function loadOrderInvoice(oid){
+  try{
+    var r = await API.getOrder(oid);
+    var o = Array.isArray(r.data)?r.data[0]:r.data;
+    var invoiceIds = (Array.isArray(o.invoice_ids)?o.invoice_ids:(o.invoice_ids?[o.invoice_ids]:[]))
+      .map(function(x){ return typeof x==='object'?x.id:x; });
+    if(!invoiceIds.length){ toast('No invoice generated yet','warn'); return; }
+    var ir = await API.getInvoice(invoiceIds[0]);
+    var inv = Array.isArray(ir.data)?ir.data[0]:ir.data;
+    if(!inv){ toast('Invoice details unavailable','warn'); return; }
+    var pdfUrl = inv.access_token?API.invPdfUrl(inv.id, inv.access_token):(inv.access_url?API.PX+inv.access_url:'');
+    if(pdfUrl){ window.open(pdfUrl, '_blank'); }
+    else{ toast('Invoice PDF not available yet — invoice must be posted','warn'); }
+  }catch(e){ toast('❌ '+e.message,'err'); }
+}
+
+async function loadInvoices(){
+  var el = document.getElementById('invoicesTable');
+  el.innerHTML='<div style="text-align:center;padding:40px;color:#9ca3af">⏳ Loading...</div>';
+  try{
+    var r = await API.myInvoices();
+    var invoices = r.data||[];
+    if(!invoices.length){
+      el.innerHTML='<div style="text-align:center;padding:52px 20px"><div style="font-size:52px;margin-bottom:14px">🧾</div><h3 style="font-weight:800;color:#374151">No invoices yet</h3></div>';
+      return;
+    }
+    el.innerHTML = invoices.map(function(inv){
+      var state = Array.isArray(inv.state)?inv.state[1]:inv.state||'Draft';
+      var cls = state.toLowerCase().includes('post')?'os-ok':state.toLowerCase().includes('cancel')?'os-cancel':'os-draft';
+      // PDF URL from access_token OR access_url
+      var pdfUrl = inv.access_token ? API.invPdfUrl(inv.id, inv.access_token) : (inv.access_url?'/proxy'+inv.access_url:'');
+      return '<div style="background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:18px;margin-bottom:12px">'
+        +'<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px">'
+        +'<div><div style="font-size:15px;font-weight:900">'+(inv.name||'Invoice')+'</div>'
+        +(inv.ref?'<div style="font-size:11px;color:#6b7280;margin-top:2px">Ref: '+inv.ref+'</div>':'')
+        +'<div style="font-size:11px;color:#6b7280;margin-top:2px">Date: '+(inv.date||inv.invoice_date||'').slice(0,10)+'</div>'
+        +'<div style="font-size:11px;color:#6b7280">Due: '+(inv.invoice_date_due||'').slice(0,10)+'</div>'
+        +'</div>'
+        +'<div style="text-align:right">'
+        +'<span class="os '+cls+'" style="display:block;margin-bottom:5px">'+state+'</span>'
+        +'<div style="font-size:17px;font-weight:900;color:var(--red-d)">AED '+parseFloat(inv.amount_total||0).toFixed(2)+'</div>'
+        +(inv.amount_residual&&parseFloat(inv.amount_residual)>0?'<div style="font-size:11px;color:#9ca3af">Due: AED '+parseFloat(inv.amount_residual).toFixed(2)+'</div>':'')
+        +'</div></div>'
+        // PDF DOWNLOAD BUTTON
+        +(pdfUrl?'<div style="margin-top:12px"><a href="'+pdfUrl+'" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:var(--red);color:#fff;padding:9px 18px;border-radius:8px;font-weight:700;font-size:12px;text-decoration:none">📄 Download PDF Invoice</a></div>':'<div style="margin-top:10px;font-size:11px;color:#9ca3af">PDF will be available once invoice is confirmed</div>')
+        +'</div>';
+    }).join('');
+  }catch(e){ el.innerHTML='<div style="color:var(--red);font-size:13px;padding:20px">❌ '+e.message+'</div>'; }
+}
+
+async function loadLoyalty(){
+  var el = document.getElementById('loyaltyContent');
+  el.innerHTML='<div style="text-align:center;padding:40px;color:#9ca3af">⏳ Loading...</div>';
+  try{
+    var bal = await API.getLoyaltyBalance();
+    var coupons = bal.coupons||[];
+    var cards = bal.cards||[];
+    var totalPts = bal.points||0;
+
+    var html = '';
+    if(totalPts > 0 || cards.length || coupons.length){
+      html+='<div class="lcard"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;opacity:.8">Your Loyalty Balance</div>'
+        +'<div style="font-size:44px;font-weight:900;color:var(--yellow);margin-bottom:4px">'+(totalPts%1?totalPts.toFixed(2):totalPts.toFixed(0))+'<span style="font-size:20px;font-weight:600"> pts</span></div>'
+        +(coupons[0]&&coupons[0].points_display?'<div style="font-size:12px;opacity:.85;margin-bottom:4px">'+coupons[0].points_display+'</div>':'')
+        +'<div style="font-size:12px;opacity:.8">Redeem your code at checkout to apply your loyalty discount</div></div>';
+    }
+
+    if(coupons.length){
+      html+='<div style="font-size:14px;font-weight:800;margin:16px 0 10px">🎁 Your Loyalty Coupons</div>';
+      for(var i=0;i<coupons.length;i++){
+        var c = coupons[i];
+        var progName = c.program_id&&c.program_id.length?c.program_id[0].name:'Loyalty Program';
+        var rid = API.resolveLoyaltyRewardId(c);
+        var rewardLabel = '';
+        if(rid){
+          try{
+            var rr = await API.getLoyaltyReward(rid);
+            var rw = Array.isArray(rr.data)?rr.data[0]:rr.data;
+            if(rw){
+              var desc = rw.description||'Loyalty reward';
+              var disc = parseFloat(rw.discount||0);
+              var mode = Array.isArray(rw.discount_mode)?rw.discount_mode[0]:rw.discount_mode;
+              if(disc>0 && mode==='per_point') rewardLabel = desc+' — '+disc+' AED per point redeemed';
+              else if(disc>0) rewardLabel = desc+' — discount available';
+              else rewardLabel = desc;
+            }
+          }catch(_){}
+        }
+        var pts = parseFloat(c.points||0);
+        var code = c.code||'';
+        html += '<div style="background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:16px;margin-bottom:10px">'
+          +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap">'
+          +'<div><div style="font-size:13px;font-weight:800">'+progName+'</div>'
+          +(pts?'<div style="font-size:14px;color:var(--red);font-weight:700;margin-top:4px">'+pts.toFixed(2)+' points</div>':'')
+          +(code?'<div style="font-size:11px;color:#374151;margin-top:6px"><span style="color:#6b7280">Coupon code:</span> <code style="background:#f3f4f6;padding:2px 8px;border-radius:4px;font-weight:800">'+code+'</code></div>':'')
+          +(rewardLabel?'<div style="font-size:11px;color:#6b7280;margin-top:4px">'+rewardLabel+'</div>':'')
+          +(c.expiration_date?'<div style="font-size:10px;color:#9ca3af;margin-top:4px">Expires: '+String(c.expiration_date).slice(0,10)+'</div>':'')
+          +'</div>'
+          +'<span style="background:var(--red-l);color:var(--red);padding:4px 12px;border-radius:20px;font-size:11px;font-weight:800;flex-shrink:0">ACTIVE</span>'
+          +'</div>'
+          +(code?'<a href="javascript:void(0)" onclick="if(Cart.count()===0){ toast(\'Your cart is empty\', \'warn\'); return; } location.href=\'checkout.html?coupon='+encodeURIComponent(code)+'\';" style="display:inline-block;margin-top:10px;background:var(--red);color:#fff;padding:8px 16px;border-radius:8px;font-weight:700;font-size:12px;text-decoration:none">Use at Checkout →</a>':'')
+          +'</div>';
+      }
+    }
+
+    if(!cards.length&&!coupons.length){
+      html='<div style="text-align:center;padding:52px 20px"><div style="font-size:52px;margin-bottom:14px">⭐</div><h3 style="font-weight:800;color:#374151;margin-bottom:8px">No rewards yet</h3><p style="font-size:13px;color:#9ca3af;margin-bottom:16px">Shop more to earn loyalty points and unlock rewards!</p><a href="shop.html" style="color:var(--red);font-weight:700;text-decoration:none;font-size:13px">Shop Now →</a></div>';
+    }
+    el.innerHTML = html;
+  }catch(e){ el.innerHTML='<div style="color:var(--red);font-size:13px;padding:20px">❌ '+e.message+'</div>'; }
+}
+
+async function loadAddress(){
+  // Load countries/states
+  try{
+    var cR = await API.getCountries();
+    var countries = cR.data||[];
+    var cSel = document.getElementById('aCountry');
+    cSel.innerHTML='<option value="">Select Country</option>'+countries.map(function(c){ return '<option value="'+c.id+'">'+c.name+'</option>'; }).join('');
+    // UAE default
+    var uae = countries.find(function(c){ return c.name==='United Arab Emirates'||c.id===228; });
+    if(uae) cSel.value = uae.id;
+
+    var sR = await API.getStates();
+    var states = sR.data||[];
+    var sSel = document.getElementById('aState');
+    sSel.innerHTML='<option value="">Select State/Emirate</option>'+states.filter(function(s){ return !uae||(Array.isArray(s.country_id)?s.country_id[0]===uae.id:s.country_id===uae.id); }).map(function(s){ return '<option value="'+s.id+'">'+s.name+'</option>'; }).join('');
+  }catch(_){}
+
+  try{
+    var r = await API.myProfile();
+    var p = Array.isArray(r.data)?r.data[0]:r.data;
+    if(p){
+      document.getElementById('aStreet').value = p.street||'';
+      document.getElementById('aStreet2').value = p.street2||'';
+      document.getElementById('aCity').value = p.city||'';
+      document.getElementById('aZip').value = p.zip||'';
+      if(p.country_id) document.getElementById('aCountry').value = Array.isArray(p.country_id)?p.country_id[0]:p.country_id;
+      if(p.state_id) document.getElementById('aState').value = Array.isArray(p.state_id)?p.state_id[0]:p.state_id;
+    }
+  }catch(_){}
+}
+
+async function saveAddress(){
+  var pid=API.myPid(); if(!pid)return;
+  var msg=document.getElementById('addrMsg');
+  var street=document.getElementById('aStreet').value.trim();
+  if(!street){ msg.textContent='❌ Street / Building is required'; msg.style.color='var(--red)'; return; }
+  msg.textContent='⏳ Saving address...'; msg.style.color='#9ca3af';
+  try{
+    await API.updContact(pid,{
+      street:street,
+      street2:document.getElementById('aStreet2').value.trim(),
+      city:document.getElementById('aCity').value.trim(),
+      zip:document.getElementById('aZip').value.trim(),
+      country_id:document.getElementById('aCountry').value,
+      state_id:document.getElementById('aState').value
+    });
+    msg.textContent='✅ Home address saved to your profile!'; msg.style.color='#065f46';
+  }catch(e){ msg.textContent='❌ '+e.message; msg.style.color='var(--red)'; }
+}
+
+async function doLogout(){
+  await API.logout(); Cart.clear(); toast('Signed out');
+  setTimeout(function(){ location.href='index.html'; }, 600);
+}
+</script>
+</body></html>

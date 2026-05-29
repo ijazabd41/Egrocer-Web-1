@@ -1,0 +1,22 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hot Deals – Coop Discounts</title><link rel="stylesheet" href="css/style.css"></head>
+<body><div id="site-header"></div>
+<div class="phero"><h1>🔥 Hot Deals & Offers</h1><p>Unbeatable prices every day at Coop Discounts</p></div>
+<section class="sec"><div class="w">
+  <div class="pgrid" id="offersGrid"></div>
+  <div style="text-align:center;margin-top:24px" id="offerPages"></div>
+</div></section>
+<style>@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}</style>
+<div id="site-footer"></div>
+<script src="js/api.js?v=8.5"></script><script src="js/app.js?v=8.5"></script><script src="js/layout.js"></script>
+<script>
+let pg=0;
+async function load(){
+  Bar.start();
+  const el=document.getElementById('offersGrid');
+  if(el)el.innerHTML=skelGrid(10,300);
+  try{const r=await API.getProds({limit:20,Offset:pg*20});const prods=(r.data||[]).filter(p=>p.type?.[0]!=='service'&&parseFloat(p.list_price||0)>0);el.innerHTML=prods.length?prods.map(buildCard).join(''):'<div style="grid-column:1/-1;text-align:center;padding:40px;color:#9ca3af">No products</div>';}
+  catch(e){el.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:#e41e26">⚠️ ${e.message}</div>`;}
+  Bar.done();
+}
+document.addEventListener('DOMContentLoaded',load);
+</script></body></html>

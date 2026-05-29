@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Checkout – Coop Discounts</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+<div class="ctr" style="padding-top:8px"><div class="bcnav"><a href="index.html">Home</a><span>›</span><a href="cart.html">Cart</a><span>›</span><span>Checkout</span></div></div>
+
+<section class="sec">
+<div class="ctr">
+<h1 style="font-size:22px;font-weight:900;margin-bottom:22px">Checkout</h1>
+<div style="display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:start" class="chk-layout">
+
+<!-- LEFT -->
+<div>
+  <div id="loginReminder" style="display:none" class="alert alert-info">
+    🔐 <a href="login.html?next=checkout.html" style="color:#a01820;font-weight:700">Sign in</a> for faster checkout & order history
+  </div>
+
+  <!-- DELIVERY METHOD (carrier_id) -->
+  <div class="fs" id="deliverySection">
+    <h3>🚚 Delivery Method</h3>
+    <p style="font-size:11px;color:#6b7280;margin-bottom:10px">Pick how you want your order delivered. Selecting a method updates the order on the server (carrier_id).</p>
+    <div id="delivMethodsEl">
+      <div class="pmeth on" id="dm-standard" onclick="selDelivery(1,'Standard delivery','home')">
+        <span class="pmeth-ic">🚚</span>
+        <div><div class="pmeth-lbl">Standard Delivery</div><div class="pmeth-desc">2-4 hours delivery</div></div>
+        <span style="margin-left:auto;font-weight:800;color:#16a34a">FREE</span>
+      </div>
+    </div>
+    <div id="carrierMsg" style="margin-top:8px;font-size:12px;font-weight:600"></div>
+  </div>
+
+  <!-- DELIVERY ADDRESS — Home Address (saved to /api/contacts/{pid}/update) -->
+  <div class="fs" id="homeAddrSection">
+    <h3>🏠 Home Delivery Address</h3>
+    <p style="font-size:11px;color:#6b7280;margin-bottom:10px">Enter or edit your home address. We save it to your profile and use it for delivery.</p>
+    <div class="fgrid">
+      <div class="fg"><label class="fl">First Name *</label><input class="fi" id="fn" placeholder="Ahmed"></div>
+      <div class="fg"><label class="fl">Last Name *</label><input class="fi" id="ln" placeholder="Al-Rashid"></div>
+      <div class="fg"><label class="fl">Phone *</label><input class="fi" id="ph" placeholder="+971 55 000 0000" type="tel"></div>
+      <div class="fg"><label class="fl">Email *</label><input class="fi" id="em" placeholder="you@email.com" type="email"></div>
+      <div class="fg full"><label class="fl">Street / Building *</label><input class="fi" id="addr" placeholder="Building No, Street, Area"></div>
+      <div class="fg full"><label class="fl">Street 2 (Apt / Villa)</label><input class="fi" id="addr2" placeholder="Apartment / Villa / Floor"></div>
+      <div class="fg"><label class="fl">City</label><input class="fi" id="city" placeholder="Dubai"></div>
+      <div class="fg"><label class="fl">ZIP / Postal Code</label><input class="fi" id="zip" placeholder="00000"></div>
+      <div class="fg"><label class="fl">Country</label><select class="fsel" id="country"><option value="">Loading...</option></select></div>
+      <div class="fg"><label class="fl">State / Emirate</label><select class="fsel" id="state"><option value="">Loading...</option></select></div>
+      <div class="fg full"><label class="fl">Delivery Notes</label><input class="fi" id="notes" placeholder="Leave at door, building gate code..."></div>
+    </div>
+    <div id="addrMsg" style="margin-top:8px;font-size:12px;font-weight:600"></div>
+    <button type="button" onclick="saveHomeAddress()" style="margin-top:10px;background:#fff;border:1.5px solid var(--red);color:var(--red);padding:9px 16px;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer">💾 Save Address & Apply Delivery</button>
+  </div>
+
+  <!-- STORE PICKUP — Store address card (hidden by default) -->
+  <div class="fs" id="storePickupSection" style="display:none">
+    <h3>🏬 Store Pickup Location</h3>
+    <p style="font-size:11px;color:#6b7280;margin-bottom:12px">Pick your order up directly from the store. No delivery address required.</p>
+    <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px">
+      <div style="font-size:14px;font-weight:800;color:#111;margin-bottom:6px" id="storeName">Coop Discounts Hyper Market</div>
+      <div style="font-size:12px;color:#374151;line-height:1.6" id="storeAddr">Al Ghandi Complex, Showroom 03<br>Nadd Al Hamar, Dubai, UAE</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:#6b7280">
+        <div>📞 <a href="tel:+971555944719" style="color:#374151;text-decoration:none">+971 55 594 4719</a></div>
+        <div>🕒 Open Daily 8AM – 12AM</div>
+      </div>
+      <a id="storeMapLink" href="https://maps.google.com/?q=Al+Ghandi+Complex+Nadd+Al+Hamar+Dubai" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-top:12px;background:var(--red);color:#fff;padding:8px 14px;border-radius:8px;font-weight:700;font-size:12px;text-decoration:none">📍 View on Google Maps</a>
+    </div>
+    <div style="margin-top:12px;font-size:11px;color:#92400e;background:#fffbea;border:1px solid #f5c518;border-radius:8px;padding:10px">ℹ️ Bring a copy of your order confirmation or photo ID when collecting.</div>
+    <div id="pickupContactBlock" style="margin-top:18px;border-top:1.5px solid #e5e7eb;padding-top:16px">
+      <h4 style="font-size:14px;font-weight:800;margin-bottom:6px">👤 Your contact for pickup *</h4>
+      <p style="font-size:11px;color:#6b7280;margin-bottom:12px">We'll call or message you when your order is ready to collect.</p>
+      <div class="fgrid">
+        <div class="fg"><label class="fl">First Name *</label><input class="fi" id="fnPk" placeholder="Ahmed" autocomplete="given-name"></div>
+        <div class="fg"><label class="fl">Last Name</label><input class="fi" id="lnPk" placeholder="Al-Rashid" autocomplete="family-name"></div>
+        <div class="fg"><label class="fl">Phone *</label><input class="fi" id="phPk" placeholder="+971 55 000 0000" type="tel" autocomplete="tel"></div>
+        <div class="fg"><label class="fl">Email</label><input class="fi" id="emPk" placeholder="you@email.com" type="email" autocomplete="email"></div>
+        <div class="fg full"><label class="fl">Pickup notes</label><input class="fi" id="notesPk" placeholder="Preferred pickup time, special instructions..."></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYMENT METHOD -->
+  <div class="fs">
+    <h3>💳 Payment Method</h3>
+    <div id="payEl">
+      <div style="display:flex;align-items:center;gap:10px;padding:18px;color:#9ca3af;font-size:13px"><span style="font-size:20px">⏳</span>Loading payment options...</div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT: ORDER SUMMARY -->
+<div class="chk-summary">
+  <h3>Order Summary</h3>
+  <div id="itemsList" style="margin-bottom:14px;max-height:260px;overflow-y:auto"></div>
+  <div class="chk-row"><span style="color:#6b7280">Subtotal</span><span id="chkSub" style="font-weight:700">AED 0.00</span></div>
+  <div class="chk-row"><span style="color:#6b7280">Delivery</span><span style="font-weight:700;color:#16a34a">FREE</span></div>
+  <div class="chk-row"><span style="color:#6b7280">VAT (5%)</span><span id="chkVat" style="font-weight:700">AED 0.00</span></div>
+  <div class="chk-row" id="discRow" style="display:none"><span style="color:#16a34a;font-weight:700">🎁 Discount</span><span id="discAmt" style="font-weight:700;color:#16a34a">–AED 0.00</span></div>
+
+  <!-- COUPON -->
+  <div style="margin:14px 0;padding:14px;background:#fffbea;border-radius:10px;border:1px solid #f5c518">
+    <div style="font-size:12px;font-weight:700;color:#111;margin-bottom:8px">🎁 Loyalty / Coupon Code</div>
+    <div style="display:flex;gap:8px">
+      <input class="fi" id="couponInput" placeholder="Enter coupon code" style="flex:1;padding:9px 12px;font-size:13px">
+      <button onclick="applyCoupon()" style="background:#f5c518;color:#111;border:none;padding:9px 16px;border-radius:8px;font-weight:800;font-size:13px;cursor:pointer">Apply</button>
+    </div>
+    <div id="couponMsg" style="margin-top:7px;font-size:12px;font-weight:600"></div>
+  </div>
+
+  <div class="chk-total"><span>Total</span><span id="chkTotal">AED 0.00</span></div>
+  <div id="placeErr" class="alert alert-err" style="display:none;margin-top:12px"></div>
+  <button id="placeBtn" onclick="placeOrder()" class="sbtn" style="margin-top:14px">✅ Place Order</button>
+  <p style="font-size:11px;color:#9ca3af;text-align:center;margin-top:8px">🔒 Secure · Processed by our payment system</p>
+</div>
+
+</div><!-- /grid -->
+</div></section>
+
+<div id="site-footer"></div>
+<script src="js/api.js?v=8.5"></script><script src="js/app.js?v=8.5"></script><script src="js/layout.js"></script>
+<script>
+var selProvider=22, selProviderName='Cash on Delivery', selCarrierId=1, selCarrierName='Standard delivery', selDeliveryKind='home', selDeliveryMethod=null, discount=0, appliedCoupon=null;
+
+function isStorePickupMethod(m){
+  if(!m) return false;
+  var name=(m.name||'').toLowerCase();
+  var dtype=Array.isArray(m.delivery_type)?String(m.delivery_type[0]||'').toLowerCase():String(m.delivery_type||'').toLowerCase();
+  return /pickup|store|collect|click.?&.?collect|demo/i.test(name)||/pickup|store|collect/i.test(dtype);
+}
+function syncPickupContactFromHome(){
+  var pairs=[['fn','fnPk'],['ln','lnPk'],['ph','phPk'],['em','emPk']];
+  pairs.forEach(function(p){
+    var home=document.getElementById(p[0]), pk=document.getElementById(p[1]);
+    if(!home||!pk) return;
+    var hv=home.value.trim();
+    if(hv && !pk.value.trim()) pk.value=hv;
+  });
+}
+/** Collect checkout contact — merges pickup + hidden home fields + session. */
+async function resolveCheckoutContact(){
+  var isStore=(selDeliveryKind==='store');
+  if(isStore) syncPickupContactFromHome();
+  var fn=(isStore?document.getElementById('fnPk'):document.getElementById('fn')).value.trim();
+  var ln=(isStore?document.getElementById('lnPk'):document.getElementById('ln')).value.trim();
+  var ph=(isStore?document.getElementById('phPk'):document.getElementById('ph')).value.trim();
+  var em=(isStore?document.getElementById('emPk'):document.getElementById('em')).value.trim();
+  if(isStore){
+    fn=fn||document.getElementById('fn').value.trim();
+    ln=ln||document.getElementById('ln').value.trim();
+    ph=ph||document.getElementById('ph').value.trim();
+    em=em||document.getElementById('em').value.trim();
+  }
+  var user=API.me();
+  if(user){
+    var parts=(user.name||'').trim().split(/\s+/);
+    if(!fn) fn=parts[0]||'';
+    if(!ln) ln=parts.slice(1).join(' ')||'';
+    if(!em) em=user.username||'';
+  }
+  if((!fn||!ph)&&API.loggedIn()){
+    try{
+      var r=await API.myProfile();
+      var p=Array.isArray(r.data)?r.data[0]:r.data;
+      if(p){
+        if(!fn&&p.name) fn=(p.name||'').trim().split(/\s+/)[0]||'';
+        if(!ln&&p.name) ln=(p.name||'').trim().split(/\s+/).slice(1).join(' ')||'';
+        if(!ph) ph=(p.phone||p.mobile||'').trim();
+        if(!em) em=(p.email||p.email_normalized||'').trim();
+      }
+    }catch(_){}
+  }
+  if(isStore){
+    if(fn) document.getElementById('fnPk').value=fn;
+    if(ln) document.getElementById('lnPk').value=ln;
+    if(ph) document.getElementById('phPk').value=ph;
+    if(em) document.getElementById('emPk').value=em;
+  }
+  var notes=(isStore?document.getElementById('notesPk'):document.getElementById('notes')).value.trim();
+  var addr=isStore?'':document.getElementById('addr').value.trim();
+  return { isStore, fn, ln, ph, em, notes, addr };
+}
+function focusPickupContactMissing(contact){
+  var el=document.getElementById('storePickupSection');
+  if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); }
+  if(!contact.fn) document.getElementById('fnPk').focus();
+  else if(!contact.ph) document.getElementById('phPk').focus();
+}
+
+document.addEventListener('DOMContentLoaded', async function(){
+  if(!API.loggedIn()) document.getElementById('loginReminder').style.display='flex';
+
+  // PRE-FILL from saved session — populate BOTH home form and pickup-contact form
+  var user=API.me();
+  if(user&&user.uid){
+    var nm=user.name||'';
+    var fnVal=nm.split(' ')[0]||'';
+    var lnVal=nm.split(' ').slice(1).join(' ')||'';
+    document.getElementById('fn').value=fnVal;
+    document.getElementById('ln').value=lnVal;
+    document.getElementById('em').value=user.username||'';
+    document.getElementById('fnPk').value=fnVal;
+    document.getElementById('lnPk').value=lnVal;
+    document.getElementById('emPk').value=user.username||'';
+    await loadCountriesStates();
+    try{
+      var r=await API.myProfile();
+      var p=Array.isArray(r.data)?r.data[0]:r.data;
+      if(p){
+        var phoneVal=p.phone||p.mobile||'';
+        if(phoneVal){ document.getElementById('ph').value=phoneVal; document.getElementById('phPk').value=phoneVal; }
+        if(p.street) document.getElementById('addr').value=p.street;
+        if(p.street2) document.getElementById('addr2').value=p.street2;
+        if(p.city) document.getElementById('city').value=p.city;
+        if(p.zip) document.getElementById('zip').value=p.zip;
+        if(p.country_id) document.getElementById('country').value=Array.isArray(p.country_id)?p.country_id[0]:p.country_id;
+        if(p.state_id) document.getElementById('state').value=Array.isArray(p.state_id)?p.state_id[0]:p.state_id;
+      }
+    }catch(_){}
+  } else {
+    await loadCountriesStates();
+  }
+
+  renderSummary();
+  loadPayProviders();
+  loadDeliveryMethods();
+
+  // Auto-fetch best loyalty coupon if logged in
+  var preCoupon = new URLSearchParams(location.search).get('coupon');
+  if (!preCoupon && API.loggedIn()) {
+    try {
+      var loyR = await API.myLoyalty();
+      var coupons = loyR.data || [];
+      if (coupons.length > 0) {
+        var best = coupons.reduce(function(max, c){ return parseFloat(c.points||0) > parseFloat(max.points||0) ? c : max; }, coupons[0]);
+        if (best && best.code && parseFloat(best.points||0) > 0) {
+          preCoupon = best.code;
+        }
+      }
+    } catch (_) {}
+  }
+
+  // Apply pre-filled or auto-fetched coupon
+  if (preCoupon) {
+    document.getElementById('couponInput').value = preCoupon;
+    if (API.loggedIn()) applyCoupon();
+  }
+});
+
+async function loadCountriesStates(){
+  try{
+    var cR=await API.getCountries();
+    var countries=cR.data||[];
+    var cSel=document.getElementById('country');
+    cSel.innerHTML='<option value="">Select Country</option>'+countries.map(function(c){return '<option value="'+c.id+'">'+c.name+'</option>';}).join('');
+    var uae=countries.find(function(c){return c.name==='United Arab Emirates'||c.id===228;});
+    if(uae) cSel.value=uae.id;
+  }catch(_){ document.getElementById('country').innerHTML='<option value="228">United Arab Emirates</option>'; }
+  try{
+    var sR=await API.getStates();
+    var states=sR.data||[];
+    var sSel=document.getElementById('state');
+    var ccId=parseInt(document.getElementById('country').value)||228;
+    var filtered=states.filter(function(s){return Array.isArray(s.country_id)?s.country_id[0]===ccId:s.country_id===ccId;});
+    sSel.innerHTML='<option value="">Select Emirate</option>'+(filtered.length?filtered:states).map(function(s){return '<option value="'+s.id+'">'+s.name+'</option>';}).join('');
+  }catch(_){ document.getElementById('state').innerHTML='<option value="">Dubai</option>'; }
+}
+
+function renderSummary(){
+  var items=Cart.raw(), sub=Cart.total();
+  discount=Math.max(0,Math.min(discount||0,sub));
+  var vat=sub*0.05, total=sub+vat-discount;
+  document.getElementById('chkSub').textContent='AED '+sub.toFixed(2);
+  document.getElementById('chkVat').textContent='AED '+vat.toFixed(2);
+  document.getElementById('chkTotal').textContent='AED '+total.toFixed(2);
+  if(discount>0){
+    document.getElementById('discRow').style.display='flex';
+    document.getElementById('discAmt').textContent='–AED '+discount.toFixed(2);
+  }else{
+    document.getElementById('discRow').style.display='none';
+  }
+  document.getElementById('itemsList').innerHTML=items.length?items.map(function(it){
+    return '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f3f4f6">'
+      +'<div style="width:44px;height:44px;background:#f9fafb;border-radius:8px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center">'+(it.image?'<img src="'+it.image+'" style="width:100%;height:100%;object-fit:contain">':'📦')+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+it.name+'</div>'
+      +'<div style="font-size:11px;color:#9ca3af">× '+it.qty+'</div></div>'
+      +'<div style="font-size:13px;font-weight:700;color:#a01820">AED '+((it.price*it.qty)||0).toFixed(2)+'</div></div>';
+  }).join(''):'<p style="font-size:13px;color:#9ca3af;text-align:center">No items in cart</p>';
+}
+
+async function loadDeliveryMethods(){
+  try{
+    var r=await API.getDeliveryMethods();
+    var methods=r.data||[];
+    if(!methods.length)return;
+    var el=document.getElementById('delivMethodsEl');
+    el.innerHTML='';
+    methods.forEach(function(m,i){
+      var price=parseFloat(m.fixed_price||0);
+      var kind=isStorePickupMethod(m)?'store':'home';
+      var ic=kind==='store'?'🏬':'🚚';
+      var d=document.createElement('div');
+      d.className='pmeth'+(i===0?' on':'');
+      d.id='dm-'+m.id;
+      d.onclick=(function(mid,mname,k,mm){return function(){selDelivery(mid,mname,k,mm);};})(m.id,m.name,kind,m);
+      d.innerHTML='<span class="pmeth-ic">'+ic+'</span>'
+        +'<div><div class="pmeth-lbl">'+m.name+'</div>'+(m.delivery_type?'<div class="pmeth-desc">'+m.delivery_type[1]+'</div>':'<div class="pmeth-desc">'+(kind==='store'?'Pick up from store':'Home delivery')+'</div>')+'</div>'
+        +'<span style="margin-left:auto;font-weight:800;color:'+(price===0?'#16a34a':'#a01820')+'">'+(price===0?'FREE':'AED '+price.toFixed(2))+'</span>';
+      el.appendChild(d);
+    });
+    if(methods.length){
+      var first=methods[0];
+      selCarrierId=first.id;
+      selCarrierName=first.name;
+      selDeliveryKind=isStorePickupMethod(first)?'store':'home';
+      selDeliveryMethod=first;
+      // Send initial carrier to backend if we already have an open order
+      pushCarrierToOrder();
+    }
+    toggleAddressSection();
+  }catch(_){}
+}
+
+function selDelivery(id,name,kind,method){
+  document.querySelectorAll('#delivMethodsEl .pmeth').forEach(function(m){m.classList.remove('on');});
+  var el=document.getElementById('dm-'+id); if(el)el.classList.add('on');
+  selCarrierId=id;
+  selCarrierName=name||selCarrierName;
+  selDeliveryKind=kind||'home';
+  selDeliveryMethod=method||null;
+  toggleAddressSection();
+  pushCarrierToOrder();
+}
+
+function toggleAddressSection(){
+  var isStore=(selDeliveryKind==='store');
+  document.getElementById('homeAddrSection').style.display=isStore?'none':'block';
+  document.getElementById('storePickupSection').style.display=isStore?'block':'none';
+  if(isStore && selDeliveryMethod){
+    var nm=selDeliveryMethod.name||'Coop Discounts Store';
+    var desc=(selDeliveryMethod.description||'').trim();
+    document.getElementById('storeName').textContent=nm;
+    if(desc){
+      document.getElementById('storeAddr').innerHTML=desc.replace(/\n/g,'<br>');
+      document.getElementById('storeMapLink').href='https://maps.google.com/?q='+encodeURIComponent(desc.replace(/<[^>]+>/g,' ').trim());
+    }
+  }
+  if(isStore) syncPickupContactFromHome();
+  else {
+    if(!document.getElementById('fn').value.trim()) document.getElementById('fn').value=document.getElementById('fnPk').value;
+    if(!document.getElementById('ln').value.trim()) document.getElementById('ln').value=document.getElementById('lnPk').value;
+    if(!document.getElementById('ph').value.trim()) document.getElementById('ph').value=document.getElementById('phPk').value;
+    if(!document.getElementById('em').value.trim()) document.getElementById('em').value=document.getElementById('emPk').value;
+  }
+}
+
+// Update carrier_id on the order via /api/order/{oid}/update?carrier_id=X
+async function pushCarrierToOrder(){
+  var msg=document.getElementById('carrierMsg');
+  if(!selCarrierId){ return; }
+  if(!API.loggedIn()){ msg.textContent='ℹ️ Sign in to lock in delivery on your order'; msg.style.color='#92400e'; return; }
+  var oid=Cart.oid();
+  if(!oid){ // create the order on first selection so carrier_id can be applied immediately
+    try{ oid = await Cart.ensureOrder(); }catch(_){ oid=null; }
+  }
+  if(!oid){ msg.textContent='ℹ️ Add an item to cart to apply the delivery method'; msg.style.color='#92400e'; return; }
+  try{
+    await API.updDelivery(parseInt(oid), selCarrierId);
+    msg.textContent='✅ '+selCarrierName+' applied to your order';
+    msg.style.color='#065f46';
+  }catch(e){ msg.textContent='❌ Failed to apply carrier: '+e.message; msg.style.color='#e41e26'; }
+}
+
+async function saveHomeAddress(){
+  var msg=document.getElementById('addrMsg');
+  if(!API.loggedIn()){ msg.textContent='❌ Please sign in to save your address'; msg.style.color='#e41e26'; return; }
+  var fn=document.getElementById('fn').value.trim();
+  var ln=document.getElementById('ln').value.trim();
+  var em=document.getElementById('em').value.trim();
+  var ph=document.getElementById('ph').value.trim();
+  var addr=document.getElementById('addr').value.trim();
+  if(!fn||!addr){ msg.textContent='❌ Name and street are required'; msg.style.color='#e41e26'; return; }
+  msg.textContent='⏳ Saving address...'; msg.style.color='#9ca3af';
+  var oid=Cart.oid();
+  if(!oid){ try{ oid=await Cart.ensureOrder(); }catch(_){} }
+  var fields={
+    name: (fn+' '+ln).trim(),
+    email: em,
+    phone: ph,
+    mobile: ph,
+    street: addr,
+    street2: document.getElementById('addr2').value.trim(),
+    city: document.getElementById('city').value.trim(),
+    zip: document.getElementById('zip').value.trim(),
+    country_id: document.getElementById('country').value||'',
+    state_id: document.getElementById('state').value||''
+  };
+  try{
+    await API.saveHomeAddressAndApplyCarrier(fields, oid, selCarrierId);
+    msg.textContent='✅ Address saved & '+selCarrierName+' applied to order';
+    msg.style.color='#065f46';
+  }catch(e){ msg.textContent='❌ '+e.message; msg.style.color='#e41e26'; }
+}
+
+async function loadPayProviders(){
+  var el=document.getElementById('payEl');
+  try{
+    var r=await API.getPayProviders();
+    var providers=API.filterCheckoutProviders(r.data||[]);
+    var html='';
+    providers.forEach(function(p,i){
+      var ic=p.code&&(p.code[0]==='cash_on_delivery'||p.name.toLowerCase().includes('cash'))?'💵':p.code&&p.code[0]==='apple_pay'?'🍎':'💳';
+      html+='<div class="pmeth'+(i===0?' on':'')+'" id="pm-'+p.id+'" onclick="selPay('+p.id+',\''+p.name.replace(/'/g,"\\'")+'\')">'
+        +'<span class="pmeth-ic">'+ic+'</span>'
+        +'<div><div class="pmeth-lbl">'+p.name+'</div>'+(p.display_message?'<div class="pmeth-desc">'+p.display_message+'</div>':'')+'</div>'
+        +'</div>';
+    });
+    if(!providers.length){
+      html='<div class="pmeth on" id="pm-22" onclick="selPay(22,\'Cash on Delivery\')">'
+        +'<span class="pmeth-ic">💵</span><div><div class="pmeth-lbl">Cash on Delivery</div><div class="pmeth-desc">Pay when your order arrives</div></div></div>';
+    }
+    el.innerHTML=html;
+    var def=API.pickDefaultPaymentProvider(providers);
+    if(def){selProvider=def.id;selProviderName=def.name;}
+    API.log.info('Checkout','payment providers loaded',{selected:selProvider,name:selProviderName,all:providers.map(function(p){return p.id+':'+p.name;})});
+  }catch(_){
+    el.innerHTML='<div class="pmeth on" id="pm-22" onclick="selPay(22,\'Cash on Delivery\')">'
+      +'<span class="pmeth-ic">💵</span><div><div class="pmeth-lbl">Cash on Delivery</div><div class="pmeth-desc">Pay when your order arrives</div></div></div>';
+    selProvider=22; selProviderName='Cash on Delivery';
+  }
+}
+function selPay(id,name){
+  document.querySelectorAll('.pmeth').forEach(function(m){m.classList.remove('on');});
+  var el=document.getElementById('pm-'+id); if(el)el.classList.add('on');
+  selProvider=id; selProviderName=name;
+}
+
+async function applyCoupon(){
+  var code=document.getElementById('couponInput').value.trim();
+  var msg=document.getElementById('couponMsg');
+  if(!code){msg.textContent='Please enter a coupon code';msg.style.color='#e41e26';return;}
+  if(!API.loggedIn()){msg.textContent='❌ Please sign in to use loyalty / coupon codes';msg.style.color='#e41e26';return;}
+  msg.textContent='⏳ Looking up coupon "'+code+'"...';msg.style.color='#9ca3af';
+  try{
+    var oid=Cart.oid()||await Cart.ensureOrder();
+    if(!oid) throw new Error('Add an item to your cart first');
+
+    var result = await API.applyCouponToOrder(oid, code);
+    appliedCoupon = {
+      code: result.code,
+      coupon_id: result.coupon.id,
+      reward_id: result.rewardId,
+      programName: result.programName,
+      rewardLabel: result.rewardLabel
+    };
+
+    var sub = Cart.total();
+    discount = Math.max(0, Math.min(result.discount || 0, sub));
+    if(!discount && result.orderTotal > 0){
+      var expected = Cart.total() * 1.05;
+      if(result.orderTotal < expected){
+        discount = +(expected - result.orderTotal).toFixed(2);
+      }
+    }
+    discount = Math.max(0, Math.min(discount, sub));
+
+    var extra = result.rewardLabel ? ' — '+result.rewardLabel : '';
+    var ptsInfo = '';
+    if(typeof result.pointsAfter === 'number'){
+      ptsInfo = ' | points left: '+result.pointsAfter.toFixed(2);
+    }
+    msg.textContent = discount > 0
+      ? '✅ "'+code+'" applied — discount AED '+discount.toFixed(2)+extra+ptsInfo
+      : '✅ "'+code+'" applied to your order'+extra+ptsInfo;
+    msg.style.color='#065f46';
+    renderSummary();
+  }catch(e){
+    msg.textContent='❌ '+(e.message||'Invalid coupon');
+    msg.style.color='#e41e26';
+  }
+}
+
+async function placeOrder(){
+  var errEl=document.getElementById('placeErr'), btn=document.getElementById('placeBtn');
+  errEl.style.display='none';
+  var contact=await resolveCheckoutContact();
+  var isStore=contact.isStore, fn=contact.fn, ln=contact.ln, ph=contact.ph, em=contact.em, addr=contact.addr;
+  if(isStore){
+    if(!fn||!ph){
+      errEl.textContent='❌ Please enter your name and phone in the pickup contact section below (or sign in so we can use your profile).';
+      errEl.style.display='flex';
+      focusPickupContactMissing(contact);
+      return;
+    }
+  } else {
+    if(!fn||!ph||!em||!addr){errEl.textContent='❌ Please fill in all required fields (Name, Phone, Email, Address)';errEl.style.display='flex';return;}
+  }
+  if(!Cart.raw().length){errEl.textContent='❌ Your cart is empty';errEl.style.display='flex';return;}
+  if(!API.loggedIn()){errEl.textContent='❌ Please sign in to place an order';errEl.style.display='flex';return;}
+  btn.disabled=true;btn.textContent='⏳ Placing order...';
+  var log=API.log;
+  try{
+    if(!API.ensureCleanCheckoutOrder||API.build!=='8.4'){
+      throw new Error('Outdated checkout script (need api.js build 8.4). Hard-refresh: Ctrl+Shift+R');
+    }
+    log.info('Checkout','placeOrder → start',{
+      cartItems:Cart.raw().map(function(it){return{product_id:it.product_id,variant_id:it.variant_id||it.product_id,qty:it.qty};}),
+      storedOid:Cart.oid()
+    });
+    // 1) Use existing draft order if valid, else create new
+    var oldOid=Cart.oid();
+    var oid = oldOid;
+    var orderName = null;
+    var needNewOrder = true;
+
+    if(oldOid){
+      if(Cart.wasPlaced(oldOid)){
+        Cart.markPlaced(oldOid);
+        log.info('Checkout','marked old order as placed',{orderId:oldOid});
+      }else{
+        try{
+          var oldR=await API.getOrder(parseInt(oldOid));
+          var oldO=Array.isArray(oldR.data)?oldR.data[0]:oldR.data;
+          // Re-use if it is a draft AND not submitted/completed
+          if(oldO && API.isDraftOrder(oldO) && !(await API.isOrderComplete(parseInt(oldOid)))){
+            needNewOrder = false;
+            orderName = oldO.name;
+            log.info('Checkout','reusing existing draft order',{orderId:oid,orderName:orderName});
+          } else {
+            Cart.markPlaced(oldOid);
+            log.info('Checkout','old order not reusable — marked placed',{orderId:oldOid});
+          }
+        }catch(e){
+          // 500 = portal user lost read access after order was confirmed; treat as placed
+          if(/500|not allowed/i.test(e.message)){
+            Cart.markPlaced(oldOid);
+            log.info('Checkout','old order inaccessible (likely confirmed) — marked placed',{orderId:oldOid,message:e.message});
+          } else {
+            log.warn('Checkout','could not inspect old order',{orderId:oldOid,message:e.message});
+          }
+        }
+      }
+    }
+
+    if(needNewOrder){
+      Cart.coid();
+      Cart.clearLineIds();
+      var ro=await API.ensureCleanCheckoutOrder();
+      oid=ro.id; orderName=ro.name;
+      Cart.soid(oid);
+      log.info('Checkout','fresh order created',{orderId:oid,orderName:orderName});
+    }
+
+    // 2) Clear any existing lines (create_order may return an old draft) then sync cart
+    try{
+      var existingR=await API.getLines(parseInt(oid));
+      var existingIds=(existingR.data||[]).map(function(l){return l.id;}).filter(Boolean);
+      if(existingIds.length){
+        log.info('Checkout','clearing pre-existing lines',{orderId:oid,lineIds:existingIds});
+        await API.rmLines(parseInt(oid),existingIds);
+      }
+    }catch(e){log.warn('Checkout','clear existing lines skipped',{orderId:oid,message:e.message});}
+    var cartItems=Cart.raw();
+    await Cart.syncToOrder(parseInt(oid), true);
+    var linesMatch=await API.orderLinesMatchCart(parseInt(oid), cartItems);
+    log.info('Checkout','cart synced',{orderId:oid,linesMatch:linesMatch,cartCount:cartItems.length});
+    if(!linesMatch){
+      throw new Error('Could not add your cart items to the order. Please try again or contact support.');
+    }
+
+    // RE-APPLY COUPON: syncToOrder completely wipes existing lines (including the backend reward line)
+    // We must re-apply the active coupon now so Odoo calculates the discounted amount_total before payment
+    if(typeof appliedCoupon !== 'undefined' && appliedCoupon && appliedCoupon.code){
+      try {
+        log.info('Checkout','re-applying coupon after sync',{orderId:oid,code:appliedCoupon.code});
+        await API.applyCouponToOrder(parseInt(oid), appliedCoupon.code, { skipSync: true });
+      } catch(e) {
+        log.warn('Checkout','failed to re-apply coupon during placeOrder',{orderId:oid,code:appliedCoupon.code,msg:e.message});
+      }
+    }
+
+    // 3) Update delivery method (carrier_id) on the order
+    try{await API.updDelivery(parseInt(oid),selCarrierId);}catch(_){}
+
+    // 4) Add delivery note (full address) — for store pickup we skip address and tag as PICKUP
+    var cityVal=document.getElementById('city').value.trim();
+    var zipVal=document.getElementById('zip').value.trim();
+    var note=(isStore?'[STORE PICKUP] ':'')+fn+' '+ln+' | '+ph+(em?' | '+em:'');
+    if(!isStore){ note += ' | '+addr+(cityVal?', '+cityVal:'')+(zipVal?' '+zipVal:''); }
+    var notesVal=contact.notes;
+    if(notesVal)note+=' | '+notesVal;
+    await API.updOrder(parseInt(oid),{note:note,origin:'CoopMart Web'}).catch(function(e){
+      log.warn('Checkout','order note update failed',{orderId:oid,message:e.message});
+    });
+
+    // 5–7) Confirm order on server (Postman: createTx → markDone → createInvoice)
+    log.info('Checkout','confirming payment',{orderId:oid,providerId:selProvider});
+    var payResult=await API.confirmOrderPayment(parseInt(oid), selProvider);
+    log.info('Checkout','payment confirmed',{orderId:oid,txId:payResult.txId,providerId:payResult.providerId});
+
+    // 8) Update contact profile with latest contact info.
+    //    For home delivery: also save the full address. For store pickup: only save name/phone/email.
+    var pid=API.myPid();
+    if(pid){
+      var addrFields={ name:(fn+' '+ln).trim(), email:em, phone:ph, mobile:ph };
+      if(!isStore){
+        addrFields.street=addr;
+        addrFields.street2=document.getElementById('addr2').value.trim();
+        addrFields.city=cityVal;
+        addrFields.zip=zipVal;
+        addrFields.country_id=document.getElementById('country').value||'';
+        addrFields.state_id=document.getElementById('state').value||'';
+      }
+      API.updContact(pid, addrFields).catch(function(){});
+    }
+
+    Cart.markPlaced(oid);
+    Cart.clear();
+    log.info('Checkout','placeOrder ✓ redirecting',{orderId:oid,orderName:orderName});
+    location.href='order-success.html?oid='+oid+'&name='+(orderName||'');
+  }catch(e){
+    var savedOid=Cart.oid();
+    log.error('Checkout','placeOrder ✗',{message:e.message,savedOid:savedOid});
+    if(savedOid&&API.isOdooAccessError&&API.isOdooAccessError(e)){
+      Cart.markPlaced(savedOid);
+      Cart.clear();
+      location.href='order-success.html?oid='+savedOid+'&access_warn=1';
+      return;
+    }
+    errEl.textContent='❌ '+(e.message||'Could not place order');
+    errEl.style.display='flex';
+    btn.disabled=false;btn.textContent='✅ Place Order';
+  }
+}
+</script>
+</body></html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
+<meta name="theme-color" content="#e41e26">
+<title>Coop Discounts Hyper Market – Best Prices in Dubai</title>
+<meta name="description" content="Coop Discounts Hyper Market – Al Ghandi Complex, Nadd Al Hamar, Dubai. Fresh groceries, household products at unbeatable prices. Daily 8AM–12AM.">
+<link rel="stylesheet" href="css/style.css">
+<link id="favicon" rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+<style>
+/* HERO — always light background so images display */
+.hero-wrap,.hero-slide{background:#f0f0f0!important}
+.hero-slide img{width:100%;height:420px;object-fit:cover;object-position:center;display:block;background:#e8e8e8}
+@media(max-width:768px){.hero-slide img{height:200px}}
+@media(max-width:480px){.hero-slide img{height:170px}}
+/* DEAL CARD product image */
+.dp-img img{width:100%;height:100%;object-fit:contain;display:block;background:#fff}
+/* CATEGORY CHIP */
+.cat-chip-img img{width:100%;height:100%;object-fit:cover;display:block}
+/* PRODUCT CARD image */
+.pc-img img{width:100%;height:100%;object-fit:contain;display:block}
+/* SKELETON */
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel{background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:200% 100%;animation:sk 1.5s infinite;border-radius:10px}
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<!-- ① MAIN HOME SLIDER — images from /api/deal-day-slider/9 → image_ids[].image_url → /proxy + path -->
+<div class="hero-wrap" id="heroWrap">
+  <div class="hero-slides" id="heroSlides">
+    <!-- Placeholder shown while loading -->
+    <div class="hero-slide">
+      <div style="width:100%;height:420px;background:linear-gradient(135deg,#e41e26 0%,#A8151B 60%,#7a0f12 100%);display:flex;align-items:center;justify-content:center">
+        <div style="text-align:center;color:#fff">
+          <div style="font-size:64px;margin-bottom:12px">🛒</div>
+          <h1 style="font-size:28px;font-weight:900;font-family:Poppins,sans-serif;margin-bottom:8px">Coop Discounts</h1>
+          <p style="font-size:14px;opacity:.85">Hyper Market — Dubai</p>
+          <a href="shop.html" style="display:inline-block;margin-top:18px;background:#F5C800;color:#111;padding:11px 26px;border-radius:50px;font-weight:800;font-size:13px;text-decoration:none">Shop Now →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="h-nav-btn pv" id="hPrev" onclick="slide(-1)" style="display:none" aria-label="Previous">‹</button>
+  <button class="h-nav-btn nx" id="hNext" onclick="slide(1)" style="display:none" aria-label="Next">›</button>
+  <div class="h-dots" id="hDots" role="tablist" aria-label="Slides"></div>
+</div>
+
+<!-- PROMO STRIP -->
+<div class="promo-strip"><div class="ctr"><div class="promo-grid">
+  <div class="promo-item"><span class="promo-ic">🚀</span><div><span class="promo-ttl">Free Delivery</span><span class="promo-sub">Orders above AED 50</span></div></div>
+  <div class="promo-item"><span class="promo-ic">🔄</span><div><span class="promo-ttl">Easy Returns</span><span class="promo-sub">7-day return policy</span></div></div>
+  <div class="promo-item"><span class="promo-ic">🔒</span><div><span class="promo-ttl">Secure Payment</span><span class="promo-sub">100% safe checkout</span></div></div>
+  <div class="promo-item"><span class="promo-ic">🎧</span><div><span class="promo-ttl">24/7 Support</span><span class="promo-sub">055 594 4719</span></div></div>
+</div></div></div>
+
+<!-- ② SHOP BY CATEGORY -->
+<section class="sec sec-w"><div class="ctr">
+  <div class="sec-hd"><h2 class="sec-ttl">Shop by Category</h2><a href="shop.html" class="see-all">All Categories →</a></div>
+  <div class="cat-row" id="catRow">
+    <div class="skel" style="min-width:88px;height:112px;flex-shrink:0"></div>
+    <div class="skel" style="min-width:88px;height:112px;flex-shrink:0"></div>
+    <div class="skel" style="min-width:88px;height:112px;flex-shrink:0"></div>
+    <div class="skel" style="min-width:88px;height:112px;flex-shrink:0"></div>
+    <div class="skel" style="min-width:88px;height:112px;flex-shrink:0"></div>
+    <div class="skel" style="min-width:88px;height:112px;flex-shrink:0"></div>
+  </div>
+</div></section>
+
+<!-- ③ DEAL OF THE DAY — from /api/deal-day-slider/2 -->
+<section class="sec"><div class="ctr">
+  <div class="deal-box" id="ddBox">
+    <div class="deal-hdr" style="background:linear-gradient(120deg,#A8151B 0%,#e41e26 100%)">
+      <div class="deal-hdr-l">
+        <div>
+          <div class="deal-ttl" id="ddTtl">⚡ Deal Of The Day</div>
+          <div class="deal-sub" id="ddSub"></div>
+        </div>
+      </div>
+      <div class="deal-cd">
+        <div class="cd-blk"><span class="cd-n cd-h">05</span><span class="cd-l">HRS</span></div>
+        <span class="cd-sep">:</span>
+        <div class="cd-blk"><span class="cd-n cd-m">00</span><span class="cd-l">MIN</span></div>
+        <span class="cd-sep">:</span>
+        <div class="cd-blk"><span class="cd-n cd-s">00</span><span class="cd-l">SEC</span></div>
+      </div>
+    </div>
+    <div class="deal-body">
+      <div class="dscroll" id="ddProds">
+        <div class="skel" style="min-width:140px;height:185px;flex-shrink:0"></div>
+        <div class="skel" style="min-width:140px;height:185px;flex-shrink:0"></div>
+        <div class="skel" style="min-width:140px;height:185px;flex-shrink:0"></div>
+        <div class="skel" style="min-width:140px;height:185px;flex-shrink:0"></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ④ BEST SELLERS — from /api/deal-day-slider/1 -->
+<section class="sec sec-w"><div class="ctr">
+  <div class="deal-box">
+    <div class="deal-hdr" style="background:linear-gradient(120deg,#1a1a2e 0%,#16213e 100%)">
+      <div><div class="deal-ttl" id="bsTtl">🏆 Best Sellers</div></div>
+      <a href="shop.html" style="color:rgba(255,255,255,.8);font-size:12px;font-weight:700;text-decoration:none;flex-shrink:0">View All →</a>
+    </div>
+    <div class="deal-body">
+      <div class="dscroll" id="bsProds">
+        <div class="skel" style="min-width:140px;height:185px;flex-shrink:0"></div>
+        <div class="skel" style="min-width:140px;height:185px;flex-shrink:0"></div>
+        <div class="skel" style="min-width:140px;height:185px;flex-shrink:0"></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ⑤ RECOMMENDED — from /api/deal-day-slider/3 -->
+<section class="sec"><div class="ctr">
+  <div class="deal-box">
+    <div class="deal-hdr" style="background:linear-gradient(120deg,#7c1e22 0%,#a32830 100%)">
+      <div><div class="deal-ttl" id="recTtl">⭐ Recommended For You</div></div>
+      <a href="shop.html" style="color:rgba(255,255,255,.8);font-size:12px;font-weight:700;text-decoration:none;flex-shrink:0">View All →</a>
+    </div>
+    <div class="deal-body">
+      <div class="dscroll" id="recProds">
+        <div class="skel" style="min-width:140px;height:185px;flex-shrink:0"></div>
+        <div class="skel" style="min-width:140px;height:185px;flex-shrink:0"></div>
+        <div class="skel" style="min-width:140px;height:185px;flex-shrink:0"></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ⑥ FEATURED PRODUCTS — from /api/deal-day-slider/4 -->
+<section class="sec sec-w"><div class="ctr">
+  <div class="deal-box">
+    <div class="deal-hdr" style="background:linear-gradient(120deg,#3d2800 0%,#6b4500 100%)">
+      <div><div class="deal-ttl" id="ftTtl">🌟 Featured Products</div></div>
+      <a href="shop.html" style="color:rgba(255,255,255,.8);font-size:12px;font-weight:700;text-decoration:none;flex-shrink:0">View All →</a>
+    </div>
+    <div class="deal-body">
+      <div class="dscroll" id="ftProds">
+        <div class="skel" style="min-width:140px;height:185px;flex-shrink:0"></div>
+        <div class="skel" style="min-width:140px;height:185px;flex-shrink:0"></div>
+        <div class="skel" style="min-width:140px;height:185px;flex-shrink:0"></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ⑦ FRESH PICK TODAY — from /api/deal-day-slider/5 -->
+<section class="sec"><div class="ctr">
+  <div class="deal-box">
+    <div class="deal-hdr" style="background:linear-gradient(120deg,#14532d 0%,#166534 100%)">
+      <div><div class="deal-ttl" id="fpTtl">🥦 Fresh Pick Today</div></div>
+      <a href="shop.html" style="color:rgba(255,255,255,.8);font-size:12px;font-weight:700;text-decoration:none;flex-shrink:0">View All →</a>
+    </div>
+    <div class="deal-body">
+      <div class="dscroll" id="fpProds">
+        <div class="skel" style="min-width:140px;height:185px;flex-shrink:0"></div>
+        <div class="skel" style="min-width:140px;height:185px;flex-shrink:0"></div>
+        <div class="skel" style="min-width:140px;height:185px;flex-shrink:0"></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ⑧ SHOP BY BRAND — from /api/deal-day-slider/8 -->
+<section class="sec sec-w" id="brandSec"><div class="ctr">
+  <div class="sec-hd"><h2 class="sec-ttl">🏷️ Shop By Brand</h2><a href="shop.html" class="see-all">All →</a></div>
+  <div class="b-scroll" id="brandRow"></div>
+</div></section>
+
+<!-- ⑨ ALL PRODUCTS GRID -->
+<section class="sec"><div class="ctr">
+  <div class="sec-hd"><h2 class="sec-ttl">🛍️ All Products</h2><a href="shop.html" class="see-all">View All →</a></div>
+  <div class="pgrid" id="allGrid">
+    <div class="skel" style="height:280px"></div>
+    <div class="skel" style="height:280px"></div>
+    <div class="skel" style="height:280px"></div>
+    <div class="skel" style="height:280px"></div>
+    <div class="skel" style="height:280px"></div>
+  </div>
+  <div style="text-align:center;margin-top:22px">
+    <a href="shop.html" style="display:inline-flex;align-items:center;gap:8px;background:#e41e26;color:#fff;padding:13px 32px;border-radius:50px;font-weight:800;font-size:14px;text-decoration:none;transition:background .2s" onmouseover="this.style.background='#A8151B'" onmouseout="this.style.background='#e41e26'">View All Products →</a>
+  </div>
+</div></section>
+
+<div id="site-footer"></div>
+
+<script src="js/api.js?v=8.5"></script>
+<script src="js/app.js?v=8.5"></script>
+<script src="js/layout.js"></script>
+<script>
+/* ──────────────────────────────────────────────
+ * SLIDER
+ * /api/deal-day-slider/9 → data[0].image_ids[]
+ * Each item: { id, image_url: "/web/image/slider.image/31/image" }
+ * → API.img(item.image_url) = /proxy/web/image/slider.image/31/image
+ * ────────────────────────────────────────────── */
+var sIdx=0, sTotal=0, sTimer=null;
+
+function slide(d) {
+  sIdx = (sIdx + d + sTotal) % sTotal;
+  applySlide();
+}
+function applySlide() {
+  document.getElementById('heroSlides').style.transform = 'translateX(-' + (sIdx * 100) + '%)';
+  document.querySelectorAll('.h-dot').forEach(function(e,i){ e.classList.toggle('on', i===sIdx); });
+}
+
+function initSlider(imageItems) {
+  if (!imageItems || !imageItems.length) return;
+  sTotal = imageItems.length;
+  var sl = document.getElementById('heroSlides');
+  sl.innerHTML = '';
+  imageItems.forEach(function(item) {
+    // Use image_url field directly — it's already a path like /web/image/slider.image/31/image
+    var imgSrc = item.image_url ? API.img(item.image_url) : (item.image ? API.img(item.image) : API.sliderImg(item.id));
+    var div = document.createElement('div');
+    div.className = 'hero-slide';
+    var img = document.createElement('img');
+    img.src = imgSrc;
+    img.alt = item.name || 'Coop Discounts';
+    img.loading = 'eager';
+    img.onerror = function() {
+      // Fallback to brand banner if image fails
+      this.style.display = 'none';
+      var fb = document.createElement('div');
+      fb.style.cssText = 'width:100%;height:420px;background:linear-gradient(135deg,#e41e26,#A8151B);display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff;text-align:center';
+      fb.innerHTML = '<div style="font-size:60px;margin-bottom:12px">🛒</div><h2 style="font-size:24px;font-weight:900;font-family:Poppins,sans-serif">Coop Discounts</h2><p style="font-size:13px;opacity:.8;margin-top:6px">Hyper Market — Dubai</p>';
+      div.appendChild(fb);
+    };
+    div.appendChild(img);
+    sl.appendChild(div);
+  });
+  // Build dots
+  var dotsEl = document.getElementById('hDots');
+  dotsEl.innerHTML = '';
+  imageItems.forEach(function(_, i) {
+    var dot = document.createElement('button');
+    dot.className = 'h-dot' + (i===0 ? ' on' : '');
+    dot.setAttribute('role','tab');
+    dot.setAttribute('aria-label','Slide ' + (i+1));
+    (function(idx){ dot.onclick = function(){ sIdx=idx; applySlide(); clearInterval(sTimer); sTimer=setInterval(autoSlide,5000); }; })(i);
+    dotsEl.appendChild(dot);
+  });
+  document.getElementById('hPrev').style.display = sTotal > 1 ? 'flex' : 'none';
+  document.getElementById('hNext').style.display = sTotal > 1 ? 'flex' : 'none';
+  applySlide();
+  if (sTotal > 1) sTimer = setInterval(autoSlide, 5000);
+}
+function autoSlide() { sIdx = (sIdx + 1) % sTotal; applySlide(); }
+
+/* ──────────────────────────────────────────────
+ * DEAL SECTIONS
+ * Each slider has image_ids[] with:
+ *   { id, name, image_url: "/web/image/slider.image/{id}/image", product_id: [{id:X, name:Y}] }
+ * image_url → API.img(image_url) = /proxy + path ✅
+ * product_id[0].id = product template ID → link to product.html?id=X
+ * ────────────────────────────────────────────── */
+function buildDealSection(slider, containerId, titleId) {
+  if (!slider) return;
+  var items = slider.image_ids || [];
+  // Update title
+  if (titleId && slider.name) {
+    var te = document.getElementById(titleId);
+    if (te) {
+      var icon = te.textContent.charAt(0) + te.textContent.charAt(1);
+      te.textContent = icon + ' ' + slider.name;
+    }
+  }
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  if (!items.length) {
+    el.innerHTML = '<div style="padding:20px;color:#9ca3af;font-size:13px;text-align:center">No products in this section</div>';
+    return;
+  }
+  el.innerHTML = items.map(function(it) {
+    var pid = it.product_id && it.product_id.length ? it.product_id[0].id : null;
+    var pname = (it.name || it.display_name || '').replace(/^\[.*?\]\s*/,'').replace(/"/g,'&quot;').trim();
+    // Use image_url field (already a path) → prepend /proxy
+    var imgSrc = it.image_url ? API.img(it.image_url) : (it.image ? API.img(it.image) : API.sliderImg(it.id));
+    var href = pid ? 'product.html?id=' + pid : 'shop.html';
+    return '<div class="dp" data-pid="' + pid + '" onclick="location.href=\'' + href + '\'">' +
+      '<div class="dp-img">' +
+        '<img src="' + imgSrc + '" alt="' + pname + '" loading="lazy"' +
+             ' onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'">' +
+        '<span style="font-size:36px;display:none;align-items:center;justify-content:center;width:100%;height:100%">📦</span>' +
+      '</div>' +
+      '<div class="dp-nm">' + (pname || 'View Product') + '</div>' +
+      '<div class="dp-price" id="dpp-' + it.id + '"><span style="color:#9ca3af;font-size:10px">Loading...</span></div>' +
+      '<div class="cd-qty-ctrl" data-pid="' + pid + '" data-pdenc="" data-btnclass="dp-atc" style="margin-top:auto">' +
+        (pid ? '<button class="dp-atc" id="dpa-' + it.id + '" onclick="event.stopPropagation();quickAdd(' + pid + ',\'' + pname + '\',\'' + imgSrc + '\')">Add to Cart</button>' : '') +
+      '</div>' +
+    '</div>';
+  }).join('');
+  // Enrich with real prices from product API
+  enrichDealSection(items);
+}
+
+function enrichDealSection(items) {
+  items.forEach(function(it) {
+    var pid = it.product_id && it.product_id.length ? it.product_id[0].id : null;
+    if (!pid) return;
+    API.getProdById(pid).then(function(r) {
+      var p = Array.isArray(r.data) ? r.data[0] : r.data;
+      if (!p) return;
+      var price = parseFloat(p.list_price || 0);
+      var std = parseFloat(p.standard_price || 0);
+      var qty = p.qty_available !== undefined ? parseFloat(p.qty_available) : -1;
+      var oos = qty === 0;
+      var varId = Array.isArray(p.product_variant_id) && p.product_variant_id.length ? p.product_variant_id[0].id : pid;
+      var nm = (p.name || '').replace(/^\[.*?\]\s*/,'').trim();
+      var disc = std > price && std > 0 ? Math.round((1 - price/std)*100) : 0;
+      // Update price display
+      var priceEl = document.getElementById('dpp-' + it.id);
+      if (priceEl) {
+        priceEl.innerHTML = '<strong style="color:#A8151B">AED ' + price.toFixed(2) + '</strong>' +
+          (disc > 0 ? '<span style="color:#9ca3af;text-decoration:line-through;font-size:9px;margin-left:4px">'+std.toFixed(2)+'</span>' : '');
+      }
+      // Update button
+      var btnEl = document.getElementById('dpa-' + it.id);
+      if (btnEl) {
+        if (oos) { btnEl.textContent='Out of Stock'; btnEl.style.background='#9ca3af'; btnEl.disabled=true; }
+        else {
+          var imgSrc2 = p.image_1024 ? API.img(p.image_1024) : API.prodImg(pid);
+          // Update card image with real product image
+          var imgEl = document.querySelector('[data-pid="'+pid+'"] .dp-img img');
+          if (imgEl && p.image_1024) { imgEl.src = imgSrc2; }
+          var pdEnc = encodeURIComponent(JSON.stringify({product_id:pid,variant_id:varId,name:nm,price:price,image:imgSrc2,qty_available:qty}));
+          var wrap = document.querySelector('.cd-qty-ctrl[data-pid="'+pid+'"]');
+          if (wrap) { wrap.setAttribute('data-pdenc', pdEnc); if(typeof tick === 'function') tick(); }
+          btnEl.onclick = function(e) {
+            e.stopPropagation();
+            quickAdd(pid, nm, imgSrc2, varId, price, qty);
+          };
+          if (price > 0) btnEl.textContent = 'AED ' + price.toFixed(2) + ' – Add';
+        }
+      }
+    }).catch(function() {
+      var priceEl = document.getElementById('dpp-' + it.id);
+      if (priceEl) priceEl.innerHTML = '';
+    });
+  });
+}
+
+function quickAdd(pid, name, imgSrc, varId, price, qty) {
+  if (!API.loggedIn()) {
+    toast('Please sign in to add to cart', 'warn');
+    setTimeout(function(){ location.href = 'login.html?next=index.html'; }, 800);
+    return;
+  }
+  Cart.add({ product_id: pid, variant_id: varId||pid, name: name||'Product', price: price||0, image: imgSrc||'', qty_available: qty!=null?qty:-1 });
+  openDrw();
+}
+
+/* ──────────────────────────────────────────────
+ * CATEGORIES
+ * /api/bcd-website-category → data[]
+ * { id, name, image_1024: "/web/image/product.public.category/15/image_1024" }
+ * → API.img(c.image_1024) = /proxy + path ✅
+ * ────────────────────────────────────────────── */
+function buildCategories(cats) {
+  var cr = document.getElementById('catRow');
+  if (!cr) return;
+  if (!cats || !cats.length) { cr.innerHTML = '<div style="color:#9ca3af;padding:18px">No categories</div>'; return; }
+  cr.innerHTML = cats.slice(0,14).map(function(c) {
+    // image_1024 is a PATH → API.img() prepends /proxy
+    var imgSrc = c.image_1024 ? API.img(c.image_1024) : API.catImg(c.id);
+    return '<a href="shop.html?cat_id=' + c.id + '&cat_name=' + encodeURIComponent(c.name) + '" class="cat-chip">' +
+      '<div class="cat-chip-img">' +
+        '<img src="' + imgSrc + '" alt="' + c.name + '" loading="lazy"' +
+             ' onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<span style=font-size:26px>🏷️</span>\'">' +
+      '</div>' +
+      '<div class="cat-chip-nm">' + c.name + '</div>' +
+    '</a>';
+  }).join('');
+}
+
+/* ──────────────────────────────────────────────
+ * PRODUCT GRID (bottom section)
+ * /api/bcp-product-template
+ * { id, name, list_price, image_1024 (PATH), product_variant_id[] }
+ * ────────────────────────────────────────────── */
+function buildProductGrid(prods) {
+  var el = document.getElementById('allGrid');
+  if (!el) return;
+  var filtered = (prods || []).filter(function(p){ return parseFloat(p.list_price||0) > 0; });
+  if (!filtered.length) { el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#9ca3af">No products available</div>'; return; }
+  el.innerHTML = filtered.slice(0,10).map(buildCard).join('');
+}
+
+/* ──────────────────────────────────────────────
+ * MAIN INIT
+ * ────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function() {
+  Bar.start();
+  // Auto-create order on load if logged in (so it's ready for add-to-cart)
+  if (API.loggedIn()) Cart.ensureOrder().catch(function(){});
+  // Init web settings
+  API.initSettings().catch(function(){});
+  // Load countdown
+  startCD(Date.now() + 5 * 3600000);
+
+  // Load all data in parallel
+  Promise.allSettled([
+    API.getHomeSliders(),   // 0 - slider 9
+    API.getCats(),          // 1 - categories
+    API.getDealOfDay(),     // 2 - slider 2
+    API.getBestSeller(),    // 3 - slider 1
+    API.getRecommended(),   // 4 - slider 3
+    API.getFeatured(),      // 5 - slider 4
+    API.getFreshPick(),     // 6 - slider 5
+    API.getBrands(),        // 7 - slider 8
+    API.getProds({limit:10}) // 8 - all products
+  ]).then(function(results) {
+
+    // ① HOME SLIDER — slider 9 → image_ids[].image_url
+    if (results[0].status === 'fulfilled') {
+      var sl9 = results[0].value.data && results[0].value.data[0];
+      var imgIds = sl9 && sl9.image_ids ? sl9.image_ids : [];
+      if (imgIds.length) {
+        initSlider(imgIds);
+      }
+      // Fallback: use banner_image if no image_ids
+      else if (sl9 && sl9.banner_image) {
+        initSlider([{ id: 9, image_url: sl9.banner_image, name: 'Coop Discounts' }]);
+      }
+    }
+
+    // ② CATEGORIES — bcd-website-category
+    if (results[1].status === 'fulfilled') {
+      buildCategories(results[1].value.data || []);
+    } else {
+      document.getElementById('catRow').innerHTML = '<div style="color:#9ca3af;padding:18px">Could not load categories</div>';
+    }
+
+    // ③ DEAL OF DAY — slider 2
+    if (results[2].status === 'fulfilled') {
+      var sl = results[2].value.data && results[2].value.data[0];
+      buildDealSection(sl, 'ddProds', 'ddTtl');
+    } else {
+      document.getElementById('ddProds').innerHTML = '<div style="padding:20px;color:#9ca3af">No deals today</div>';
+    }
+
+    // ④ BEST SELLERS — slider 1
+    if (results[3].status === 'fulfilled') {
+      buildDealSection(results[3].value.data && results[3].value.data[0], 'bsProds', 'bsTtl');
+    } else {
+      document.getElementById('bsProds').innerHTML = '';
+    }
+
+    // ⑤ RECOMMENDED — slider 3
+    if (results[4].status === 'fulfilled') {
+      buildDealSection(results[4].value.data && results[4].value.data[0], 'recProds', 'recTtl');
+    } else {
+      document.getElementById('recProds').innerHTML = '';
+    }
+
+    // ⑥ FEATURED — slider 4
+    if (results[5].status === 'fulfilled') {
+      buildDealSection(results[5].value.data && results[5].value.data[0], 'ftProds', 'ftTtl');
+    } else {
+      document.getElementById('ftProds').innerHTML = '';
+    }
+
+    // ⑦ FRESH PICK — slider 5
+    if (results[6].status === 'fulfilled') {
+      buildDealSection(results[6].value.data && results[6].value.data[0], 'fpProds', 'fpTtl');
+    } else {
+      document.getElementById('fpProds').innerHTML = '';
+    }
+
+    // ⑧ BRANDS — slider 8
+    if (results[7].status === 'fulfilled') {
+      var sl8 = results[7].value.data && results[7].value.data[0];
+      var brandItems = sl8 && sl8.image_ids ? sl8.image_ids : [];
+      var br = document.getElementById('brandRow');
+      if (br) {
+        if (brandItems.length) {
+          br.innerHTML = brandItems.map(function(it) {
+            var pid = it.product_id && it.product_id.length ? it.product_id[0].id : null;
+            var nm = (it.name || '').replace(/^\[.*?\]\s*/,'').trim().substring(0,20);
+            var imgSrc = it.image_url ? API.img(it.image_url) : API.sliderImg(it.id);
+            return '<div class="b-card" onclick="location.href=\'' + (pid ? 'product.html?id='+pid : 'shop.html') + '\'">' +
+              '<img src="' + imgSrc + '" alt="' + nm + '" style="max-width:100%;max-height:100%;object-fit:contain"' +
+                   ' onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<span style=font-size:11px;font-weight:700;color:#374151;text-align:center>' + nm + '</span>\'">' +
+            '</div>';
+          }).join('');
+        } else {
+          document.getElementById('brandSec').style.display = 'none';
+        }
+      }
+    }
+
+    // ⑨ ALL PRODUCTS GRID
+    if (results[8].status === 'fulfilled') {
+      buildProductGrid(results[8].value.data || []);
+    } else {
+      document.getElementById('allGrid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#9ca3af">Could not load products. Check proxy connection.</div>';
+    }
+
+    Bar.done();
+  });
+});
+</script>
+</body>
+</html>

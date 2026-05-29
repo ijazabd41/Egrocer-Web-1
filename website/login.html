@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign In – Coop Discounts</title>
+<link rel="stylesheet" href="css/style.css">
+<style>body{background:#f3f4f6}</style>
+</head>
+<body>
+<div id="site-header"></div>
+<section class="sec">
+<div class="ctr" style="max-width:460px;margin:0 auto">
+
+  <div class="tabs">
+    <div class="tab on" id="tab-login" onclick="switchTab('login')">Sign In</div>
+    <div class="tab" id="tab-register" onclick="switchTab('register')">Create Account</div>
+  </div>
+
+  <!-- SIGN IN -->
+  <div id="panel-login" class="fs" style="border-radius:0 0 16px 16px;border-top:none;margin-bottom:0">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:46px;margin-bottom:8px">👤</div>
+      <h1 style="font-size:20px;font-weight:900;color:#e41e26;margin-bottom:4px">Welcome Back</h1>
+      <p style="font-size:12px;color:#9ca3af">Sign in to your Coop Discounts account</p>
+    </div>
+
+
+
+    <div id="login-step1">
+      <div class="fg" style="margin-bottom:12px"><label class="fl">Email or Mobile Number *</label><input class="fi" type="text" id="lg-em" placeholder="email@example.com or 971501234567" autocomplete="username"></div>
+      <div class="fg" style="margin-bottom:12px"><label class="fl">Password *</label><input class="fi" type="password" id="lg-pw" placeholder="••••••••" autocomplete="current-password"></div>
+      <div id="lg-err" style="display:none;margin-bottom:10px" class="alert alert-err"></div>
+      <button id="lg-btn" onclick="doLogin()" class="sbtn">Sign In →</button>
+      <p style="font-size:11px;color:#9ca3af;text-align:center;margin-top:10px">🔒 Your data is encrypted and secure</p>
+    </div>
+  </div>
+
+  <!-- REGISTER -->
+  <div id="panel-register" style="display:none">
+    <div class="fs" style="border-radius:0 0 16px 16px;border-top:none;margin-bottom:0">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:46px;margin-bottom:8px">🎉</div>
+        <h1 style="font-size:20px;font-weight:900;color:#e41e26;margin-bottom:4px">Create Account</h1>
+        <p style="font-size:12px;color:#9ca3af">Join for exclusive deals & loyalty rewards</p>
+      </div>
+
+      <!-- Step 1: Details -->
+      <div id="reg-step1">
+        <div class="fgrid">
+          <div class="fg"><label class="fl">Full Name *</label><input class="fi" id="rg-nm" placeholder="Ahmed Al-Rashid"></div>
+          <div class="fg"><label class="fl">Phone *</label><input class="fi" id="rg-ph" placeholder="+971 55 000 0000" type="tel"></div>
+          <div class="fg full"><label class="fl">Email *</label><input class="fi" type="email" id="rg-em" placeholder="your@email.com"></div>
+          <div class="fg"><label class="fl">Password *</label><input class="fi" type="password" id="rg-pw" placeholder="Min 6 chars"></div>
+          <div class="fg"><label class="fl">Confirm Password *</label><input class="fi" type="password" id="rg-pw2" placeholder="Repeat password"></div>
+        </div>
+        <div id="rg-err" style="display:none;margin-top:10px" class="alert alert-err"></div>
+        <button id="rg-btn" onclick="doRegister()" class="sbtn" style="margin-top:14px">Verify with OTP →</button>
+      </div>
+
+      <!-- Step 2: OTP Verification -->
+      <div id="reg-step2" style="display:none;text-align:center">
+        <div style="font-size:48px;margin-bottom:12px">📧</div>
+        <h2 style="font-size:17px;font-weight:800;margin-bottom:6px">Check Your Email</h2>
+        <p style="font-size:12px;color:#6b7280;margin-bottom:4px">We sent a 6-digit code to</p>
+        <div id="otp-email-display" style="font-size:13px;font-weight:700;color:#e41e26;margin-bottom:18px"></div>
+        <div class="otp-wrap" id="otpWrap">
+          <input class="otp-inp" type="number" maxlength="1" inputmode="numeric">
+          <input class="otp-inp" type="number" maxlength="1" inputmode="numeric">
+          <input class="otp-inp" type="number" maxlength="1" inputmode="numeric">
+          <input class="otp-inp" type="number" maxlength="1" inputmode="numeric">
+          <input class="otp-inp" type="number" maxlength="1" inputmode="numeric">
+          <input class="otp-inp" type="number" maxlength="1" inputmode="numeric">
+        </div>
+        <div id="otp-err" style="display:none;margin:8px 0" class="alert alert-err"></div>
+        <button id="otp-btn" onclick="verifyRegOtp()" class="sbtn" style="max-width:240px;margin:0 auto 12px">Verify & Create Account</button>
+        <button onclick="resendOtp()" style="background:none;border:none;color:#e41e26;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit">Resend code</button>
+      </div>
+
+      <!-- Step 3: Success -->
+      <div id="reg-step3" style="display:none;text-align:center">
+        <div style="font-size:60px;margin-bottom:14px">✅</div>
+        <h2 style="font-size:18px;font-weight:800;color:#065f46;margin-bottom:8px">Account Created!</h2>
+        <p style="font-size:13px;color:#374151;margin-bottom:18px">Welcome to Coop Discounts! You can now sign in.</p>
+        <button onclick="switchTab('login')" class="sbtn" style="max-width:220px;margin:0 auto">Sign In Now →</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+<div id="site-footer"></div>
+<script src="js/api.js?v=8.5"></script><script src="js/app.js?v=8.5"></script><script src="js/layout.js"></script>
+<script>
+const nextPage=new URLSearchParams(location.search).get('next')||'account.html';
+if(API.loggedIn())location.href=nextPage;
+
+function switchTab(t){
+  document.getElementById('panel-login').style.display=t==='login'?'block':'none';
+  document.getElementById('panel-register').style.display=t==='register'?'block':'none';
+  document.getElementById('tab-login').classList.toggle('on',t==='login');
+  document.getElementById('tab-register').classList.toggle('on',t==='register');
+}
+
+document.addEventListener('DOMContentLoaded',async()=>{
+  initOtpInputs('#otpWrap');
+
+});
+
+async function doLogin(){
+  const em=document.getElementById('lg-em').value.trim(),pw=document.getElementById('lg-pw').value;
+  const err=document.getElementById('lg-err'),btn=document.getElementById('lg-btn');
+  err.style.display='none';
+  if(!em||!pw){err.textContent='❌ Please enter email/phone and password';err.style.display='flex';return;}
+  btn.disabled=true;btn.textContent='⏳ Signing in...';
+  try{
+    const r=await API.login(em,pw);
+    if(r.ok){
+      toast(`✅ Welcome, ${r.data.name}!`);
+      setTimeout(()=>location.href=nextPage,500);
+    }else{err.textContent='❌ '+(r.err||'Invalid credentials');err.style.display='flex';btn.disabled=false;btn.textContent='Sign In →';}
+  }catch(e){err.textContent=`❌ ${e.message}`;err.style.display='flex';btn.disabled=false;btn.textContent='Sign In →';}
+}
+
+var _regData=null;
+async function doRegister(){
+  const nm=document.getElementById('rg-nm').value.trim(),ph=document.getElementById('rg-ph').value.trim();
+  const em=document.getElementById('rg-em').value.trim(),pw=document.getElementById('rg-pw').value,pw2=document.getElementById('rg-pw2').value;
+  const err=document.getElementById('rg-err'),btn=document.getElementById('rg-btn');
+  err.style.display='none';
+  if(!nm||!ph||!em||!pw){err.textContent='❌ Please fill in all fields';err.style.display='flex';return;}
+  if(pw.length<6){err.textContent='❌ Password must be at least 6 characters';err.style.display='flex';return;}
+  if(pw!==pw2){err.textContent='❌ Passwords do not match';err.style.display='flex';return;}
+  btn.disabled=true;btn.textContent='⏳ Sending OTP...';
+  try{
+    _regData={nm,ph,em,pw};
+    const otp=await sendOtp(em);
+    // In production: replace sendOtp with real email API
+    document.getElementById('otp-email-display').textContent=em;
+    document.getElementById('reg-step1').style.display='none';
+    document.getElementById('reg-step2').style.display='block';
+    toast(`OTP sent to ${em} (check console for demo)`,'warn');
+  }catch(e){err.textContent=`❌ ${e.message}`;err.style.display='flex';btn.disabled=false;btn.textContent='Verify with OTP →';}
+}
+
+async function verifyRegOtp(){
+  if(!_regData)return;
+  const otp=getOtp('#otpWrap');
+  const err=document.getElementById('otp-err'),btn=document.getElementById('otp-btn');
+  err.style.display='none';
+  if(otp.length<6){err.textContent='❌ Enter the 6-digit code';err.style.display='flex';return;}
+  if(!verifyOtp(_regData.em,otp)){err.textContent='❌ Invalid code. Try again.';err.style.display='flex';return;}
+  btn.disabled=true;btn.textContent='⏳ Creating account...';
+  try{
+    const r=await API.register(_regData.nm,_regData.em,_regData.ph,_regData.pw,'web-'+Date.now());
+    if(r.success===1||r.response?.success){
+      document.getElementById('reg-step2').style.display='none';
+      document.getElementById('reg-step3').style.display='block';
+      toast('✅ Account created! Please sign in.');
+    }else{throw new Error(r.message||'Registration failed');}
+  }catch(e){err.textContent=`❌ ${e.message}`;err.style.display='flex';btn.disabled=false;btn.textContent='Verify & Create Account';}
+}
+
+async function resendOtp(){
+  if(!_regData)return;
+  const otp=await sendOtp(_regData.em);
+  toast('OTP resent!','warn');
+  document.querySelectorAll('.otp-inp').forEach(i=>i.value='');
+  document.querySelectorAll('.otp-inp')[0]?.focus();
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Enter'){if(document.getElementById('panel-login').style.display!=='none')doLogin();else if(document.getElementById('reg-step1').style.display!=='none')doRegister();}});
+</script>
+</body>
+</html>

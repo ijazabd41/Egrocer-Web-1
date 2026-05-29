@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COOP Discounts — Brand Color System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* ── PRIMARY ── */
+    --coop-red:        #D61F26;   /* logo red */
+    --coop-red-dark:   #A8151B;   /* pressed / dark variant */
+    --coop-red-light:  #FF3B42;   /* hover / elevated */
+
+    /* ── SECONDARY ── */
+    --coop-yellow:     #F5C800;   /* logo gold-yellow */
+    --coop-yellow-dark:#C9A200;
+    --coop-yellow-light:#FFD93D;
+
+    /* ── NEUTRALS ── */
+    --coop-white:      #FFFFFF;
+    --coop-off-white:  #FFF8F8;   /* warm tinted bg */
+    --coop-light-gray: #F2F2F2;
+    --coop-mid-gray:   #9E9E9E;
+    --coop-dark-gray:  #333333;
+    --coop-black:      #1A1A1A;
+
+    /* ── SEMANTIC ── */
+    --coop-success:    #2ECC71;
+    --coop-warning:    #F5C800;   /* reuse yellow */
+    --coop-error:      #D61F26;   /* reuse red */
+    --coop-info:       #2980B9;
+
+    /* ── SURFACE / TEXT ── */
+    --bg-page:         var(--coop-off-white);
+    --bg-card:         var(--coop-white);
+    --text-primary:    var(--coop-black);
+    --text-secondary:  var(--coop-dark-gray);
+    --text-muted:      var(--coop-mid-gray);
+    --text-on-primary: var(--coop-white);
+    --text-on-secondary: var(--coop-black);
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg-page);
+    color: var(--text-primary);
+    padding: 32px 16px 64px;
+    min-height: 100vh;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .logo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--coop-red);
+    color: #fff;
+    padding: 12px 28px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+  }
+  .logo-badge .brand { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px; }
+  .logo-badge .tag   { font-size: 11px; font-weight: 800; letter-spacing: 2px; background: var(--coop-yellow); color: #000; padding: 3px 8px; border-radius: 3px; }
+
+  header h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(22px,5vw,36px); letter-spacing: 2px; color: var(--coop-red); }
+  header p  { color: var(--text-secondary); font-size: 14px; margin-top: 4px; }
+
+  /* ── SECTIONS ── */
+  section { max-width: 860px; margin: 0 auto 48px; }
+  section h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: var(--coop-red);
+    border-left: 5px solid var(--coop-yellow);
+    padding-left: 12px;
+    margin-bottom: 20px;
+  }
+
+  /* ── SWATCHES ── */
+  .swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+
+  .swatch {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    background: #fff;
+  }
+
+  .swatch-color {
+    height: 90px;
+    width: 100%;
+    position: relative;
+  }
+
+  .swatch-color.bordered { border: 2px solid #e0e0e0; }
+
+  .swatch-body {
+    padding: 10px 12px 14px;
+  }
+
+  .swatch-name {
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--coop-black);
+    margin-bottom: 2px;
+  }
+
+  .swatch-role {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+
+  .swatch-hex {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--coop-dark-gray);
+  }
+
+  .swatch-var {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    word-break: break-all;
+  }
+
+  /* ── TOKENS TABLE ── */
+  .token-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .token-table th {
+    text-align: left;
+    padding: 10px 12px;
+    background: var(--coop-red);
+    color: #fff;
+    font-weight: 800;
+    letter-spacing: .5px;
+  }
+  .token-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+  }
+  .token-table tr:nth-child(even) td { background: #fafafa; }
+  .token-table code {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    background: #f0f0f0;
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+  .dot {
+    display: inline-block;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 8px;
+    border: 1px solid rgba(0,0,0,0.1);
+  }
+
+  /* ── USAGE DEMO ── */
+  .demo-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+  .btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: .5px;
+    cursor: pointer;
+    border: none;
+    transition: transform .1s, opacity .1s;
+  }
+  .btn:hover { opacity: .9; transform: translateY(-1px); }
+  .btn-primary   { background: var(--coop-red);    color: #fff; }
+  .btn-secondary { background: var(--coop-yellow);  color: #000; }
+  .btn-outline   { background: transparent; color: var(--coop-red); border: 2px solid var(--coop-red); }
+  .btn-ghost     { background: var(--coop-light-gray); color: var(--coop-dark-gray); }
+  .btn-success   { background: var(--coop-success); color: #fff; }
+
+  .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .5px;
+  }
+  .badge-primary   { background: var(--coop-red);    color: #fff; }
+  .badge-secondary { background: var(--coop-yellow);  color: #000; }
+  .badge-success   { background: var(--coop-success); color: #fff; }
+  .badge-info      { background: var(--coop-info);    color: #fff; }
+
+  /* ── MOBILE PREVIEW ── */
+  .phone-frame {
+    width: 240px;
+    height: 420px;
+    border: 6px solid #222;
+    border-radius: 36px;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+    position: relative;
+    margin: 0 auto;
+  }
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    background: var(--coop-off-white);
+    display: flex;
+    flex-direction: column;
+  }
+  .phone-header {
+    background: var(--coop-red);
+    padding: 14px 12px 10px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .phone-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; }
+  .phone-cart { margin-left: auto; background: var(--coop-yellow); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+
+  .phone-banner {
+    background: linear-gradient(135deg, var(--coop-red-dark), var(--coop-red));
+    padding: 14px 12px;
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+  }
+  .phone-banner span { color: var(--coop-yellow); }
+
+  .phone-search {
+    margin: 10px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+    border: 1.5px solid #eee;
+  }
+
+  .phone-chips { display: flex; gap: 6px; padding: 0 10px; overflow: hidden; }
+  .chip {
+    flex-shrink: 0;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .chip-active { background: var(--coop-red); color: #fff; }
+  .chip-default { background: #eee; color: #555; }
+
+  .phone-products { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; flex: 1; }
+  .product-card {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+  .product-img { background: #f5f5f5; height: 64px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .product-info { padding: 6px 8px; }
+  .product-name { font-size: 10px; font-weight: 700; color: var(--coop-black); }
+  .product-price { font-size: 12px; font-weight: 800; color: var(--coop-red); margin-top: 2px; }
+  .product-add { background: var(--coop-yellow); border: none; border-radius: 4px; font-size: 10px; font-weight: 800; padding: 3px 8px; cursor: pointer; margin-top: 4px; width: 100%; }
+
+  .phone-nav {
+    background: #fff;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0 6px;
+    border-top: 1px solid #eee;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+  .phone-nav .active { color: var(--coop-red); font-weight: 800; }
+
+  /* ── GRADIENT DEMOS ── */
+  .gradient-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+  .gradient-chip {
+    height: 70px;
+    border-radius: 10px;
+    display: flex;
+    align-items: flex-end;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  /* ── CSS SNIPPET ── */
+  pre {
+    background: #1a1a1a;
+    color: #f8f8f2;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 12px;
+    overflow-x: auto;
+    line-height: 1.7;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  .kw  { color: #ff79c6; }
+  .prop{ color: #8be9fd; }
+  .val { color: #f1fa8c; }
+  .cm  { color: #6272a4; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-badge">
+    <span class="brand">COOP DISCOUNTS</span>
+    <span class="tag">HYPER MARKET</span>
+  </div>
+  <h1>Brand Color System</h1>
+  <p>Official palette · Web &amp; Mobile design tokens · May 2026</p>
+</header>
+
+<!-- PRIMARY -->
+<section>
+  <h2>Primary Colors — Red</h2>
+  <div class="swatch-grid">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#D61F26;"></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Coop Red</div>
+        <div class="swatch-role">Primary / Brand</div>
+        <div class="swatch-hex">#D61F26</div>
+        <div class="swatch-var">--coop-red</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#A8151B;"></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Red Dark</div>
+        <div class="swatch-role">Pressed / Shadow</div>
+        <div class="swatch-hex">#A8151B</div>
+        <div class="swatch-var">--coop-red-dark</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#FF3B42;"></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Red Light</div>
+        <div class="swatch-role">Hover / Elevated</div>
+        <div class="swatch-hex">#FF3B42</div>
+        <div class="swatch-var">--coop-red-light</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECONDARY -->
+<section>
+  <h2>Secondary Colors — Gold Yellow</h2>
+  <div class="swatch-grid">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#F5C800;"></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Coop Yellow</div>
+        <div class="swatch-role">Secondary / Accent</div>
+        <div class="swatch-hex">#F5C800</div>
+        <div class="swatch-var">--coop-yellow</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#C9A200;"></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Yellow Dark</div>
+        <div class="swatch-role">Pressed / Deep</div>
+        <div class="swatch-hex">#C9A200</div>
+        <div class="swatch-var">--coop-yellow-dark</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#FFD93D;"></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Yellow Light</div>
+        <div class="swatch-role">Highlight / Tag</div>
+        <div class="swatch-hex">#FFD93D</div>
+        <div class="swatch-var">--coop-yellow-light</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEUTRALS -->
+<section>
+  <h2>Neutral Colors</h2>
+  <div class="swatch-grid">
+    <div class="swatch">
+      <div class="swatch-color bordered" style="background:#FFFFFF;"></div>
+      <div class="swatch-body">
+        <div class="swatch-name">White</div>
+        <div class="swatch-role">Cards / Surfaces</div>
+        <div class="swatch-hex">#FFFFFF</div>
+        <div class="swatch-var">--coop-white</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color bordered" style="background:#FFF8F8;"></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Off-White</div>
+        <div class="swatch-role">Page Background</div>
+        <div class="swatch-hex">#FFF8F8</div>
+        <div class="swatch-var">--coop-off-white</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#F2F2F2;"></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Light Gray</div>
+        <div class="swatch-role">Borders / Dividers</div>
+        <div class="swatch-hex">#F2F2F2</div>
+        <div class="swatch-var">--coop-light-gray</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#9E9E9E;"></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Mid Gray</div>
+        <div class="swatch-role">Placeholder / Muted</div>
+        <div class="swatch-hex">#9E9E9E</div>
+        <div class="swatch-var">--coop-mid-gray</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#333333;"></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Dark Gray</div>
+        <div class="swatch-role">Body Text</div>
+        <div class="swatch-hex">#333333</div>
+        <div class="swatch-var">--coop-dark-gray</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#1A1A1A;"></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Black</div>
+        <div class="swatch-role">Headings / Icons</div>
+        <div class="swatch-hex">#1A1A1A</div>
+        <div class="swatch-var">--coop-black</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEMANTIC -->
+<section>
+  <h2>Semantic / Functional Colors</h2>
+  <div class="swatch-grid">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#2ECC71;"></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Success</div>
+        <div class="swatch-role">Order Confirmed</div>
+        <div class="swatch-hex">#2ECC71</div>
+        <div class="swatch-var">--coop-success</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#F5C800;"></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Warning</div>
+        <div class="swatch-role">Pending / Promo</div>
+        <div class="swatch-hex">#F5C800</div>
+        <div class="swatch-var">--coop-warning</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#D61F26;"></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Error</div>
+        <div class="swatch-role">Out of Stock / Alert</div>
+        <div class="swatch-hex">#D61F26</div>
+        <div class="swatch-var">--coop-error</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#2980B9;"></div>
+      <div class="swatch-body">
+        <div class="swatch-name">Info</div>
+        <div class="swatch-role">Delivery / Tracking</div>
+        <div class="swatch-hex">#2980B9</div>
+        <div class="swatch-var">--coop-info</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GRADIENTS -->
+<section>
+  <h2>Gradients</h2>
+  <div class="gradient-grid">
+    <div class="gradient-chip" style="background:linear-gradient(135deg,#A8151B,#D61F26);">Hero Banner</div>
+    <div class="gradient-chip" style="background:linear-gradient(135deg,#D61F26,#FF3B42);">Promo Card</div>
+    <div class="gradient-chip" style="background:linear-gradient(135deg,#D61F26,#F5C800);">CTA Gradient</div>
+    <div class="gradient-chip" style="background:linear-gradient(135deg,#1A1A1A,#333333);">Dark Header</div>
+    <div class="gradient-chip" style="background:linear-gradient(135deg,#C9A200,#F5C800);color:#000;text-shadow:none;">Discount Tag</div>
+    <div class="gradient-chip" style="background:linear-gradient(135deg,#D61F26 0%,#A8151B 50%,#D61F26 100%);">Navbar</div>
+  </div>
+</section>
+
+<!-- UI COMPONENTS DEMO -->
+<section>
+  <h2>UI Components Preview</h2>
+  <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Buttons &amp; Badges using the palette</p>
+  <div class="demo-row" style="margin-bottom:20px;">
+    <button class="btn btn-primary">Add to Cart</button>
+    <button class="btn btn-secondary">View Deals</button>
+    <button class="btn btn-outline">Browse</button>
+    <button class="btn btn-ghost">Cancel</button>
+    <button class="btn btn-success">Order Placed ✓</button>
+  </div>
+  <div class="demo-row">
+    <span class="badge badge-primary">SALE</span>
+    <span class="badge badge-secondary">HOT DEAL</span>
+    <span class="badge badge-success">In Stock</span>
+    <span class="badge badge-info">Delivery Today</span>
+  </div>
+</section>
+
+<!-- MOBILE PREVIEW -->
+<section>
+  <h2>Mobile App Preview</h2>
+  <div class="phone-frame">
+    <div class="phone-screen">
+      <div class="phone-header">
+        <div class="phone-logo">COOP</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.75);">Hyper Market</div>
+        <div class="phone-cart">🛒</div>
+      </div>
+      <div class="phone-banner">UP TO <span>50% OFF</span><br><span style="font-size:13px;color:rgba(255,255,255,.85);font-family:Nunito,sans-serif;font-weight:600;">This week's best deals</span></div>
+      <div class="phone-search">🔍  Search products...</div>
+      <div class="phone-chips">
+        <div class="chip chip-active">All</div>
+        <div class="chip chip-default">Fruits</div>
+        <div class="chip chip-default">Dairy</div>
+        <div class="chip chip-default">Bakery</div>
+      </div>
+      <div class="phone-products">
+        <div class="product-card">
+          <div class="product-img">🥛</div>
+          <div class="product-info">
+            <div class="product-name">Fresh Milk 1L</div>
+            <div class="product-price">$1.49</div>
+            <button class="product-add">+ Add</button>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="product-img">🍎</div>
+          <div class="product-info">
+            <div class="product-name">Red Apples 1kg</div>
+            <div class="product-price">$2.29</div>
+            <button class="product-add">+ Add</button>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="product-img">🍞</div>
+          <div class="product-info">
+            <div class="product-name">White Bread</div>
+            <div class="product-price">$0.99</div>
+            <button class="product-add">+ Add</button>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="product-img">🧃</div>
+          <div class="product-info">
+            <div class="product-name">Orange Juice</div>
+            <div class="product-price">$1.79</div>
+            <button class="product-add">+ Add</button>
+          </div>
+        </div>
+      </div>
+      <div class="phone-nav">
+        <div class="active">🏠 Home</div>
+        <div>📦 Orders</div>
+        <div>❤️ Saved</div>
+        <div>👤 Me</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DESIGN TOKENS TABLE -->
+<section>
+  <h2>Design Tokens — Quick Reference</h2>
+  <table class="token-table">
+    <thead>
+      <tr><th>Token</th><th>Hex</th><th>Use</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:#D61F26;"></span><code>--coop-red</code></td><td>#D61F26</td><td>Primary buttons, navbar, header bg</td></tr>
+      <tr><td><span class="dot" style="background:#A8151B;"></span><code>--coop-red-dark</code></td><td>#A8151B</td><td>Pressed state, shadows, gradient start</td></tr>
+      <tr><td><span class="dot" style="background:#FF3B42;"></span><code>--coop-red-light</code></td><td>#FF3B42</td><td>Hover state, notifications</td></tr>
+      <tr><td><span class="dot" style="background:#F5C800;border:1px solid #ccc;"></span><code>--coop-yellow</code></td><td>#F5C800</td><td>Secondary buttons, price tags, badges</td></tr>
+      <tr><td><span class="dot" style="background:#C9A200;"></span><code>--coop-yellow-dark</code></td><td>#C9A200</td><td>Yellow pressed state</td></tr>
+      <tr><td><span class="dot" style="background:#FFD93D;border:1px solid #ccc;"></span><code>--coop-yellow-light</code></td><td>#FFD93D</td><td>Highlights, rating stars</td></tr>
+      <tr><td><span class="dot" style="background:#FFF8F8;border:1px solid #ddd;"></span><code>--bg-page</code></td><td>#FFF8F8</td><td>App / web page background</td></tr>
+      <tr><td><span class="dot" style="background:#FFFFFF;border:1px solid #ddd;"></span><code>--bg-card</code></td><td>#FFFFFF</td><td>Product cards, modals, sheets</td></tr>
+      <tr><td><span class="dot" style="background:#1A1A1A;"></span><code>--coop-black</code></td><td>#1A1A1A</td><td>Headings, icon fills</td></tr>
+      <tr><td><span class="dot" style="background:#333333;"></span><code>--coop-dark-gray</code></td><td>#333333</td><td>Body text, descriptions</td></tr>
+      <tr><td><span class="dot" style="background:#9E9E9E;"></span><code>--coop-mid-gray</code></td><td>#9E9E9E</td><td>Placeholders, muted text</td></tr>
+      <tr><td><span class="dot" style="background:#2ECC71;"></span><code>--coop-success</code></td><td>#2ECC71</td><td>Order success, in-stock indicator</td></tr>
+      <tr><td><span class="dot" style="background:#2980B9;"></span><code>--coop-info</code></td><td>#2980B9</td><td>Delivery status, tracking info</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- CSS SNIPPET -->
+<section>
+  <h2>CSS Variables — Copy &amp; Paste</h2>
+<pre><span class="cm">/* ── COOP Discounts Hyper Market — Design Tokens ── */</span>
+<span class="kw">:root</span> {
+  <span class="cm">/* Primary */</span>
+  <span class="prop">--coop-red</span>:         <span class="val">#D61F26</span>;
+  <span class="prop">--coop-red-dark</span>:    <span class="val">#A8151B</span>;
+  <span class="prop">--coop-red-light</span>:   <span class="val">#FF3B42</span>;
+
+  <span class="cm">/* Secondary */</span>
+  <span class="prop">--coop-yellow</span>:      <span class="val">#F5C800</span>;
+  <span class="prop">--coop-yellow-dark</span>: <span class="val">#C9A200</span>;
+  <span class="prop">--coop-yellow-light</span>:<span class="val">#FFD93D</span>;
+
+  <span class="cm">/* Neutrals */</span>
+  <span class="prop">--coop-white</span>:       <span class="val">#FFFFFF</span>;
+  <span class="prop">--coop-off-white</span>:   <span class="val">#FFF8F8</span>;
+  <span class="prop">--coop-light-gray</span>:  <span class="val">#F2F2F2</span>;
+  <span class="prop">--coop-mid-gray</span>:    <span class="val">#9E9E9E</span>;
+  <span class="prop">--coop-dark-gray</span>:   <span class="val">#333333</span>;
+  <span class="prop">--coop-black</span>:       <span class="val">#1A1A1A</span>;
+
+  <span class="cm">/* Semantic */</span>
+  <span class="prop">--coop-success</span>:     <span class="val">#2ECC71</span>;
+  <span class="prop">--coop-warning</span>:     <span class="val">#F5C800</span>;
+  <span class="prop">--coop-error</span>:       <span class="val">#D61F26</span>;
+  <span class="prop">--coop-info</span>:        <span class="val">#2980B9</span>;
+
+  <span class="cm">/* Surfaces */</span>
+  <span class="prop">--bg-page</span>:          <span class="val">var(--coop-off-white)</span>;
+  <span class="prop">--bg-card</span>:          <span class="val">var(--coop-white)</span>;
+  <span class="prop">--text-primary</span>:     <span class="val">var(--coop-black)</span>;
+  <span class="prop">--text-secondary</span>:   <span class="val">var(--coop-dark-gray)</span>;
+  <span class="prop">--text-muted</span>:       <span class="val">var(--coop-mid-gray)</span>;
+  <span class="prop">--text-on-primary</span>:  <span class="val">var(--coop-white)</span>;
+  <span class="prop">--text-on-secondary</span>:<span class="val">var(--coop-black)</span>;
+}
+
+<span class="cm">/* Tailwind — add to tailwind.config.js extend.colors */</span>
+<span class="cm">// primary:   { DEFAULT: '#D61F26', dark: '#A8151B', light: '#FF3B42' },</span>
+<span class="cm">// secondary: { DEFAULT: '#F5C800', dark: '#C9A200', light: '#FFD93D' },</span></pre>
+</section>
+
+</body>
+</html>

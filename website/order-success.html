@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Order Confirmed – Coop Discounts</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body style="background:#f9fafb">
+<div id="site-header"></div>
+<section class="sec">
+<div class="ctr" style="max-width:640px;margin:0 auto">
+
+  <!-- SUCCESS BANNER -->
+  <div style="background:linear-gradient(135deg,#065f46 0%,#047857 100%);border-radius:20px;padding:36px;text-align:center;color:#fff;margin-bottom:20px;box-shadow:0 8px 32px rgba(5,150,105,.3)">
+    <div style="width:80px;height:80px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 16px">✅</div>
+    <h1 style="font-size:26px;font-weight:900;margin-bottom:8px">Order Confirmed!</h1>
+    <p style="font-size:15px;opacity:.9;margin-bottom:4px">Thank you for shopping at Coop Discounts</p>
+    <div style="font-size:13px;opacity:.8" id="orderNameDisplay"></div>
+  </div>
+
+  <div id="accessWarn" style="display:none;background:#fffbeb;border:1.5px solid #f59e0b;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.55">
+    ⚠️ Your order was submitted, but your account could not complete every step on the server (order permissions). Our team will process it manually if needed. Ask support to enable <strong>Portal</strong> access on your Odoo user, then sign in again to view order details online.
+  </div>
+
+  <!-- ORDER LOADING SKELETON -->
+  <div id="orderLoading" style="background:#fff;border-radius:16px;border:1.5px solid #e5e7eb;padding:24px;margin-bottom:16px">
+    <div style="text-align:center;padding:20px;color:#9ca3af"><span style="font-size:24px">⏳</span><div style="margin-top:8px;font-size:13px">Loading your order details...</div></div>
+  </div>
+
+  <!-- ORDER DETAIL -->
+  <div id="orderDetail" style="display:none">
+
+    <!-- ORDER INFO -->
+    <div class="fs" id="orderInfoCard">
+      <h3>📋 Order Summary</h3>
+      <div id="orderInfoContent"></div>
+    </div>
+
+    <!-- INVOICE CARD -->
+    <div class="fs" id="invoiceCard" style="display:none">
+      <h3>🧾 Invoice</h3>
+      <div id="invoiceContent"></div>
+    </div>
+
+    <!-- DELIVERY STATUS -->
+    <div class="fs" id="deliveryCard" style="display:none">
+      <h3>🚚 Delivery Status</h3>
+      <div id="deliveryContent"></div>
+    </div>
+
+  </div>
+
+  <!-- ACTION BUTTONS -->
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px">
+    <a href="account.html" style="background:var(--red);color:#fff;padding:13px 24px;border-radius:50px;font-weight:700;font-size:14px;text-decoration:none;display:flex;align-items:center;gap:6px">📦 My Orders</a>
+    <a href="track-order.html" id="trackBtn" style="background:#f3f4f6;color:#374151;padding:13px 24px;border-radius:50px;font-weight:700;font-size:14px;text-decoration:none;display:flex;align-items:center;gap:6px">📍 Track Order</a>
+    <a href="index.html" style="background:#f3f4f6;color:#374151;padding:13px 24px;border-radius:50px;font-weight:700;font-size:14px;text-decoration:none;display:flex;align-items:center;gap:6px">🏠 Continue Shopping</a>
+  </div>
+
+</div>
+</section>
+<div id="site-footer"></div>
+<script src="js/api.js?v=8.5"></script><script src="js/app.js?v=8.5"></script><script src="js/layout.js"></script>
+<script>
+var orderId = new URLSearchParams(location.search).get('oid');
+var orderName = new URLSearchParams(location.search).get('name') || '';
+var accessWarn = new URLSearchParams(location.search).get('access_warn') === '1';
+
+document.addEventListener('DOMContentLoaded', async function(){
+  if(!orderId){ document.getElementById('orderLoading').innerHTML='<div style="text-align:center;padding:20px;color:#e41e26">No order ID provided</div>'; return; }
+  API.log.info('OrderSuccess','load → start',{orderId:orderId,orderName:orderName});
+  if(accessWarn) document.getElementById('accessWarn').style.display='block';
+  document.getElementById('orderNameDisplay').textContent = orderName ? 'Order ' + orderName : 'Order #' + orderId;
+  document.getElementById('trackBtn').href = 'track-order.html?oid=' + orderId;
+
+  try{
+    // Load full order detail
+    var r = await API.getOrder(parseInt(orderId));
+    var o = Array.isArray(r.data) ? r.data[0] : r.data;
+    if(!o){ document.getElementById('orderLoading').innerHTML='<div style="text-align:center;padding:20px;color:#e41e26">Order not found</div>'; return; }
+
+    document.getElementById('orderLoading').style.display='none';
+    document.getElementById('orderDetail').style.display='block';
+
+    // ORDER SUMMARY
+    var state = Array.isArray(o.state) ? o.state[1] : o.state || 'Processing';
+    var stateClass = state.toLowerCase().includes('sale') || state.toLowerCase().includes('done') ? 'os-ok' : state.toLowerCase().includes('cancel') ? 'os-cancel' : 'os-proc';
+    // Lines may come back as `order_line` OR `order_lines` depending on the endpoint
+    var lines = o.order_line || o.order_lines || [];
+    if(!lines.length){
+      try{
+        var lr=await API.getLines(parseInt(orderId));
+        lines=lr.data||[];
+        API.log.debug('OrderSuccess','lines fetched via getLines',{orderId:orderId,lineCount:lines.length});
+      }catch(e){API.log.warn('OrderSuccess','getLines failed',{orderId:orderId,message:e.message});}
+    }
+    var carrier = Array.isArray(o.carrier_id) ? (typeof o.carrier_id[0]==='object'?o.carrier_id[0].name:o.carrier_id[1]) : (o.carrier_id||'');
+    var amtSub = parseFloat(o.amount_untaxed||0);
+    var amtTax = parseFloat(o.amount_tax||0);
+    var amtTotal = parseFloat(o.amount_total||0);
+    API.log.info('OrderSuccess','load ✓',{
+      orderId:orderId,name:o.name,state:state,lineCount:lines.length,total:amtTotal
+    });
+
+    document.getElementById('orderInfoContent').innerHTML =
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">'
+      +'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Order Number</div><div style="font-weight:800;font-size:15px">'+(o.name||'#'+orderId)+'</div></div>'
+      +'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Status</div><span class="os '+stateClass+'">'+state+'</span></div>'
+      +'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Order Date</div><div style="font-size:13px">'+(o.date_order||'').slice(0,16)+'</div></div>'
+      +'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Total Amount</div><div style="font-weight:900;color:var(--red-d);font-size:17px">AED '+amtTotal.toFixed(2)+'</div></div>'
+      +(carrier?'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Delivery Method</div><div style="font-size:13px">🚚 '+carrier+'</div></div>':'')
+      +'</div>'
+      +(o.note?'<div style="font-size:11px;color:#6b7280;margin-bottom:12px;padding:10px;background:#f9fafb;border-radius:8px;line-height:1.5"><strong>📝 Delivery Note:</strong><br>'+o.note+'</div>':'')
+      // Order lines
+      +(lines.length ? '<div style="border-top:1.5px solid #f3f4f6;padding-top:14px"><div style="font-size:13px;font-weight:800;margin-bottom:10px">Items Ordered ('+lines.length+')</div>'
+        + lines.map(function(l){
+            // product_id can be [id, "Name"]  OR  [{id, name}]  OR  string fallback
+            var pnm = '';
+            if(Array.isArray(l.product_id)){
+              var first = l.product_id[0];
+              if(typeof first === 'object' && first){ pnm = first.name || first.display_name || ''; }
+              else { pnm = l.product_id[1] || ''; }
+            }
+            if(!pnm) pnm = l.name || l.display_name || '–';
+            pnm = (pnm||'').replace(/^\[.*?\]\s*/,'').trim();
+            var qty = parseFloat(l.product_uom_qty || l.qty || 1);
+            var unit = parseFloat(l.price_unit || 0);
+            // Subtotal: try multiple fields, then fall back to qty * unit
+            var sub = parseFloat(l.price_subtotal || l.price_total || l.price_subtotal_incl || 0);
+            if(!sub) sub = qty * unit;
+            return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f9fafb;gap:10px">'
+              +'<div style="flex:1"><div style="font-size:12.5px;font-weight:700">'+pnm+'</div>'
+              +'<div style="font-size:11px;color:#9ca3af">Qty: '+qty+(unit?' × AED '+unit.toFixed(2):'')+'</div></div>'
+              +'<div style="font-weight:700;color:var(--red-d)">AED '+sub.toFixed(2)+'</div>'
+              +'</div>';
+          }).join('')
+        + (amtSub||amtTax ? '<div style="margin-top:10px;padding-top:10px;border-top:1.5px solid #e5e7eb;font-size:12px">'
+            +(amtSub?'<div style="display:flex;justify-content:space-between;color:#6b7280"><span>Subtotal</span><span>AED '+amtSub.toFixed(2)+'</span></div>':'')
+            +(amtTax?'<div style="display:flex;justify-content:space-between;color:#6b7280;margin-top:3px"><span>VAT</span><span>AED '+amtTax.toFixed(2)+'</span></div>':'')
+            +'<div style="display:flex;justify-content:space-between;font-weight:800;margin-top:6px;font-size:14px"><span>Total</span><span style="color:var(--red-d)">AED '+amtTotal.toFixed(2)+'</span></div>'
+          +'</div>' : '')
+        +'</div>' : '<div style="text-align:center;padding:18px;color:#9ca3af;font-size:13px">No items found on this order</div>');
+
+    // INVOICE — fetch each invoice by id so we get the access_token for the PDF.
+    // For Cash on Delivery orders the invoice may not exist yet (still in Quotation) — show a friendly note.
+    var invoiceIds = (Array.isArray(o.invoice_ids) ? o.invoice_ids : (o.invoice_ids ? [o.invoice_ids] : []))
+      .map(function(x){ return typeof x==='object'?x.id:x; });
+    if(invoiceIds.length){
+      document.getElementById('invoiceCard').style.display='block';
+      var invHtml='';
+      for(var i=0;i<invoiceIds.length;i++){
+        try{
+          var ir = await API.getInvoice(invoiceIds[i]);
+          var inv = Array.isArray(ir.data)?ir.data[0]:ir.data;
+          if(!inv) continue;
+          var istate = Array.isArray(inv.state)?inv.state[1]:inv.state||'Draft';
+          var pdfUrl = inv.access_token ? API.invPdfUrl(inv.id, inv.access_token) : (inv.access_url ? API.PX+inv.access_url : '');
+          invHtml += '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid #f3f4f6">'
+            +'<div><div style="font-size:14px;font-weight:800">'+(inv.name||'Invoice #'+inv.id)+'</div>'
+            +'<div style="font-size:11px;color:#6b7280;margin-top:2px">Invoice ID: <strong>'+inv.id+'</strong></div>'
+            +'<div style="font-size:11px;color:#6b7280">Date: '+(inv.invoice_date||inv.date||'').slice(0,10)+'</div>'
+            +'</div>'
+            +'<div style="text-align:right">'
+            +'<span class="os '+(istate.toLowerCase().includes('post')?'os-ok':istate.toLowerCase().includes('cancel')?'os-cancel':'os-draft')+'" style="display:block;margin-bottom:5px">'+istate+'</span>'
+            +'<div style="font-weight:800;color:var(--red-d)">AED '+parseFloat(inv.amount_total||0).toFixed(2)+'</div>'
+            +'</div>'
+            +(pdfUrl ? '<div style="width:100%;margin-top:8px"><a href="'+pdfUrl+'" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:var(--red);color:#fff;padding:9px 18px;border-radius:8px;font-weight:700;font-size:12px;text-decoration:none">📄 Download Invoice PDF</a></div>' : '<div style="width:100%;margin-top:6px;font-size:11px;color:#9ca3af">PDF available once the invoice is posted</div>')
+            +'</div>';
+        }catch(_){ invHtml += '<div style="padding:6px 0;font-size:11px;color:#9ca3af">Invoice #'+invoiceIds[i]+' — could not load</div>'; }
+      }
+      document.getElementById('invoiceContent').innerHTML = invHtml || '<div style="color:#9ca3af;font-size:13px">Invoice details loading...</div>';
+    } else if (stateClass==='os-proc' || state.toLowerCase().includes('quot') || state.toLowerCase().includes('draft')) {
+      // Cash on Delivery: invoice is auto-created after mark_done — show a placeholder
+      document.getElementById('invoiceCard').style.display='block';
+      document.getElementById('invoiceContent').innerHTML='<div style="font-size:12px;color:#92400e;background:#fffbea;border:1px solid #f5c518;border-radius:8px;padding:10px;line-height:1.5">🧾 Your invoice will be generated once payment is confirmed. For Cash on Delivery, the invoice is issued when the order is marked as paid.</div>';
+    }
+
+    // DELIVERY STATUS — fetch each picking by id (handles multiple shipments)
+    var pickingIds = (Array.isArray(o.picking_ids) ? o.picking_ids : (o.picking_ids ? [o.picking_ids] : []))
+      .map(function(x){ return typeof x==='object'?x.id:x; });
+    if(pickingIds.length){
+      document.getElementById('deliveryCard').style.display='block';
+      var delHtml='';
+      for(var j=0;j<pickingIds.length;j++){
+        try{
+          var delivR = await API.getDelivery(pickingIds[j]);
+          var del = Array.isArray(delivR.data)?delivR.data[0]:delivR.data;
+          if(!del) continue;
+          var dstate = Array.isArray(del.state)?del.state[1]:del.state||'Processing';
+          var dstateKey = Array.isArray(del.state)?del.state[0]:del.state||'';
+          var dstateClass = dstateKey==='done'?'os-ok':dstateKey==='cancel'?'os-cancel':'os-proc';
+          var hasGeo = del.partner_latitude || del.partner_longitude;
+          var mapUrl = hasGeo ? 'https://maps.google.com/?q='+del.partner_latitude+','+del.partner_longitude : '';
+          var dcarrier = Array.isArray(del.carrier_id)?(typeof del.carrier_id[0]==='object'?del.carrier_id[0].name:del.carrier_id[1]):(del.carrier_id||carrier||'');
+          delHtml += '<div style="padding:8px 0;border-bottom:1px solid #f3f4f6">'
+            +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px">'
+            +'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Delivery Reference</div><div style="font-weight:700">'+(del.name||'#'+del.id)+'</div></div>'
+            +'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Status</div><span class="os '+dstateClass+'">'+dstate+'</span></div>'
+            +'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Delivery ID</div><div style="font-size:12px"><strong>'+del.id+'</strong></div></div>'
+            +(dcarrier?'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Carrier</div><div style="font-size:12px">'+dcarrier+'</div></div>':'')
+            +(del.scheduled_date?'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Scheduled</div><div style="font-size:12px">'+(del.scheduled_date||'').slice(0,16)+'</div></div>':'')
+            +(del.date_done?'<div><div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:3px">Delivered</div><div style="font-size:12px">'+(del.date_done||'').slice(0,16)+'</div></div>':'')
+            +'</div>'
+            +(mapUrl?'<a href="'+mapUrl+'" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#f3f4f6;color:#374151;padding:9px 16px;border-radius:8px;font-weight:700;font-size:12px;text-decoration:none">📍 Get Directions</a>':'')
+            +'</div>';
+        }catch(_){ delHtml += '<div style="padding:6px 0;font-size:11px;color:#9ca3af">Picking #'+pickingIds[j]+' — could not load</div>'; }
+      }
+      document.getElementById('deliveryContent').innerHTML = delHtml || '<div style="color:#9ca3af;font-size:13px">Delivery details loading...</div>';
+    } else {
+      // No picking yet — common for Cash on Delivery before confirmation
+      document.getElementById('deliveryCard').style.display='block';
+      document.getElementById('deliveryContent').innerHTML='<div style="font-size:12px;color:#1e40af;background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;padding:10px;line-height:1.5">🚚 Your delivery will be scheduled shortly after the order is confirmed. We\'ll send you an update with tracking details.</div>';
+    }
+
+  }catch(e){
+    if(accessWarn || (API.isOdooAccessError && API.isOdooAccessError(e))) {
+      document.getElementById('accessWarn').style.display='block';
+      document.getElementById('orderLoading').innerHTML='<div style="text-align:center;padding:20px;color:#6b7280;font-size:13px;line-height:1.5">Order <strong>#'+orderId+'</strong> was placed. Full details are not visible until your account has Portal order access in Odoo.</div>';
+    } else {
+      document.getElementById('orderLoading').innerHTML='<div style="text-align:center;padding:20px;color:#e41e26">❌ '+(e.message||'Could not load order')+'</div>';
+    }
+  }
+});
+</script>
+</body></html>

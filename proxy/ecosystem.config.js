@@ -1,0 +1,1 @@
+module.exports={apps:[{name:'cd-proxy',script:'server.js',cwd:'/var/www/cdmart/proxy',instances:1,autorestart:true,watch:false,env:{NODE_ENV:'production',ODOO_BASE:'http://cooperp.freeddns.org:8076',BY_AJR:'1',PORT:'3001'},error_file:'/var/log/cd-proxy-error.log',out_file:'/var/log/cd-proxy-out.log',log_date_format:'YYYY-MM-DD HH:mm:ss'}]};

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Product – Coop Discounts</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+<div class="ctr" style="padding-top:8px">
+  <div class="bcnav"><a href="index.html">Home</a><span>›</span><a href="shop.html">Shop</a><span>›</span><span id="pdBcName">Product</span></div>
+</div>
+
+<section class="sec">
+<div class="ctr">
+
+  <!-- SKELETON -->
+  <div id="pdSkel" class="det-grid">
+    <div class="skel" style="height:340px;border-radius:16px"></div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="skel" style="height:30px;border-radius:8px"></div>
+      <div class="skel" style="height:20px;border-radius:8px;width:60%"></div>
+      <div class="skel" style="height:50px;border-radius:8px"></div>
+      <div class="skel" style="height:90px;border-radius:8px"></div>
+    </div>
+  </div>
+
+  <!-- PRODUCT DETAIL -->
+  <div id="pdContent" style="display:none">
+    <div class="det-grid">
+      <!-- IMAGE GALLERY -->
+      <div class="det-gal">
+        <div style="position:relative;border-radius:12px;overflow:hidden;background:#f9fafb;border:1.5px solid #e5e7eb;display:flex;align-items:center;justify-content:center;min-height:300px">
+          <img id="pdImg" src="" alt="" style="max-height:320px;object-fit:contain;width:100%;display:block"
+            onerror="this.style.display='none';document.getElementById('pdImgFb').style.display='flex'">
+          <div id="pdImgFb" style="display:none;font-size:80px;position:absolute;align-items:center;justify-content:center;width:100%;height:100%">📦</div>
+          <!-- Ribbon badge -->
+          <div id="pdRibbon" style="display:none;position:absolute;top:12px;left:0;background:var(--red);color:#fff;font-size:11px;font-weight:800;padding:4px 10px 4px 8px;border-radius:0 20px 20px 0"></div>
+        </div>
+        <!-- Wishlist -->
+        <button id="pdWishBtn" style="margin-top:12px;width:100%;background:#fff;color:var(--red);border:2px solid var(--red);padding:10px;border-radius:var(--r);font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px"
+          onmouseover="this.style.background='var(--red-l)'" onmouseout="this.style.background='#fff'">
+          ♡ Save to Wishlist
+        </button>
+      </div>
+
+      <!-- PRODUCT INFO -->
+      <div class="det-pan">
+        <div id="pdCat" style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px"></div>
+        <h1 id="pdName" style="font-size:22px;font-weight:900;color:#111;line-height:1.3;margin-bottom:12px"></h1>
+        <div id="pdBarcode" style="font-size:11px;color:#9ca3af;margin-bottom:14px"></div>
+
+        <!-- PRICE -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+          <span id="pdPrice" class="det-price"></span>
+          <span id="pdWas" style="display:none;font-size:15px;color:#9ca3af;text-decoration:line-through"></span>
+          <span id="pdSave" style="display:none;font-size:12px;font-weight:700;color:var(--red);background:var(--red-l);padding:3px 8px;border-radius:6px"></span>
+        </div>
+
+        <!-- STOCK STATUS -->
+        <div id="pdStock" style="margin-bottom:16px"></div>
+
+        <!-- DESCRIPTION -->
+        <div id="pdDesc" style="font-size:13px;color:#374151;line-height:1.7;margin-bottom:18px;padding:14px;background:#f9fafb;border-radius:var(--r);display:none"></div>
+
+        <!-- QTY CONTROL + ADD TO CART -->
+        <div id="pdAddSec">
+          <div id="pdCartState"></div>
+        </div>
+        <div id="pdOosMsg" style="display:none;background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;padding:12px;border-radius:8px;font-weight:700;font-size:13px;text-align:center;margin-top:10px">
+          ❌ Out of Stock — Check back soon
+        </div>
+
+        <!-- CART LINE QTY FEEDBACK -->
+        <div id="pdLineFeedback" style="display:none;margin-top:12px;background:#f0fdf4;border:1px solid #6ee7b7;border-radius:8px;padding:10px 14px;font-size:12px;font-weight:600;color:#065f46"></div>
+
+        <!-- DELIVERY INFO -->
+        <div style="margin-top:18px;border-top:1.5px solid #f3f4f6;padding-top:16px">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#374151"><span>🚀</span><span>Free delivery on orders above AED 50</span></div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#374151"><span>🔄</span><span>Easy 7-day returns</span></div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#374151"><span>🔒</span><span>100% secure checkout</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RELATED PRODUCTS -->
+    <div style="margin-top:32px">
+      <div class="sec-hd"><h2 class="sec-ttl">You May Also Like</h2><a href="shop.html" class="see-all">View All →</a></div>
+      <div class="pgrid" id="relatedGrid"></div>
+    </div>
+  </div>
+
+</div>
+</section>
+<div id="site-footer"></div>
+<script src="js/api.js?v=8.5"></script><script src="js/app.js?v=8.5"></script><script src="js/layout.js"></script>
+<script>
+var pdId = parseInt(new URLSearchParams(location.search).get('id'));
+var pdData = null, pdQty = 1, pdLineId = null;
+
+document.addEventListener('DOMContentLoaded', async function(){
+  if(!pdId){ document.getElementById('pdSkel').innerHTML='<div style="color:#e41e26;padding:40px;text-align:center">Product not found</div>'; return; }
+  Bar.start();
+  try{
+    var r = await API.getProdById(pdId);
+    pdData = Array.isArray(r.data) ? r.data[0] : r.data;
+    if(!pdData){ document.getElementById('pdSkel').innerHTML='<div style="color:#e41e26;padding:40px;text-align:center">Product not found</div>'; return; }
+
+    document.getElementById('pdSkel').style.display='none';
+    document.getElementById('pdContent').style.display='block';
+
+    // Name — strip [SKU] prefix
+    var name = (pdData.name||pdData.display_name||'').replace(/^\[.*?\]\s*/,'').trim();
+    document.title = name + ' – Coop Discounts';
+    document.getElementById('pdName').textContent = name;
+    document.getElementById('pdBcName').textContent = name.length > 40 ? name.substring(0,40)+'…' : name;
+
+    // CRITICAL: image_1024 is a PATH — must use API.img() to proxy
+    var imgSrc = pdData.image_1024 ? API.img(pdData.image_1024) : API.prodImg(pdId);
+    document.getElementById('pdImg').src = imgSrc;
+    document.getElementById('pdImg').alt = name;
+
+    // Category
+    var cat = Array.isArray(pdData.categ_id) ? pdData.categ_id[1] : '';
+    if(cat){ document.getElementById('pdCat').textContent = cat; }
+
+    // Barcode
+    if(pdData.barcode){ document.getElementById('pdBarcode').textContent = 'Barcode: '+pdData.barcode; }
+
+    // Price
+    var price = parseFloat(pdData.list_price || pdData.lst_price || 0);
+    var std = parseFloat(pdData.standard_price || 0);
+    document.getElementById('pdPrice').textContent = 'AED ' + price.toFixed(2);
+    if(std > price && std > 0){
+      document.getElementById('pdWas').style.display='inline';
+      document.getElementById('pdWas').textContent = 'AED ' + std.toFixed(2);
+      var disc = Math.round((1-price/std)*100);
+      document.getElementById('pdSave').style.display='inline';
+      document.getElementById('pdSave').textContent = '-'+disc+'% OFF';
+    }
+
+    // Stock
+    var qtyAvail = pdData.qty_available !== undefined ? parseFloat(pdData.qty_available) : -1;
+    var oos = qtyAvail === 0;
+    var stockEl = document.getElementById('pdStock');
+    if(oos){
+      stockEl.innerHTML='<span class="os os-cancel">Out of Stock</span>';
+      document.getElementById('pdAddSec').style.display='none';
+      document.getElementById('pdOosMsg').style.display='block';
+    } else if(qtyAvail > 0){
+      stockEl.innerHTML='<span class="os os-ok">✅ In Stock ('+(qtyAvail>99?'99+':qtyAvail)+' available)</span>';
+    } else {
+      stockEl.innerHTML='<span class="os os-ok">✅ In Stock</span>';
+    }
+    updatePdCartState();
+
+    // Ribbon
+    if(pdData.website_ribbon_id && pdData.website_ribbon_id.length){
+      document.getElementById('pdRibbon').style.display='block';
+      document.getElementById('pdRibbon').textContent = pdData.website_ribbon_id[0].name;
+    }
+
+    // Description
+    if(pdData.description || pdData.description_sale){
+      var desc = pdData.description || pdData.description_sale || '';
+      if(desc && desc !== 'false' && desc !== 'False'){
+        document.getElementById('pdDesc').style.display='block';
+        document.getElementById('pdDesc').textContent = desc;
+      }
+    }
+
+    // Wishlist button
+    document.getElementById('pdWishBtn').onclick = function(){
+      WL.toggle(pdId, name);
+    };
+
+    // Load related products
+    loadRelated(cat);
+
+    Bar.done();
+  }catch(e){
+    document.getElementById('pdSkel').innerHTML='<div style="color:#e41e26;padding:40px;text-align:center">❌ '+e.message+'</div>';
+    Bar.done();
+  }
+});
+
+function chQty(d){
+  if(!pdData)return;
+  var qtyAvail = pdData.qty_available !== undefined ? parseFloat(pdData.qty_available) : 999;
+  pdQty = Math.max(1, Math.min(pdQty + d, qtyAvail > 0 ? qtyAvail : 999));
+  updatePdCartState();
+}
+
+function updatePdCartState(){
+  if(!pdData) return;
+  var cItem = Cart.raw().find(function(i){ return i.product_id === pdId; });
+  var cQty = cItem ? cItem.qty : 0;
+  var sec = document.getElementById('pdCartState');
+  if(!sec) return;
+
+  var qtyAvail = pdData.qty_available !== undefined ? parseFloat(pdData.qty_available) : -1;
+  var oos = qtyAvail === 0;
+
+  if (oos) {
+    sec.innerHTML = '';
+  } else if (cQty > 0) {
+    sec.innerHTML = '<div style="display:flex;flex-direction:column;gap:12px">' +
+      '<div style="font-size:13px;font-weight:700;color:var(--red)">✅ This item is in your cart</div>' +
+      '<div style="display:flex;border:2px solid var(--red);border-radius:12px;overflow:hidden;width:100%;height:52px">' +
+        '<button onclick="Cart.setQty('+pdId+',-1)" style="width:52px;background:#fef2f2;color:var(--red);font-size:24px;font-weight:700;border:none;cursor:pointer">−</button>' +
+        '<span style="flex:1;text-align:center;font-size:18px;font-weight:900;line-height:48px;color:var(--red)">'+cQty+'</span>' +
+        '<button onclick="Cart.setQty('+pdId+',1)" style="width:52px;background:#fef2f2;color:var(--red);font-size:24px;font-weight:700;border:none;cursor:pointer">+</button>' +
+      '</div></div>';
+  } else {
+    var availTxt = (qtyAvail > 0 && qtyAvail < 10) ? 'Only '+qtyAvail+' left!' : '';
+    sec.innerHTML = '<div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">' +
+      '<div class="qty-ctrl">' +
+        '<button class="qty-btn" onclick="chQty(-1)">−</button>' +
+        '<span class="qty-n" id="pdQtyN">'+pdQty+'</span>' +
+        '<button class="qty-btn" onclick="chQty(1)">+</button>' +
+      '</div><span style="font-size:12px;color:#9ca3af" id="pdAvailTxt">'+availTxt+'</span></div>' +
+      '<button id="pdAtcBtn" class="det-atc" onclick="addPdToCart()" style="width:100%">🛒 Add to Cart</button>';
+  }
+}
+
+// Hook into tick() to update live when cart changes from drawer
+var _oldTick = window.tick;
+window.tick = function(){
+  if(typeof _oldTick === 'function') _oldTick();
+  updatePdCartState();
+};
+
+async function addPdToCart(){
+  if(!pdData)return;
+  var btn = document.getElementById('pdAtcBtn');
+  btn.disabled = true; btn.textContent = '⏳ Adding...';
+
+  var varId = Array.isArray(pdData.product_variant_id) && pdData.product_variant_id.length
+    ? pdData.product_variant_id[0].id : pdId;
+  var price = parseFloat(pdData.list_price || 0);
+  var imgSrc = pdData.image_1024 ? API.img(pdData.image_1024) : API.prodImg(pdId);
+  var name = (pdData.name||'').replace(/^\[.*?\]\s*/,'').trim();
+  var qtyAvail = pdData.qty_available !== undefined ? parseFloat(pdData.qty_available) : -1;
+
+  // Add to local cart
+  for(var i = 0; i < pdQty; i++){
+    await Cart.add({ product_id:pdId, variant_id:varId, name, price, image:imgSrc, qty_available:qtyAvail });
+  }
+
+  // After adding, get line qty from backend using getLineQty
+  var items = Cart.raw();
+  var item = items.find(function(it){ return it.product_id === pdId; });
+  if(item && item.line_id){
+    try{
+      var qtyR = await API.getLineQty(item.line_id);
+      var backendQty = qtyR.data?.product_uom_qty || qtyR.data?.qty || pdQty;
+      // Show feedback
+      document.getElementById('pdLineFeedback').style.display='block';
+      document.getElementById('pdLineFeedback').textContent='✅ '+ backendQty + (backendQty==1?' item':' items') +' in cart (confirmed with server)';
+      setTimeout(function(){ document.getElementById('pdLineFeedback').style.display='none'; }, 4000);
+    }catch(_){}
+  }
+
+  btn.disabled = false; btn.textContent = '🛒 Add to Cart';
+  openDrw();
+}
+
+async function loadRelated(cat){
+  var el = document.getElementById('relatedGrid');
+  el.innerHTML = skelGrid(5, 280);
+  try{
+    var params = { limit: 5 };
+    if(cat) params.domain = "[('categ_id.name','ilike','"+cat.replace(/'/g,"\\'")+"')]";
+    var r = await API.getProds(params);
+    var prods = (r.data||[]).filter(function(p){ return p.id !== pdId && parseFloat(p.list_price||0)>0; }).slice(0,5);
+    el.innerHTML = prods.length ? prods.map(buildCard).join('') : '<div style="grid-column:1/-1;color:#9ca3af;text-align:center;padding:20px">No related products</div>';
+  }catch(_){el.innerHTML='';}
+}
+</script>
+</body></html>
