@@ -428,6 +428,13 @@ const API = ((_DB='staging-apr17', SK='cd_session', NOTIFY='eicoopit@gmail.com')
   async function POST(path, body={}) {
     return httpRequest('POST', path, {}, body);
   }
+  async function callKw(model, method, args, kwargs={}) {
+    return POST(`/web/dataset/call_kw/${model}/${method}`, {
+      jsonrpc: "2.0",
+      method: "call",
+      params: { model, method, args, kwargs }
+    });
+  }
   function getGeo() {
     return new Promise(res => {
       if(!navigator.geolocation) return res({});

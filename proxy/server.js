@@ -37,7 +37,7 @@ function parseOdooUrl(urlStr) {
   const qIdx = urlStr.indexOf('?');
   const pathname = qIdx === -1 ? urlStr : urlStr.slice(0, qIdx);
   const qsStr = qIdx === -1 ? '' : urlStr.slice(qIdx + 1);
-  
+
   const searchParams = new Map();
   if (qsStr) {
     qsStr.split('&').forEach(pair => {
@@ -51,7 +51,7 @@ function parseOdooUrl(urlStr) {
       }
     });
   }
-  
+
   return { pathname, searchParams };
 }
 
@@ -113,46 +113,46 @@ function fwd(res, odooPath, method, body, cookie, sessionToken) {
   const defaultPort = isS ? 443 : 80;
   const safePath = safeEncodePath(odooPath);
   const opts = { hostname: odooUrl.hostname, port: odooUrl.port || defaultPort, path: safePath, method, headers: hdrs };
-  
+
   let r;
   try {
     r = T.request(opts, or => {
-    // Forward Set-Cookie with SameSite fix
-    const sc = or.headers['set-cookie'];
-    if (sc) {
-        res.setHeader('Set-Cookie', sc.map(c => c.replace(/;\s*Secure/gi,'').replace(/;\s*SameSite=[^;]*/gi,'')+'; SameSite=Lax'));
+      // Forward Set-Cookie with SameSite fix
+      const sc = or.headers['set-cookie'];
+      if (sc) {
+        res.setHeader('Set-Cookie', sc.map(c => c.replace(/;\s*Secure/gi, '').replace(/;\s*SameSite=[^;]*/gi, '') + '; SameSite=Lax'));
         // Expose session_id to frontend since cross-origin document.cookie can't read it
         for (const c of sc) {
-            const match = c.match(/session_id=([^;]+)/);
-            if (match) res.setHeader('X-Set-Session-Token', match[1]);
+          const match = c.match(/session_id=([^;]+)/);
+          if (match) res.setHeader('X-Set-Session-Token', match[1]);
         }
-    }
-    res.statusCode = or.statusCode;
-    // Forward Content-Type exactly as Odoo returns it
-    const ct = or.headers['content-type'] || (isImage(odooPath) ? 'image/jpeg' : 'application/json');
-    res.setHeader('Content-Type', ct);
-    if (or.headers['content-length']) res.setHeader('Content-Length', or.headers['content-length']);
-    // For images: stream binary data as buffers
-    const chunks = [];
-    or.on('data', chunk => chunks.push(Buffer.from(chunk)));
-    or.on('end', () => {
-      const data = Buffer.concat(chunks);
-      res.end(data);
+      }
+      res.statusCode = or.statusCode;
+      // Forward Content-Type exactly as Odoo returns it
+      const ct = or.headers['content-type'] || (isImage(odooPath) ? 'image/jpeg' : 'application/json');
+      res.setHeader('Content-Type', ct);
+      if (or.headers['content-length']) res.setHeader('Content-Length', or.headers['content-length']);
+      // For images: stream binary data as buffers
+      const chunks = [];
+      or.on('data', chunk => chunks.push(Buffer.from(chunk)));
+      or.on('end', () => {
+        const data = Buffer.concat(chunks);
+        res.end(data);
+      });
     });
-  });
-  r.on('error', e => {
-    console.error(`[Proxy] Error -> ${method} ${odooPath}`, e.message);
-    res.statusCode = 502;
-    res.setHeader('Content-Type','application/json');
-    res.end(JSON.stringify({success:0,error:'Backend unreachable',detail:e.message}));
-  });
-  if (body) r.write(body);
-  r.end();
-  } catch(e) {
+    r.on('error', e => {
+      console.error(`[Proxy] Error -> ${method} ${odooPath}`, e.message);
+      res.statusCode = 502;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ success: 0, error: 'Backend unreachable', detail: e.message }));
+    });
+    if (body) r.write(body);
+    r.end();
+  } catch (e) {
     console.error(`[Proxy] Request creation failed -> ${method} ${odooPath}`, e.message);
     res.statusCode = 400;
-    res.setHeader('Content-Type','application/json');
-    res.end(JSON.stringify({success:0,error:'Bad Request',detail:e.message}));
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ success: 0, error: 'Bad Request', detail: e.message }));
   }
 }
 
@@ -168,11 +168,11 @@ http.createServer((req, res) => {
   // Forward POST /telr/* to https://secure.telr.com/*
   if (path.startsWith('/telr/')) {
     const telrPath = '/' + path.replace(/^\/telr\//, '');
-    console.log(`[${new Date().toISOString().substr(11,8)}] 💳 TELR ${req.method} ${telrPath}`);
+    console.log(`[${new Date().toISOString().substr(11, 8)}] 💳 TELR ${req.method} ${telrPath}`);
     if (req.method !== 'POST') {
       res.statusCode = 405;
-      res.setHeader('Content-Type','application/json');
-      return res.end(JSON.stringify({error:'Only POST allowed for Telr proxy'}));
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify({ error: 'Only POST allowed for Telr proxy' }));
     }
     let body = '';
     req.on('data', d => body += d);
@@ -196,8 +196,8 @@ http.createServer((req, res) => {
       tr.on('error', e => {
         console.error('[Proxy] Telr error:', e.message);
         res.statusCode = 502;
-        res.setHeader('Content-Type','application/json');
-        res.end(JSON.stringify({success:0,error:'Telr unreachable',detail:e.message}));
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ success: 0, error: 'Telr unreachable', detail: e.message }));
       });
       tr.write(body);
       tr.end();
@@ -207,14 +207,14 @@ http.createServer((req, res) => {
 
   // Health check
   if (path === '/health' || path === '/proxy/health') {
-    res.setHeader('Content-Type','application/json');
-    return res.end(JSON.stringify({status:'ok',odoo:ODOO,port:PORT,ts:new Date().toISOString()}));
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify({ status: 'ok', odoo: ODOO, port: PORT, ts: new Date().toISOString() }));
   }
 
   if (!path.startsWith('/proxy/')) {
     res.statusCode = 404;
-    res.setHeader('Content-Type','application/json');
-    return res.end(JSON.stringify({error:'Use /proxy/ prefix'}));
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify({ error: 'Use /proxy/ prefix' }));
   }
 
   const odooPath = path.replace(/^\/proxy/, '');
@@ -222,8 +222,8 @@ http.createServer((req, res) => {
   // ── PATH ALLOWLIST CHECK ─────────────────────────────────────────
   if (!isAllowedPath(odooPath)) {
     res.statusCode = 403;
-    res.setHeader('Content-Type','application/json');
-    return res.end(JSON.stringify({error:'Forbidden: path not allowed', path: odooPath}));
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify({ error: 'Forbidden: path not allowed', path: odooPath }));
   }
 
   // Build query params from the parsed URL
@@ -246,7 +246,7 @@ http.createServer((req, res) => {
   const cookie = req.headers['cookie'] || '';
 
   const tag = isImage(odooPath) ? '🖼️' : '📡';
-  console.log(`[${new Date().toISOString().substr(11,8)}] ${tag} ${req.method} ${odooPath}`);
+  console.log(`[${new Date().toISOString().substr(11, 8)}] ${tag} ${req.method} ${odooPath}`);
 
   if (req.method === 'POST') {
     let b = '';

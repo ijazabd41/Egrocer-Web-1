@@ -1121,13 +1121,37 @@ async function placeOrder(){
     }
     try{await API.updDelivery(parseInt(oid),selCarrierId, updOpts);}catch(_){}
 
-    // 4) Add delivery note
+    // 4) Add delivery note and actual lines to Odoo via callKw
     var note = '';
     if(contact.isStore) {
       var pickupDisc = parseFloat((sub * 0.05).toFixed(2));
       note = '[STORE PICKUP] ' + contact.fn + ' | ' + contact.ph + (contact.em?' | '+contact.em:'') + (contact.partnerInvoiceId?' | Invoice Contact ID '+contact.partnerInvoiceId:'') + ' | Store Pickup Discount (5%): -AED ' + pickupDisc.toFixed(2);
+      try {
+        await API.callKw('sale.order.line', 'create', [{
+          order_id: parseInt(oid),
+          name: "Store Pickup Discount (5%)",
+          product_uom_qty: 1,
+          price_unit: -pickupDisc
+        }]);
+      } catch(e) { log.warn('Checkout','failed to add pickup discount line',{msg:e.message}); }
     } else {
       note = '[DELIVERY] Ship Contact ID ' + contact.partnerShippingId + ' | Invoice Contact ID ' + (contact.partnerInvoiceId || contact.partnerShippingId);
+      var deliveryFeeVal = 0;
+      if (sub < 150) {
+        deliveryFeeVal = selDeliveryMethod ? parseFloat(selDeliveryMethod.fixed_price || 0) : 15;
+      }
+      try {
+        if (selDeliveryMethod && selDeliveryMethod.product_id) {
+          var dPid = Array.isArray(selDeliveryMethod.product_id) ? selDeliveryMethod.product_id[0].id : (selDeliveryMethod.product_id.id || selDeliveryMethod.product_id);
+          await API.callKw('sale.order.line', 'create', [{
+            order_id: parseInt(oid),
+            product_id: parseInt(dPid),
+            name: selDeliveryMethod.name || "Delivery",
+            product_uom_qty: 1,
+            price_unit: deliveryFeeVal
+          }]);
+        }
+      } catch(e) { log.warn('Checkout','failed to add delivery line',{msg:e.message}); }
     }
     var notesVal = document.getElementById('notes').value.trim();
     if(notesVal) note+=' | Notes: '+notesVal;
