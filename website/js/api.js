@@ -815,6 +815,10 @@ const API = ((_DB='staging-apr17', SK='cd_session', NOTIFY='eicoopit@gmail.com')
     }
   }
 
+  async function createCustomLine(oid, pid, name, price_unit) {
+    return GET('/api/order-line/create', { order_id: oid, product_id: pid, name: name, price_unit: price_unit });
+  }
+
   async function addLine(oid, variantId, qty = 1) {
     const r = await upsertOrderLine(oid, variantId, qty);
     return { success: 1, data: { rec_id: r.rec_id, message: 'record create successfully' } };
@@ -1706,12 +1710,15 @@ const API = ((_DB='staging-apr17', SK='cd_session', NOTIFY='eicoopit@gmail.com')
     createTelrSession, verifyTelrPayment, isTelrProvider,
     TELR_STORE_ID,
     // Invoices
-    createInvoice, getInvoices, getInvoice, updInvoice, invPdfUrl,
+    createInvoice, getInvoices, getInvoice, updInvoice, clearCart,
     // Loyalty
     getLoyaltyCoupons, getLoyaltyCouponByCode, getLoyaltyCards, getLoyaltyPrograms,
     getLoyaltyReward, applyLoyalty, findLoyaltyByCode, applyCouponToOrder,
     getLoyaltyBalance, getOrderDiscountAmount, resolveLoyaltyRewardId,
     normalizeApiErrorMessage, isOdooAccessError,
+    removeLoyalty,
+    callKw,
+    createCustomLine,
     // Contacts
     getContacts, getContact, getChildContacts, addAddress, updContact, saveHomeAddressAndApplyCarrier,
     // Countries & States
