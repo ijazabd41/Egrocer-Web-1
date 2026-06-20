@@ -331,6 +331,8 @@ async function doLogin(){
   const err=document.getElementById('lg-err'),btn=document.getElementById('lg-btn');
   err.style.display='none';
   if(!em||!pw){err.textContent='❌ Please enter email/phone and password';err.style.display='flex';return;}
+  const captchaVal = document.getElementById('lg-captcha')?.value?.trim()?.toUpperCase();
+  if(captchaVal !== _lgCaptcha){err.textContent='❌ Please complete the CAPTCHA';err.style.display='flex';return;}
   btn.disabled=true;btn.textContent='⏳ Signing in...';
   try{
     const r=await API.login(em,pw);

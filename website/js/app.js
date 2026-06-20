@@ -1,9 +1,9 @@
-/* Coop Discounts App v6 Ã¢â‚¬â€ Session, Cart, OTP, Images all fixed */
+/* Coop Discounts App v6 — Session, Cart, OTP, Images all fixed */
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ PROGRESS BAR Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── PROGRESS BAR ─────────────────────────────────────── */
 const Bar={_el:null,_v:0,_t:null,init(){if(this._el)return;this._el=document.createElement('div');this._el.style.cssText='position:fixed;top:0;left:0;height:3px;background:#ED1C24;z-index:99999;width:0;transition:width .25s;pointer-events:none';document.body.prepend(this._el);},start(){this.init();this._v=0;this._el.style.opacity='1';this._set(10);clearInterval(this._t);this._t=setInterval(()=>{if(this._v<85){this._v+=Math.random()*5;this._set(this._v);}},400);},done(){clearInterval(this._t);this._set(100);setTimeout(()=>{this._el.style.opacity='0';setTimeout(()=>{this._el.style.width='0';this._el.style.opacity='1';},400);},250);},_set(v){this._v=v;if(this._el)this._el.style.width=v+'%';}};
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ HELPER FUNCTIONS FOR DELIVERY & DISCOUNTS Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── HELPER FUNCTIONS FOR DELIVERY & DISCOUNTS ────────── */
 function getProdPrice(p) {
   if (!p) return 0;
   var ep = parseFloat(p.ecommerce_price); if (!isNaN(ep) && ep > 0) return ep;
@@ -26,11 +26,11 @@ function getCartProgressHtml(subtotal, isCheckout = false) {
   var freeReached = subtotal >= 150;
   
   var minMsg = minReached 
-    ? "Minimum order reached Ã¢Å“â€œ" 
+    ? "Minimum order reached ✓" 
     : "Add AED " + (100 - subtotal).toFixed(2) + " more to reach minimum order.";
     
   var freeMsg = freeReached 
-    ? "You have unlocked FREE delivery Ã°Å¸Å½â€°" 
+    ? "You have unlocked FREE delivery 🎉" 
     : "Add AED " + (150 - subtotal).toFixed(2) + " more to unlock free delivery.";
     
   var showFreeDelivery = (typeof selDeliveryKind !== 'undefined' && selDeliveryKind === 'home');
@@ -180,12 +180,12 @@ function recalculateInvoicePrices(inv, isPickup) {
   };
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ SKELETONS Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── SKELETONS ────────────────────────────────────────── */
 function skelRow(n=6,h=190){return Array(n).fill(0).map(()=>`<div style="min-width:140px;height:${h}px;border-radius:12px;flex-shrink:0" class="skel"></div>`).join('');}
 function skelGrid(n=8,h=290){return Array(n).fill(0).map(()=>`<div style="height:${h}px" class="skel"></div>`).join('');}
 function skelCats(n=8){return Array(n).fill(0).map(()=>`<div style="min-width:88px;height:112px;border-radius:18px;flex-shrink:0" class="skel"></div>`).join('');}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ CART Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── CART ─────────────────────────────────────────────── */
 const Cart=(()=>{
   const CK='cd_cart',OK='cd_oid',PK='cd_placed_oid',PLK='cd_placed_oids';
   const L=()=>(typeof API!=='undefined'&&API.log)?API.log:{debug(){},info(){},warn(){},error(){}};
@@ -217,13 +217,13 @@ const Cart=(()=>{
   const count=()=>raw().reduce((s,i)=>s+i.qty,0);
   const total=()=>raw().reduce((s,i)=>s+(i.price*i.qty),0);
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Mutex lock to prevent duplicate order creation from rapid clicks Ã¢â€â‚¬Ã¢â€â‚¬
+  // ── Mutex lock to prevent duplicate order creation from rapid clicks ──
   let _ensureOrderLock = null;
   let _reusableOid = null;
 
   async function _ensureOrderImpl(){
     let id=oid();
-    L().debug('Cart','ensureOrder Ã¢â€ â€™ start',{storedOid:id});
+    L().debug('Cart','ensureOrder → start',{storedOid:id});
     if(id){
       if(wasPlaced(id)){
         L().info('Cart','ensureOrder discard placed',{orderId:id});
@@ -272,7 +272,7 @@ const Cart=(()=>{
     const oid=parseInt(orderId,10);
     if(!oid) throw new Error('No order to update');
     const items=raw();
-    L().info('Cart','syncToOrder Ã¢â€ â€™ start',{orderId:oid,itemCount:items.length,replace});
+    L().info('Cart','syncToOrder → start',{orderId:oid,itemCount:items.length,replace});
     if(!items.length) throw new Error('Add products to your cart before applying a loyalty code');
     if(!API.loggedIn()) throw new Error('Please sign in first');
 
@@ -332,14 +332,14 @@ const Cart=(()=>{
     if(lastErr){
       try{
         if(await API.orderLinesMatchCart(oid, items)){
-          L().info('Cart','syncToOrder Ã¢Å“â€œ (lines matched despite errors)',{orderId:oid});
+          L().info('Cart','syncToOrder ✓ (lines matched despite errors)',{orderId:oid});
           return oid;
         }
       }catch(_){}
-      L().error('Cart','syncToOrder Ã¢Å“â€”',{orderId:oid,message:lastErr.message});
+      L().error('Cart','syncToOrder ✗',{orderId:oid,message:lastErr.message});
       throw new Error('Could not add cart items to your order. '+(lastErr.message||''));
     }
-    L().info('Cart','syncToOrder Ã¢Å“â€œ',{orderId:oid,itemCount:items.length});
+    L().info('Cart','syncToOrder ✓',{orderId:oid,itemCount:items.length});
     return oid;
   }
   function clearLineIds(){
@@ -350,7 +350,7 @@ const Cart=(()=>{
     sv(items);
   }
   async function add(prod){
-    if(prod.qty_available<=0 && prod.qty_available!==-1){toast('Ã¢ÂÅ’ Out of stock','err');return;}
+    if(prod.qty_available<=0 && prod.qty_available!==-1){toast('❌ Out of stock','err');return;}
     const items=raw();const ex=items.find(i=>i.product_id===prod.product_id);
     if(ex){
       ex.qty++;sv(items);
@@ -381,9 +381,9 @@ const Cart=(()=>{
         try{const qr=await API.getLineQty(lineId);const bq=qr.data?.product_uom_qty||qr.data?.qty||1;if(bq!==1){const ix=items.findIndex(i=>i.product_id===prod.product_id);if(ix>-1){items[ix].qty=bq;sv(items);}}}catch(_){}
       }
       items.push({...prod,qty:1,line_id:lineId});sv(items);
-      L().info('Cart','add Ã¢Å“â€œ',{orderId:ordId,lineId,cartCount:count()});
+      L().info('Cart','add ✓',{orderId:ordId,lineId,cartCount:count()});
     }
-    tick();renderDrawer();toast('Ã¢Å“â€¦ Added to cart');
+    tick();renderDrawer();toast('✅ Added to cart');
   }
   function remove(pid){
     const items=raw(),item=items.find(i=>i.product_id===pid);
@@ -397,7 +397,7 @@ const Cart=(()=>{
         if(item?.line_id) API.rmLines(parseInt(o),[item.line_id]).catch(()=>{});
       });
     }
-    if(!next.length){ coid(); L().debug('Cart','cart empty Ã¢â‚¬â€ cleared oid'); }
+    if(!next.length){ coid(); L().debug('Cart','cart empty — cleared oid'); }
     tick();renderDrawer();
   }
   async function setQty(pid,delta){
@@ -421,7 +421,7 @@ const Cart=(()=>{
   return{raw,sv,oid,soid,coid,wasPlaced,markPlaced,clearLineIds,count,total,add,remove,setQty,clear,ensureOrder,syncToOrder};
 })();
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ TICK: Update ALL cart badges Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── TICK: Update ALL cart badges ─────────────────────── */
 function tick(){
   const c=Cart.count();
   // Desktop badge in header
@@ -443,14 +443,14 @@ function tick(){
   document.querySelectorAll('.cd-qty-ctrl').forEach(el => {
     const pid = parseInt(el.getAttribute('data-pid'), 10);
     const pdEnc = el.getAttribute('data-pdenc') || '';
-    // Deal cards are populated asynchronously Ã¢â‚¬â€ don't replace until ready.
+    // Deal cards are populated asynchronously — don't replace until ready.
     if (!pdEnc) return;
     const btnCls = el.getAttribute('data-btnclass') || 'pc-atc';
     const item = Cart.raw().find(i => i.product_id === pid);
     const qty = item ? item.qty : 0;
     if (btnCls === 'mini-atc') {
       if (qty > 0) {
-        el.innerHTML = `<div style="display:flex;background:var(--red, #ED1C24);color:#fff;height:28px"><button onclick="event.preventDefault();event.stopPropagation();Cart.setQty(${pid},-1)" style="flex:1;background:transparent;color:#fff;font-weight:700;border:none;cursor:pointer;font-size:17.6px;font-family:Montserrat,sans-serif;">Ã¢Ë†â€™</button><span style="flex:1;text-align:center;font-size:13.2px;font-weight:800;line-height:28px;">${qty}</span><button onclick="event.preventDefault();event.stopPropagation();Cart.setQty(${pid},1)" style="flex:1;background:transparent;color:#fff;font-weight:700;border:none;cursor:pointer;font-size:17.6px;font-family:Montserrat,sans-serif;">+</button></div>`;
+        el.innerHTML = `<div style="display:flex;background:var(--red, #ED1C24);color:#fff;height:28px"><button onclick="event.preventDefault();event.stopPropagation();Cart.setQty(${pid},-1)" style="flex:1;background:transparent;color:#fff;font-weight:700;border:none;cursor:pointer;font-size:17.6px;font-family:Montserrat,sans-serif;">−</button><span style="flex:1;text-align:center;font-size:13.2px;font-weight:800;line-height:28px;">${qty}</span><button onclick="event.preventDefault();event.stopPropagation();Cart.setQty(${pid},1)" style="flex:1;background:transparent;color:#fff;font-weight:700;border:none;cursor:pointer;font-size:17.6px;font-family:Montserrat,sans-serif;">+</button></div>`;
       } else {
         el.innerHTML = `<button class="${btnCls}" onclick="event.preventDefault();event.stopPropagation();addToCart(decodeURIComponent('${pdEnc}'))" style="width:100%;background:var(--red, #ED1C24);color:#fff;border:none;padding:7px;font-size:12.1px;font-weight:700;cursor:pointer;transition:background .2s;font-family:Montserrat,sans-serif;" onmouseover="this.style.background='#BE161D'" onmouseout="this.style.background='var(--red, #ED1C24)'">Add to Cart</button>`;
       }
@@ -459,12 +459,12 @@ function tick(){
     } else if (btnCls === 'dp-atc') {
       renderDealQtyCtrl(el, pid, pdEnc, btnCls);
     } else {
-      el.innerHTML = `<button class="${btnCls}" onclick="event.preventDefault();event.stopPropagation();addToCart(decodeURIComponent('${pdEnc}'))">Ã°Å¸â€ºâ€™ Add to Cart</button>`;
+      el.innerHTML = `<button class="${btnCls}" onclick="event.preventDefault();event.stopPropagation();addToCart(decodeURIComponent('${pdEnc}'))">🛒 Add to Cart</button>`;
     }
   });
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ CART DRAWER Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── CART DRAWER ──────────────────────────────────────── */
 function openDrw(){document.getElementById('cDrw')?.classList.add('open');document.getElementById('cOv').style.display='block';renderDrawer();}
 function closeDrw(){document.getElementById('cDrw')?.classList.remove('open');document.getElementById('cOv').style.display='none';}
 
@@ -473,37 +473,37 @@ function renderDrawer(){
   if(!body)return;
   const items=Cart.raw();
   if(!items.length){
-    body.innerHTML=`<div style="text-align:center;padding:52px 20px"><div style="font-size:66px;margin-bottom:14px">Ã°Å¸â€ºâ€™</div><h3 style="font-size:16.5px;font-weight:800;color:#374151;margin-bottom:8px">Your cart is empty</h3><a href="shop.html" onclick="closeDrw()" style="color:#ED1C24;font-weight:700;font-size:14.3px">Start Shopping Ã¢â€ â€™</a></div>`;
+    body.innerHTML=`<div style="text-align:center;padding:52px 20px"><div style="font-size:66px;margin-bottom:14px">🛒</div><h3 style="font-size:16.5px;font-weight:800;color:#374151;margin-bottom:8px">Your cart is empty</h3><a href="shop.html" onclick="closeDrw()" style="color:#ED1C24;font-weight:700;font-size:14.3px">Start Shopping →</a></div>`;
     if(ftr)ftr.innerHTML='';return;
   }
   
   const t=Cart.total();
   const progressHtml = getCartProgressHtml(t);
   const minWarningHtml = t < 100 
-    ? `<div style="background:#fef2f2;border:1.5px solid #ED1C24;border-radius:8px;padding:8px 12px;font-size:12.7px;font-weight:700;color:#ED1C24;margin-bottom:10px;text-align:center;">Ã¢Å¡Â Ã¯Â¸Â Minimum order amount is AED 100.</div>` 
+    ? `<div style="background:#fef2f2;border:1.5px solid #ED1C24;border-radius:8px;padding:8px 12px;font-size:12.7px;font-weight:700;color:#ED1C24;margin-bottom:10px;text-align:center;">⚠️ Minimum order amount is AED 100.</div>` 
     : '';
 
   body.innerHTML=progressHtml + minWarningHtml + items.map(it=>`
     <div style="display:flex;gap:11px;padding:12px 0;border-bottom:1px solid #f3f4f6;align-items:center">
       <div style="width:54px;height:54px;background:#f9fafb;border-radius:10px;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;border:1px solid #e5e7eb">
-        ${it.image?`<img src="${it.image}" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none';this.nextSibling.style.display='flex'"><span style="font-size:24.2px;display:none;align-items:center;justify-content:center;width:100%;height:100%">Ã°Å¸â€œÂ¦</span>`:'<span style="font-size:24.2px">Ã°Å¸â€œÂ¦</span>'}
+        ${it.image?`<img src="${it.image}" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none';this.nextSibling.style.display='flex'"><span style="font-size:24.2px;display:none;align-items:center;justify-content:center;width:100%;height:100%">📦</span>`:'<span style="font-size:24.2px">📦</span>'}
       </div>
       <div style="flex:1;min-width:0">
         <div style="font-size:13.2px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#111">${it.name}</div>
         <div style="font-size:15.4px;font-weight:800;color:#a01820;margin:3px 0">AED ${(it.price||0).toFixed(2)}</div>
         <div style="display:flex;border:1.5px solid #ED1C24;border-radius:8px;overflow:hidden;width:86px;margin-top:5px">
-          <button onclick="Cart.setQty(${it.product_id},-1)" style="width:28px;height:26px;background:#fef2f2;color:#a01820;font-size:16.5px;font-weight:700;border:none;cursor:pointer">Ã¢Ë†â€™</button>
+          <button onclick="Cart.setQty(${it.product_id},-1)" style="width:28px;height:26px;background:#fef2f2;color:#a01820;font-size:16.5px;font-weight:700;border:none;cursor:pointer">−</button>
           <span style="flex:1;text-align:center;font-size:13.2px;font-weight:700;line-height:26px;color:#a01820">${it.qty}</span>
           <button onclick="Cart.setQty(${it.product_id},1)" style="width:28px;height:26px;background:#fef2f2;color:#a01820;font-size:16.5px;font-weight:700;border:none;cursor:pointer">+</button>
         </div>
       </div>
-      <button onclick="Cart.remove(${it.product_id})" style="color:#ED1C24;font-size:18.7px;background:none;border:none;cursor:pointer;padding:4px;flex-shrink:0">Ã°Å¸â€”â€˜Ã¯Â¸Â</button>
+      <button onclick="Cart.remove(${it.product_id})" style="color:#ED1C24;font-size:18.7px;background:none;border:none;cursor:pointer;padding:4px;flex-shrink:0">🗑️</button>
     </div>`).join('');
     
   if(ftr){
     const checkoutBtnHtml = t >= 100
-      ? `<a href="javascript:void(0)" onclick="if(Cart.count()===0){ toast('Your cart is empty', 'warn'); return; } closeDrw(); location.href='checkout.html';" style="display:block;text-align:center;background:#ED1C24;color:#fff;padding:12px;border-radius:8px;font-weight:800;font-size:15.4px;text-decoration:none">Checkout Ã¢â€ â€™</a>`
-      : `<a href="javascript:void(0)" style="display:block;text-align:center;background:#d1d5db;color:#9ca3af;padding:12px;border-radius:8px;font-weight:800;font-size:15.4px;text-decoration:none;cursor:not-allowed;" onclick="toast('Minimum order amount is AED 100', 'warn');">Checkout Ã¢â€ â€™</a>`;
+      ? `<a href="javascript:void(0)" onclick="if(Cart.count()===0){ toast('Your cart is empty', 'warn'); return; } closeDrw(); location.href='checkout.html';" style="display:block;text-align:center;background:#ED1C24;color:#fff;padding:12px;border-radius:8px;font-weight:800;font-size:15.4px;text-decoration:none">Checkout →</a>`
+      : `<a href="javascript:void(0)" style="display:block;text-align:center;background:#d1d5db;color:#9ca3af;padding:12px;border-radius:8px;font-weight:800;font-size:15.4px;text-decoration:none;cursor:not-allowed;" onclick="toast('Minimum order amount is AED 100', 'warn');">Checkout →</a>`;
       
     ftr.innerHTML=`
       <div style="display:flex;justify-content:space-between;font-size:16.5px;font-weight:800;margin-bottom:12px"><span>Total</span><span style="color:#a01820">AED ${t.toFixed(2)}</span></div>
@@ -512,7 +512,7 @@ function renderDrawer(){
   }
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ TOAST Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── TOAST ────────────────────────────────────────────── */
 let _tt;
 function toast(msg,type='ok'){
   let el=document.getElementById('cd-toast');
@@ -526,7 +526,7 @@ function toast(msg,type='ok'){
 function openModal(id){document.getElementById(id)?.classList.add('open');}
 function closeModal(id){document.getElementById(id)?.classList.remove('open');}
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ PRODUCT CARD Ã¢â‚¬â€ correct image handling Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── PRODUCT CARD — correct image handling ────────────── */
 function buildCard(p){
   if(!p?.id)return'';
   const id=p.id;
@@ -550,9 +550,9 @@ function buildCard(p){
         <img src="${imgSrc}" alt="${name.replace(/"/g,'&quot;')}" loading="lazy"
           style="width:100%;height:100%;object-fit:contain;display:block"
           onerror="this.style.display='none';this.nextSibling.style.display='flex'">
-        <span style="font-size:48.4px;display:none;align-items:center;justify-content:center;width:100%;height:100%;position:absolute;top:0;left:0">Ã°Å¸â€œÂ¦</span>
+        <span style="font-size:48.4px;display:none;align-items:center;justify-content:center;width:100%;height:100%;position:absolute;top:0;left:0">📦</span>
       </a>
-      ${oos?'':`<button class="wish-btn" onclick="WL.toggle(${id},'${name.replace(/'/g,"\\'")}')">Ã¢â„¢Â¡</button>`}
+      ${oos?'':`<button class="wish-btn" onclick="WL.toggle(${id},'${name.replace(/'/g,"\\'")}')">♡</button>`}
     </div>
     <div class="pc-body">
       <a href="product.html?id=${id}" class="pc-nm">${name}</a>
@@ -565,11 +565,11 @@ function buildCard(p){
         `<div class="cd-qty-ctrl" data-pid="${id}" data-pdenc="${pdEnc}" data-btnclass="pc-atc" style="margin-top:auto">
            ${Cart.raw().find(i=>i.product_id===id)?.qty > 0 
              ? `<div style="display:flex;border:1.5px solid var(--red);border-radius:8px;overflow:hidden;width:100%;height:38px">
-                  <button onclick="event.preventDefault();event.stopPropagation();Cart.setQty(${id},-1)" style="width:34px;background:#fef2f2;color:var(--red);font-size:19.8px;font-weight:700;border:none;cursor:pointer">Ã¢Ë†â€™</button>
+                  <button onclick="event.preventDefault();event.stopPropagation();Cart.setQty(${id},-1)" style="width:34px;background:#fef2f2;color:var(--red);font-size:19.8px;font-weight:700;border:none;cursor:pointer">−</button>
                   <span style="flex:1;text-align:center;font-size:15.4px;font-weight:800;line-height:35px;color:var(--red)">${Cart.raw().find(i=>i.product_id===id).qty}</span>
                   <button onclick="event.preventDefault();event.stopPropagation();Cart.setQty(${id},1)" style="width:34px;background:#fef2f2;color:var(--red);font-size:19.8px;font-weight:700;border:none;cursor:pointer">+</button>
                 </div>`
-             : `<button class="pc-atc" onclick="event.preventDefault();event.stopPropagation();addToCart(decodeURIComponent('${pdEnc}'))">Ã°Å¸â€ºâ€™ Add to Cart</button>`}
+             : `<button class="pc-atc" onclick="event.preventDefault();event.stopPropagation();addToCart(decodeURIComponent('${pdEnc}'))">🛒 Add to Cart</button>`}
          </div>`}
     </div>
   </div>`;
@@ -727,7 +727,7 @@ async function addToCart(json) {
 
 function dealQtyHtml(pid, qty) {
   return `<div style="display:flex;border:1.5px solid var(--red);border-radius:8px;overflow:hidden;width:100%;height:38px">
-     <button type="button" onclick="event.preventDefault();event.stopPropagation();Cart.setQty(${pid},-1)" style="width:34px;background:#fef2f2;color:var(--red);font-size:19.8px;font-weight:700;border:none;cursor:pointer">Ã¢Ë†â€™</button>
+     <button type="button" onclick="event.preventDefault();event.stopPropagation();Cart.setQty(${pid},-1)" style="width:34px;background:#fef2f2;color:var(--red);font-size:19.8px;font-weight:700;border:none;cursor:pointer">−</button>
      <span style="flex:1;text-align:center;font-size:15.4px;font-weight:800;line-height:35px;color:var(--red)">${qty}</span>
      <button type="button" onclick="event.preventDefault();event.stopPropagation();Cart.setQty(${pid},1)" style="width:34px;background:#fef2f2;color:var(--red);font-size:19.8px;font-weight:700;border:none;cursor:pointer">+</button>
    </div>`;
@@ -741,10 +741,10 @@ function renderDealQtyCtrl(wrap, pid, pdEnc, btnCls) {
     wrap.innerHTML = dealQtyHtml(pid, qty);
     return;
   }
-  wrap.innerHTML = `<button type="button" class="${btnCls}" onclick="event.preventDefault();event.stopPropagation();addToCart(decodeURIComponent('${pdEnc}'))">Ã°Å¸â€ºâ€™ Add to Cart</button>`;
+  wrap.innerHTML = `<button type="button" class="${btnCls}" onclick="event.preventDefault();event.stopPropagation();addToCart(decodeURIComponent('${pdEnc}'))">🛒 Add to Cart</button>`;
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ DEAL CARDS Ã¢â‚¬â€ slider image_ids[] Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── DEAL CARDS — slider image_ids[] ─────────────────── */
 function buildDealSection(slider, containerId, titleId) {
   if (titleId && slider?.name) {
     // Keep the title from HTML to avoid "Be Best Seller" parsing bugs with emojis
@@ -773,7 +773,7 @@ function buildDealCards(slider, containerId) {
         <img src="${imgSrc}" alt="${name.replace(/"/g, '&quot;')}" loading="lazy" decoding="async"
           style="width:100%;height:100%;object-fit:contain;display:block"
           onerror="this.style.display='none';this.nextSibling.style.display='flex'">
-        <span style="font-size:39.6px;display:none;align-items:center;justify-content:center;width:100%;height:100%">Ã°Å¸â€œÂ¦</span>
+        <span style="font-size:39.6px;display:none;align-items:center;justify-content:center;width:100%;height:100%">📦</span>
       </div>
       <div class="dp-nm dp-nav" style="cursor:pointer">${name || 'Product'}</div>
       <div class="dp-price" id="dpp-${sid}"><span style="color:#9ca3af;font-size:11px">Loading...</span></div>
@@ -874,13 +874,13 @@ function initDealCardInteractions() {
   });
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ WISHLIST Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── WISHLIST ─────────────────────────────────────────── */
 const WL={
   get(){return JSON.parse(localStorage.getItem('cd_wl')||'[]');},
-  toggle(id,name){const wl=this.get();const i=wl.findIndex(x=>x.id===id);if(i>-1){wl.splice(i,1);toast('Removed Ã¢â„¢Â¡');}else{wl.push({id,name});toast('Saved Ã¢ÂÂ¤Ã¯Â¸Â');}localStorage.setItem('cd_wl',JSON.stringify(wl));}
+  toggle(id,name){const wl=this.get();const i=wl.findIndex(x=>x.id===id);if(i>-1){wl.splice(i,1);toast('Removed ♡');}else{wl.push({id,name});toast('Saved ❤️');}localStorage.setItem('cd_wl',JSON.stringify(wl));}
 };
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ SESSION / HEADER USER STATE Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── SESSION / HEADER USER STATE ─────────────────────── */
 function updateHeaderUser(){
   const user=API.me();
   if(user?.uid){
@@ -894,14 +894,14 @@ function updateHeaderUser(){
     document.querySelectorAll('.signedin-only').forEach(el=>el.style.display='flex');
   }else{
     document.querySelectorAll('.u-name').forEach(el=>el.textContent='Sign In');
-    document.querySelectorAll('.u-avatar').forEach(el=>{el.textContent='Ã°Å¸â€˜Â¤';el.style.cssText='';});
+    document.querySelectorAll('.u-avatar').forEach(el=>{el.textContent='👤';el.style.cssText='';});
     document.querySelectorAll('.signin-only').forEach(el=>el.style.display='');
     document.querySelectorAll('.signedin-only').forEach(el=>el.style.display='none');
   }
 }
 
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ COUNTDOWN Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── COUNTDOWN ────────────────────────────────────────── */
 let _cdI;
 function startCD(ms){
   clearInterval(_cdI);
@@ -909,17 +909,17 @@ function startCD(ms){
   upd();_cdI=setInterval(upd,1000);
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ LANGUAGE Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── LANGUAGE ─────────────────────────────────────────── */
 function toggleLang(){const curr=localStorage.getItem('cd_lang')||'en';applyLang(curr==='en'?'ar':'en');}
 function applyLang(lang){
   document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';
   localStorage.setItem('cd_lang',lang);
   document.querySelectorAll('.en').forEach(e=>e.style.display=lang==='en'?'':'none');
   document.querySelectorAll('.ar').forEach(e=>e.style.display=lang==='ar'?'':'none');
-  document.querySelectorAll('.lang-lbl').forEach(e=>e.textContent=lang==='ar'?'English':'Ã˜Â§Ã™â€žÃ˜Â¹Ã˜Â±Ã˜Â¨Ã™Å Ã˜Â©');
+  document.querySelectorAll('.lang-lbl').forEach(e=>e.textContent=lang==='ar'?'English':'العربية');
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ OTP HELPERS Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── OTP HELPERS ──────────────────────────────────────── */
 function initOtpInputs(containerSel){
   const inputs=[...document.querySelectorAll(`${containerSel} .otp-inp`)];
   inputs.forEach((inp,i)=>{
@@ -931,10 +931,10 @@ function initOtpInputs(containerSel){
 function getOtp(containerSel){return[...document.querySelectorAll(`${containerSel} .otp-inp`)].map(i=>i.value).join('');}
 
 // Simulate OTP send (replace with real email service)
-// Ã¢Å¡Â Ã¯Â¸Â  WARNING: Simulated OTP Ã¢â‚¬â€ NOT production-safe.
+// ⚠️  WARNING: Simulated OTP — NOT production-safe.
 // Replace with a real email/SMS API (e.g. SendGrid, Twilio) before going live.
 async function sendOtp(email){
-  console.warn('[OTP] Using simulated OTP Ã¢â‚¬â€ NOT suitable for production. Integrate a real email/SMS provider.');
+  console.warn('[OTP] Using simulated OTP — NOT suitable for production. Integrate a real email/SMS provider.');
   const otp=Math.floor(100000+Math.random()*900000).toString();
   sessionStorage.setItem('_otp_'+email.replace(/[^a-z0-9]/gi,'_'),otp);
   sessionStorage.setItem('_otp_ts',Date.now().toString());
@@ -942,14 +942,14 @@ async function sendOtp(email){
   return otp;
 }
 function verifyOtp(email,input){
-  console.warn('[OTP] Using simulated OTP verification Ã¢â‚¬â€ NOT suitable for production.');
+  console.warn('[OTP] Using simulated OTP verification — NOT suitable for production.');
   const stored=sessionStorage.getItem('_otp_'+email.replace(/[^a-z0-9]/gi,'_'));
   const ts=parseInt(sessionStorage.getItem('_otp_ts')||'0');
   if(Date.now()-ts>600000)return false; // 10 min expiry
   return stored&&stored===input;
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ GLOBAL INIT Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── GLOBAL INIT ──────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded',()=>{
   initDealCardInteractions();
   // Inject skeleton CSS
@@ -986,7 +986,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 });
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ AUTOFILL LOCATION & MODAL Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── AUTOFILL LOCATION & MODAL ───────────────────────── */
 window.promptAddressMethod = function(prefix) {
   if (document.getElementById('addrPromptOverlay')) return;
   var overlay = document.createElement('div');
