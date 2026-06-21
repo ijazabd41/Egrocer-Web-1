@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -662,14 +662,14 @@ async function qApprove(id,btn) {
   const r = await api(`/api/skytec-delivery/action?by_AJR=1`, { picking_id: id, action: 'approve' }, 'POST');
   btn.textContent = ok(r)?'✅':'Error';
   btn.style.background = ok(r)?'#1CC88A':'#E74A3B';
-  if(ok(r)) setTimeout(()=>{loadDashboard(true);loadStateOrders('pending-list','new');},500);
+  if(ok(r)) { btn.style.display='none'; setTimeout(()=>{loadDashboard(true);loadStateOrders('pending-list','new');},500); }
 }
 async function qReady(id,btn) {
   btn.textContent='...';btn.disabled=true;
   const r = await api(`/api/skytec-delivery/action?by_AJR=1`, { picking_id: id, action: 'ready' }, 'POST');
   btn.textContent = ok(r)?'✅':'Error';
   btn.style.background = ok(r)?'#36B9CC':'#E74A3B';
-  if(ok(r)) setTimeout(()=>{loadDashboard(true);},500);
+  if(ok(r)) { btn.style.display='none'; setTimeout(()=>{loadDashboard(true);},500); }
 }
 
 // ── Detail panel ──────────────────────────────────────────
@@ -757,6 +757,7 @@ async function doAction(action) {
   btn.textContent='⏳ Processing...';btn.disabled=true;
   const r = await api(`/api/skytec-delivery/action?by_AJR=1`, { picking_id: id, action: action }, 'POST');
   if (ok(r)) {
+    btn.style.display = 'none';
     closeDetail();
     loadDashboard(true);
     loadOrders();

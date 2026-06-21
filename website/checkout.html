@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -161,6 +161,12 @@
         <div class="fg"><label class="fl">State / Emirate</label><select class="fsel" id="state"><option value="">Loading...</option></select></div>
         <div class="fg"><label class="fl">Type</label><select class="fsel" id="addrType"><option value="delivery">Delivery</option><option value="invoice">Invoice</option></select></div>
       </div>
+      <div style="display:flex;align-items:center;margin-top:10px;gap:8px">
+        <button type="button" onclick="getLocation()" style="background:#f3f4f6;border:1px solid #e5e7eb;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer">📍 Get Location</button>
+        <span id="locStatus" style="font-size:11px;color:#6b7280"></span>
+      </div>
+      <input type="hidden" id="addrLat">
+      <input type="hidden" id="addrLng">
       <div id="addrMsg" style="margin-top:8px;font-size:12px;font-weight:600"></div>
       <div style="display:flex;gap:8px;margin-top:12px">
         <button type="button" onclick="saveCheckoutAddress()" class="sbtn" style="padding:9px 16px;max-width:140px">💾 Save</button>
@@ -826,6 +832,24 @@ async function pushCarrierToOrder(){
   }catch(e){ msg.textContent='❌ Failed to apply carrier: '+e.message; msg.style.color='#ED1C24'; }
 }
 
+function getLocation() {
+  var status = document.getElementById('locStatus');
+  status.textContent = 'Locating...';
+  if (!navigator.geolocation) {
+    status.textContent = 'Geolocation is not supported by your browser';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    if(document.getElementById('addrLat')) document.getElementById('addrLat').value = pos.coords.latitude;
+    if(document.getElementById('addrLng')) document.getElementById('addrLng').value = pos.coords.longitude;
+    status.textContent = 'Location acquired ✅';
+    status.style.color = '#065f46';
+  }, function() {
+    status.textContent = 'Unable to retrieve your location';
+    status.style.color = '#ED1C24';
+  });
+}
+
 async function saveCheckoutAddress(){
   var pid = API.myPid(); if(!pid)return;
   var msg = document.getElementById('addrMsg');
@@ -849,7 +873,9 @@ async function saveCheckoutAddress(){
       zip: document.getElementById('zip').value.trim(),
       type: document.getElementById('addrType').value,
       country_id: document.getElementById('country').value,
-      state_id: document.getElementById('state').value
+      state_id: document.getElementById('state').value,
+      latitude: document.getElementById('addrLat') ? document.getElementById('addrLat').value : '',
+      longitude: document.getElementById('addrLng') ? document.getElementById('addrLng').value : ''
     };
     await API.addAddress(payload);
     msg.textContent='✅ Address created! Select it from the list above.'; msg.style.color='#065f46';
@@ -867,24 +893,45 @@ async function loadPayProviders(){
   try{
     var r=await API.getPayProviders();
     var providers=API.filterCheckoutProviders(r.data||[]);
-    // Check if a Telr provider already exists from Odoo
+    
+    // Check if providers exist, and inject fallbacks if missing
     var hasTelr = providers.some(function(p){ return API.isTelrProvider(p); });
-    // If not, inject a manual Telr option
-    if(!hasTelr){
-      providers.push({ id: 23, name: 'Telr (Card Payment)', code: ['telr'], display_message: 'Pay securely with Visa, Mastercard, AMEX' });
-    }
+    var hasTabby = providers.some(function(p){ return p.name.toLowerCase().includes('tabby') || (p.code && p.code[0]==='tabby'); });
+    var hasTamara = providers.some(function(p){ return p.name.toLowerCase().includes('tamara') || (p.code && p.code[0]==='tamara'); });
+    var hasApplePay = providers.some(function(p){ return p.name.toLowerCase().includes('apple') || (p.code && p.code[0]==='apple_pay'); });
+    var hasGooglePay = providers.some(function(p){ return p.name.toLowerCase().includes('google') || (p.code && p.code[0]==='google_pay'); });
+    
+    if(!hasTelr) providers.push({ id: 23, name: 'Telr (MasterCard/Visa Only)', code: ['telr'], display_message: 'Pay securely with Visa, Mastercard, AMEX' });
+    if(!hasTabby) providers.push({ id: 991, name: 'Tabby', code: ['tabby'], display_message: 'Split in 4, interest-free' });
+    if(!hasTamara) providers.push({ id: 992, name: 'Tamara', code: ['tamara'], display_message: 'Split in 3, interest-free' });
+    if(!hasApplePay) providers.push({ id: 993, name: 'Apple Pay', code: ['apple_pay'], display_message: 'Pay easily with Apple Pay' });
+    if(!hasGooglePay) providers.push({ id: 995, name: 'Google Pay', code: ['google_pay'], display_message: 'Pay easily with Google Pay' });
+
     var html='';
     providers.forEach(function(p,i){
       var isTelr = API.isTelrProvider(p);
-      var ic = isTelr ? '💳' : (p.code&&(p.code[0]==='cash_on_delivery'||p.name.toLowerCase().includes('cash'))?'💵':p.code&&p.code[0]==='apple_pay'?'🍎':'💳');
+      if(isTelr) p.name = 'Telr (MasterCard/Visa Only)';
+      
+      var lcaseName = p.name.toLowerCase();
+      var lcaseCode = p.code && p.code.length ? p.code[0].toLowerCase() : '';
+      
+      var icHtml = '';
+      if(lcaseName.includes('tabby') || lcaseCode.includes('tabby')) icHtml = '<img src="img/Tappy-Logo-PNG.png" style="height:24px;width:auto;object-fit:contain" alt="Tabby">';
+      else if(lcaseName.includes('tamara') || lcaseCode.includes('tamara')) icHtml = '<img src="img/tamara.png" style="height:24px;width:auto;object-fit:contain" alt="Tamara">';
+      else if(lcaseName.includes('apple') || lcaseCode.includes('apple')) icHtml = '<img src="img/apple pay.png" style="height:24px;width:auto;object-fit:contain" alt="Apple Pay">';
+      else if(lcaseName.includes('google') || lcaseCode.includes('google')) icHtml = '<img src="img/Gpay.png" style="height:24px;width:auto;object-fit:contain" alt="Google Pay">';
+      else if(isTelr) icHtml = '<div style="display:flex;gap:4px;align-items:center"><img src="img/Mastercard.png" style="height:18px;width:auto;object-fit:contain"><img src="img/visa-logo-02.png" style="height:18px;width:auto;object-fit:contain"></div>';
+      else if(lcaseName.includes('cash') || lcaseCode.includes('cash')) icHtml = '💵';
+      else icHtml = '💳';
+
       html+='<div class="pmeth'+(i===0?' on':'')+'" id="pm-'+p.id+'" onclick="selPay('+p.id+',\''+p.name.replace(/'/g,"\\'")+'\','+isTelr+')">'
-        +'<span class="pmeth-ic">'+ic+'</span>'
+        +'<div class="pmeth-ic" style="display:flex;align-items:center;justify-content:center;width:40px">'+icHtml+'</div>'
         +'<div><div class="pmeth-lbl">'+p.name+'</div>'+(p.display_message?'<div class="pmeth-desc">'+p.display_message+'</div>':'')+'</div>'
         +'</div>';
     });
     if(!providers.length){
       html='<div class="pmeth on" id="pm-22" onclick="selPay(22,\'Cash on Delivery\',false)">'
-        +'<span class="pmeth-ic">💵</span><div><div class="pmeth-lbl">Cash on Delivery</div><div class="pmeth-desc">Pay when your order arrives</div></div></div>';
+        +'<div class="pmeth-ic" style="display:flex;align-items:center;justify-content:center;width:40px">💵</div><div><div class="pmeth-lbl">Cash on Delivery</div><div class="pmeth-desc">Pay when your order arrives</div></div></div>';
     }
     el.innerHTML=html;
     var def=API.pickDefaultPaymentProvider(providers);
@@ -892,7 +939,7 @@ async function loadPayProviders(){
     API.log.info('Checkout','payment providers loaded',{selected:selProvider,name:selProviderName,all:providers.map(function(p){return p.id+':'+p.name;})});
   }catch(_){
     el.innerHTML='<div class="pmeth on" id="pm-22" onclick="selPay(22,\'Cash on Delivery\',false)">'
-      +'<span class="pmeth-ic">💵</span><div><div class="pmeth-lbl">Cash on Delivery</div><div class="pmeth-desc">Pay when your order arrives</div></div></div>';
+      +'<div class="pmeth-ic" style="display:flex;align-items:center;justify-content:center;width:40px">💵</div><div><div class="pmeth-lbl">Cash on Delivery</div><div class="pmeth-desc">Pay when your order arrives</div></div></div>';
     selProvider=22; selProviderName='Cash on Delivery'; selIsTelr=false;
   }
 }
@@ -1010,8 +1057,9 @@ async function placeOrder(){
   var errEl=document.getElementById('placeErr'), btn=document.getElementById('placeBtn');
   errEl.style.display='none';
   var sub = Cart.total();
-  if(sub < 100) {
-    errEl.textContent='❌ Minimum order amount is AED 100.';
+  var minAmt = typeof window._cd_min_order_amount !== 'undefined' ? window._cd_min_order_amount : 100;
+  if(sub < minAmt) {
+    errEl.textContent='❌ Minimum order amount is AED ' + minAmt + '.';
     errEl.style.display='flex';
     return;
   }

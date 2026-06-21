@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -122,9 +122,10 @@ function updateCartProgressAndWarning(sub) {
 
   var warningEl = document.getElementById('cartMinWarning');
   var checkoutBtn = document.getElementById('checkoutBtn');
-  if (sub < 100) {
+  var minAmt = typeof window._cd_min_order_amount !== 'undefined' ? window._cd_min_order_amount : 100;
+  if (sub < minAmt) {
     if (warningEl) {
-      warningEl.innerHTML = '<div style="background:#fef2f2;border:1.5px solid #ED1C24;border-radius:12px;padding:12px;font-size:13px;font-weight:700;color:#ED1C24;margin-bottom:16px;text-align:center;">⚠️ Minimum order amount is AED 100.</div>';
+      warningEl.innerHTML = '<div style="background:#fef2f2;border:1.5px solid #ED1C24;border-radius:12px;padding:12px;font-size:13px;font-weight:700;color:#ED1C24;margin-bottom:16px;text-align:center;">⚠️ Minimum order amount is AED '+minAmt+'.</div>';
       warningEl.style.display = 'block';
     }
     if (checkoutBtn) {
@@ -133,7 +134,7 @@ function updateCartProgressAndWarning(sub) {
       checkoutBtn.style.cursor = 'not-allowed';
       checkoutBtn.onclick = function(e) {
         e.preventDefault();
-        toast('Minimum order amount is AED 100', 'warn');
+        toast('Minimum order amount is AED '+minAmt, 'warn');
       };
     }
   } else {

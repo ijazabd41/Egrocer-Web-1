@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -13,7 +13,18 @@
 .tabs{display:flex;gap:8px;margin:12px 0}.tab{background:#fff;color:var(--primary);border:1px solid var(--primary)}.tab.active{background:var(--primary);color:#fff}.panel{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}.panel-head{background:var(--primary);color:#fff;padding:12px 14px;font-weight:800;display:flex;justify-content:space-between;align-items:center}
 .table{width:100%;border-collapse:collapse}.table th,.table td{padding:10px;border-bottom:1px solid var(--border);font-size:13px;text-align:left;vertical-align:top}.table th{background:#fafafa;color:var(--muted);font-size:12px;text-transform:uppercase}
 .badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:800}.new{background:#ffedd5;color:#c2410c}.approved{background:#dbeafe;color:#1d4ed8}.ready{background:#cffafe;color:#0e7490}.accepted{background:#ede9fe;color:#6d28d9}.delivered{background:#dcfce7;color:#15803d}.cancelled{background:#fee2e2;color:#b91c1c}.actions{display:flex;gap:6px;flex-wrap:wrap}.empty{text-align:center;color:var(--muted);padding:30px}.err{display:none;background:#fee2e2;color:#991b1b;padding:10px;border-radius:8px;margin-bottom:10px}
-@media(max-width:800px){.kpis{grid-template-columns:repeat(2,1fr)}.table{display:block;overflow-x:auto;white-space:nowrap}.header{display:block}.toolbar{display:block}.toolbar>*{width:100%;margin:4px 0}}
+@media(max-width:800px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .header{display:block}
+  .toolbar{display:block}.toolbar>*{width:100%;margin:4px 0}
+  .table thead{display:none}
+  .table, .table tbody, .table tr, .table td {display:block;width:100%}
+  .table tr{margin-bottom:12px;background:#fff;border-radius:12px;border:1px solid var(--border);padding:12px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .table td{border:none;padding:6px 0;text-align:left}
+  .table td::before{content:attr(data-label);font-weight:700;display:block;font-size:11px;color:var(--muted);text-transform:uppercase;margin-bottom:2px}
+  .actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .actions button {flex:1}
+}
 </style>
 </head>
 <body>
@@ -21,7 +32,7 @@
 <div class="wrap">
 <div id="err" class="err"></div>
 <div class="toolbar">
-<select id="role"><option value="store_manager">Store Manager</option><option value="store_keeper">Store Keeper</option><option value="admin">ERP Admin / Delivery Manager</option></select>
+<select id="role"><option value="store_manager">Store Manager</option><option value="store_keeper">Store Keeper</option><option value="delivery">Delivery Boy</option><option value="admin">ERP Admin / Delivery Manager</option></select>
 <select id="period"><option value="all">All Time</option><option value="today">Today</option><option value="this_week">This Week</option><option value="this_month">This Month</option></select>
 <input id="limit" type="number" value="25" min="1" max="100" placeholder="limit"/>
 <input id="offset" type="number" value="0" min="0" placeholder="offset"/>
@@ -53,11 +64,11 @@ function badge(s){return `<span class="badge ${s||'new'}">${s||'new'}</span>`}
 function val(o,...keys){for(const k of keys){if(o&&o[k]!==undefined&&o[k]!==null&&o[k]!=='')return (Array.isArray(o[k])&&o[k].length===2&&typeof o[k][0]==='number')?o[k][1]:o[k]}return''}
 async function apiGet(path,params={}){const url=new URL(BASE_URL+path);Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));const res=await fetch(url,{method:'GET',credentials:'include',headers:{'Accept':'application/json','Content-Type':'application/json','Cookie':'session_id='+sid()}});const txt=await res.text();if(txt.trim().startsWith('<'))throw new Error('Odoo returned HTML/login page. Check session_id cookie.');return JSON.parse(txt)}
 async function apiPost(path,body){const res=await fetch(BASE_URL+path,{method:'POST',credentials:'include',headers:{'Accept':'application/json','Content-Type':'application/json','Cookie':'session_id='+sid()},body:JSON.stringify(body)});const txt=await res.text();if(txt.trim().startsWith('<'))throw new Error('Odoo returned HTML/login page. Check session_id cookie.');return JSON.parse(txt)}
-function selectQueue(data){const role=document.getElementById('role').value;if(role==='store_manager')return data.store_manager_queue||[];if(role==='store_keeper')return data.store_keeper_queue||[];return data.workflow_orders||data.recent_orders||[]}
+function selectQueue(data){const role=document.getElementById('role').value;if(role==='store_manager')return data.store_manager_queue||[];if(role==='store_keeper')return data.store_keeper_queue||[];if(role==='delivery')return data.delivery_queue||[];return data.workflow_orders||data.recent_orders||[]}
 async function loadDashboard(){showErr('');try{const params={by_AJR:1,period:document.getElementById('period').value,limit:document.getElementById('limit').value,offset:document.getElementById('offset').value};const r=await apiGet('/api/skytec-delivery/dashboard',params);const data=r.data||r;const t=data.totals||{};document.getElementById('kTotal').textContent=t.total||0;document.getElementById('kNew').textContent=t.new||t.pending||0;document.getElementById('kApproved').textContent=t.approved||0;document.getElementById('kReady').textContent=t.ready||0;currentItems=selectQueue(data);document.getElementById('queueTitle').textContent=document.getElementById('role').selectedOptions[0].text+' Queue';document.getElementById('lastRefresh').textContent=new Date().toLocaleTimeString();render()}catch(e){showErr(e.message)}}
 function setView(v){currentView=v;document.getElementById('btnList').classList.toggle('active',v==='list');document.getElementById('btnKanban').classList.toggle('active',v==='kanban');render()}
 function render(){if(!currentItems.length){document.getElementById('orders').innerHTML='<div class="empty">No records found</div>';return}if(currentView==='kanban'){document.getElementById('orders').innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;padding:12px">${currentItems.map(card).join('')}</div>`}else{document.getElementById('orders').innerHTML=`<table class="table"><thead><tr><th>Order</th><th>Customer</th><th>Source</th><th>Status</th><th>Responsible</th><th>Actions</th></tr></thead><tbody>${currentItems.map(row).join('')}</tbody></table>`}}
-function row(o){const state=val(o,'delivery_state','state');return `<tr><td><b>${val(o,'name')}</b><br><small>${val(o,'scheduled_date','create_date')}</small></td><td>${val(o,'partner','customer','partner_name')}<br><small>${val(o,'partner_phone')}</small></td><td>${val(o,'source','delivery_source')}</td><td>${badge(state)}</td><td>${val(o,'store_manager','store_keeper','driver','responsible')||'-'}</td><td><div class="actions">${buttons(o,state)}</div></td></tr>`}
+function row(o){const state=val(o,'delivery_state','state');return `<tr><td data-label="Order"><b>${val(o,'name')}</b><br><small>${val(o,'scheduled_date','create_date')}</small></td><td data-label="Customer">${val(o,'partner','customer','partner_name')}<br><small>${val(o,'partner_phone')}</small></td><td data-label="Source">${val(o,'source','delivery_source')}</td><td data-label="Status">${badge(state)}</td><td data-label="Responsible">${val(o,'store_manager','store_keeper','driver','responsible')||'-'}</td><td data-label="Actions"><div class="actions">${buttons(o,state)}</div></td></tr>`}
 function card(o){const state=val(o,'delivery_state','state');return `<div class="kpi" style="text-align:left"><b style="font-size:15px">${val(o,'name')}</b><br>${badge(state)}<p><b>Customer:</b> ${val(o,'partner','customer','partner_name')||'-'}</p><p><b>Source:</b> ${val(o,'source','delivery_source')||'-'}</p><p><b>Responsible:</b> ${val(o,'store_manager','store_keeper','driver','responsible')||'-'}</p><div class="actions">${buttons(o,state)}</div></div>`}
 function buttons(o,state){
   const id=val(o,'id','picking_id');
@@ -69,6 +80,8 @@ function buttons(o,state){
     if (allowed.includes('ready')) b+=`<button class="blue" onclick="doAction(${id},'ready',this)">Mark Ready</button>`;
     if (allowed.includes('assign_driver')) b+=`<button class="orange" onclick="assignDriver(${id},this)">Assign Driver</button>`;
     if (allowed.includes('notify_drivers')) b+=`<button class="green" onclick="doAction(${id},'notify_drivers',this)">Notify Drivers</button>`;
+    if (allowed.includes('accept')) b+=`<button class="blue" onclick="doAction(${id},'accept',this)">Accept</button>`;
+    if (allowed.includes('delivered')) b+=`<button class="green" onclick="doAction(${id},'delivered',this)">Delivered</button>`;
     if (allowed.includes('cancel')) b+=`<button class="red" onclick="doAction(${id},'cancel',this)">Cancel</button>`;
   } else {
     if (state==='new') b+=`<button class="green" onclick="doAction(${id},'approve',this)">Approve</button>`;
@@ -76,6 +89,7 @@ function buttons(o,state){
       b+=`<button class="blue" onclick="doAction(${id},'ready',this)">Mark Ready</button>`;
       b+=`<button class="orange" onclick="assignDriver(${id},this)">Assign Driver</button>`;
     } else if (state==='ready') b+=`<button class="green" onclick="doAction(${id},'notify_drivers',this)">Notify Drivers</button>`;
+    else if (state==='dispatched' || state==='accepted') b+=`<button class="green" onclick="doAction(${id},'delivered',this)">Delivered</button>`;
   }
 
   // Always show labels for statuses if applicable
@@ -88,7 +102,7 @@ function buttons(o,state){
 }
 function openOdoo(id){window.open(ODOO_URL+'/web#id='+id+'&model=stock.picking&view_type=form','_blank')}
 function setBtnState(btn,active){if(!btn)return;if(active){btn.dataset.origText=btn.innerHTML;btn.innerHTML='⏳ Wait...';btn.style.opacity='0.6';btn.style.pointerEvents='none'}else{if(btn.dataset.origText)btn.innerHTML=btn.dataset.origText;btn.style.opacity='1';btn.style.pointerEvents='auto'}}
-async function doAction(id,action,btn){setBtnState(btn,true);showErr('');try{const r=await apiPost('/api/skytec-delivery/action?by_AJR=1',{picking_id:id,action:action});console.log('doAction response:',r);if(!r || (r.success !== 1 && r.success !== true && String(r.success) !== '1'))throw new Error(r.message||'Action failed');await loadDashboard()}catch(e){setBtnState(btn,false);showErr(e.message)}}
+async function doAction(id,action,btn){setBtnState(btn,true);showErr('');try{const r=await apiPost('/api/skytec-delivery/action?by_AJR=1',{picking_id:id,action:action});console.log('doAction response:',r);if(!r || (r.success !== 1 && r.success !== true && String(r.success) !== '1'))throw new Error(r.message||'Action failed');btn.style.display='none';await loadDashboard()}catch(e){setBtnState(btn,false);showErr(e.message)}}
 let cachedDrivers=null;
 async function assignDriver(id,btn){
   setBtnState(btn,true);showErr('');
@@ -128,6 +142,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     const roleSelect = document.getElementById('role');
     if(roleCode === 'store_manager' || roleCode === 'stock_manager') roleSelect.value = 'store_manager';
     else if(roleCode === 'store_keeper') roleSelect.value = 'store_keeper';
+    else if(roleCode === 'delivery_boy') roleSelect.value = 'delivery';
     else if(roleCode === 'admin' || roleCode === 'company_owner' || roleCode === 'delivery_manager') roleSelect.value = 'admin';
     if(roleCode !== 'admin' && roleCode !== 'company_owner' && roleCode !== 'delivery_manager') {
       roleSelect.disabled = true;

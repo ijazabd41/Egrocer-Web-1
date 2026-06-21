@@ -442,7 +442,10 @@ document.addEventListener('keydown', e => {
         shVerifyOtpAndLogin();
       }
     } else {
-      if (document.getElementById('panel-login').style.display !== 'none') doLogin();
+      if (document.getElementById('panel-login').style.display !== 'none') {
+        const lgBtn = document.getElementById('lg-btn');
+        if (lgBtn && !lgBtn.disabled) doLogin();
+      }
       else if (document.getElementById('reg-step1').style.display !== 'none') doRegister();
     }
   }

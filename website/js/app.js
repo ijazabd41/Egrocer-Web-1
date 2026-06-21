@@ -20,14 +20,15 @@ function isStorePickupMethod(m){
 }
 
 function getCartProgressHtml(subtotal, isCheckout = false) {
-  var minProgress = Math.min(100, (subtotal / 100) * 100);
+  var minAmt = typeof window._cd_min_order_amount !== 'undefined' ? window._cd_min_order_amount : 100;
+  var minProgress = Math.min(100, (subtotal / minAmt) * 100);
   var freeProgress = Math.min(100, (subtotal / 150) * 100);
-  var minReached = subtotal >= 100;
+  var minReached = subtotal >= minAmt;
   var freeReached = subtotal >= 150;
   
   var minMsg = minReached 
     ? "Minimum order reached ✓" 
-    : "Add AED " + (100 - subtotal).toFixed(2) + " more to reach minimum order.";
+    : "Add AED " + (minAmt - subtotal).toFixed(2) + " more to reach minimum order.";
     
   var freeMsg = freeReached 
     ? "You have unlocked FREE delivery 🎉" 
@@ -46,7 +47,7 @@ function getCartProgressHtml(subtotal, isCheckout = false) {
         <!-- Minimum Order Progress -->
         <div style="display:flex; flex-direction:column; gap:6px;">
           <div style="display:flex; justify-content:space-between; font-size:13.2px; font-weight:700; color:#374151;">
-            <span>Minimum Order (AED 100)</span>
+            <span>Minimum Order (AED `+minAmt+`)</span>
             <span style="color:${minReached ? '#10B981' : '#ED1C24'}">${minMsg}</span>
           </div>
           <div style="background:#e5e7eb; border-radius:50px; height:8px; overflow:hidden; position:relative;">
@@ -478,9 +479,10 @@ function renderDrawer(){
   }
   
   const t=Cart.total();
+  const minAmt = typeof window._cd_min_order_amount !== 'undefined' ? window._cd_min_order_amount : 100;
   const progressHtml = getCartProgressHtml(t);
-  const minWarningHtml = t < 100 
-    ? `<div style="background:#fef2f2;border:1.5px solid #ED1C24;border-radius:8px;padding:8px 12px;font-size:12.7px;font-weight:700;color:#ED1C24;margin-bottom:10px;text-align:center;">⚠️ Minimum order amount is AED 100.</div>` 
+  const minWarningHtml = t < minAmt 
+    ? `<div style="background:#fef2f2;border:1.5px solid #ED1C24;border-radius:8px;padding:8px 12px;font-size:12.7px;font-weight:700;color:#ED1C24;margin-bottom:10px;text-align:center;">⚠️ Minimum order amount is AED `+minAmt+`.</div>` 
     : '';
 
   body.innerHTML=progressHtml + minWarningHtml + items.map(it=>`
@@ -501,9 +503,9 @@ function renderDrawer(){
     </div>`).join('');
     
   if(ftr){
-    const checkoutBtnHtml = t >= 100
+    const checkoutBtnHtml = t >= minAmt
       ? `<a href="javascript:void(0)" onclick="if(Cart.count()===0){ toast('Your cart is empty', 'warn'); return; } closeDrw(); location.href='checkout.html';" style="display:block;text-align:center;background:#ED1C24;color:#fff;padding:12px;border-radius:8px;font-weight:800;font-size:15.4px;text-decoration:none">Checkout →</a>`
-      : `<a href="javascript:void(0)" style="display:block;text-align:center;background:#d1d5db;color:#9ca3af;padding:12px;border-radius:8px;font-weight:800;font-size:15.4px;text-decoration:none;cursor:not-allowed;" onclick="toast('Minimum order amount is AED 100', 'warn');">Checkout →</a>`;
+      : `<a href="javascript:void(0)" style="display:block;text-align:center;background:#d1d5db;color:#9ca3af;padding:12px;border-radius:8px;font-weight:800;font-size:15.4px;text-decoration:none;cursor:not-allowed;" onclick="toast('Minimum order amount is AED `+minAmt+`', 'warn');">Checkout →</a>`;
       
     ftr.innerHTML=`
       <div style="display:flex;justify-content:space-between;font-size:16.5px;font-weight:800;margin-bottom:12px"><span>Total</span><span style="color:#a01820">AED ${t.toFixed(2)}</span></div>
