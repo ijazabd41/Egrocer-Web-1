@@ -34,6 +34,7 @@
 <div class="toolbar">
 <select id="role"><option value="store_manager">Store Manager</option><option value="store_keeper">Store Keeper</option><option value="delivery">Delivery Boy</option><option value="admin">ERP Admin / Delivery Manager</option></select>
 <select id="period"><option value="all">All Time</option><option value="today">Today</option><option value="this_week">This Week</option><option value="this_month">This Month</option></select>
+<select id="stateFilter" onchange="loadDashboard()"><option value="">Default Queue</option><option value="new,approved,ready">Active (New, Appr, Ready)</option><option value="approved">Approved</option><option value="ready">Ready</option><option value="all">All Orders</option></select>
 <input id="limit" type="number" value="25" min="1" max="100" placeholder="limit"/>
 <input id="offset" type="number" value="0" min="0" placeholder="offset"/>
 <input id="sessionId" placeholder="Paste session_id cookie here"/>
@@ -65,7 +66,45 @@ function val(o,...keys){for(const k of keys){if(o&&o[k]!==undefined&&o[k]!==null
 async function apiGet(path,params={}){const url=new URL(BASE_URL+path);Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));const res=await fetch(url,{method:'GET',credentials:'include',headers:{'Accept':'application/json','Content-Type':'application/json','Cookie':'session_id='+sid()}});const txt=await res.text();if(txt.trim().startsWith('<'))throw new Error('Odoo returned HTML/login page. Check session_id cookie.');return JSON.parse(txt)}
 async function apiPost(path,body){const res=await fetch(BASE_URL+path,{method:'POST',credentials:'include',headers:{'Accept':'application/json','Content-Type':'application/json','Cookie':'session_id='+sid()},body:JSON.stringify(body)});const txt=await res.text();if(txt.trim().startsWith('<'))throw new Error('Odoo returned HTML/login page. Check session_id cookie.');return JSON.parse(txt)}
 function selectQueue(data){const role=document.getElementById('role').value;if(role==='store_manager')return data.store_manager_queue||[];if(role==='store_keeper')return data.store_keeper_queue||[];if(role==='delivery')return data.delivery_queue||[];return data.workflow_orders||data.recent_orders||[]}
-async function loadDashboard(){showErr('');try{const params={by_AJR:1,period:document.getElementById('period').value,limit:document.getElementById('limit').value,offset:document.getElementById('offset').value};const r=await apiGet('/api/skytec-delivery/dashboard',params);const data=r.data||r;const t=data.totals||{};document.getElementById('kTotal').textContent=t.total||0;document.getElementById('kNew').textContent=t.new||t.pending||0;document.getElementById('kApproved').textContent=t.approved||0;document.getElementById('kReady').textContent=t.ready||0;currentItems=selectQueue(data);document.getElementById('queueTitle').textContent=document.getElementById('role').selectedOptions[0].text+' Queue';document.getElementById('lastRefresh').textContent=new Date().toLocaleTimeString();render()}catch(e){showErr(e.message)}}
+async function loadDashboard(){
+  showErr('');
+  try{
+    const stateFilter=document.getElementById('stateFilter')?document.getElementById('stateFilter').value:'';
+    const params={by_AJR:1,period:document.getElementById('period').value,limit:document.getElementById('limit').value,offset:document.getElementById('offset').value};
+    const r=await apiGet('/api/skytec-delivery/dashboard',params);
+    const data=r.data||r;
+    const t=data.totals||{};
+    document.getElementById('kTotal').textContent=t.total||0;
+    document.getElementById('kNew').textContent=t.new||t.pending||0;
+    document.getElementById('kApproved').textContent=t.approved||0;
+    document.getElementById('kReady').textContent=t.ready||0;
+    
+    if(stateFilter){
+      document.getElementById('queueTitle').textContent = 'Filtered Orders';
+      if(stateFilter==='all'){
+        const or=await apiGet('/api/skytec-delivery/orders',params);
+        currentItems=or.data?.results||or.results||or.data||[];
+      }else if(stateFilter.includes(',')){
+        let items=[];
+        for(let st of stateFilter.split(',')){
+          const or=await apiGet('/api/skytec-delivery/orders',{...params,state:st});
+          items=items.concat(or.data?.results||or.results||or.data||[]);
+        }
+        items.sort((a,b)=>b.id-a.id);
+        currentItems=items;
+      }else{
+        const or=await apiGet('/api/skytec-delivery/orders',{...params,state:stateFilter});
+        currentItems=or.data?.results||or.results||or.data||[];
+      }
+    }else{
+      currentItems=selectQueue(data);
+      document.getElementById('queueTitle').textContent=document.getElementById('role').selectedOptions[0].text+' Queue';
+    }
+    
+    document.getElementById('lastRefresh').textContent=new Date().toLocaleTimeString();
+    render();
+  }catch(e){showErr(e.message)}
+}
 function setView(v){currentView=v;document.getElementById('btnList').classList.toggle('active',v==='list');document.getElementById('btnKanban').classList.toggle('active',v==='kanban');render()}
 function render(){if(!currentItems.length){document.getElementById('orders').innerHTML='<div class="empty">No records found</div>';return}if(currentView==='kanban'){document.getElementById('orders').innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;padding:12px">${currentItems.map(card).join('')}</div>`}else{document.getElementById('orders').innerHTML=`<table class="table"><thead><tr><th>Order</th><th>Customer</th><th>Source</th><th>Status</th><th>Responsible</th><th>Actions</th></tr></thead><tbody>${currentItems.map(row).join('')}</tbody></table>`}}
 function row(o){const state=val(o,'delivery_state','state');return `<tr><td data-label="Order"><b>${val(o,'name')}</b><br><small>${val(o,'scheduled_date','create_date')}</small></td><td data-label="Customer">${val(o,'partner','customer','partner_name')}<br><small>${val(o,'partner_phone')}</small></td><td data-label="Source">${val(o,'source','delivery_source')}</td><td data-label="Status">${badge(state)}</td><td data-label="Responsible">${val(o,'store_manager','store_keeper','driver','responsible')||'-'}</td><td data-label="Actions"><div class="actions">${buttons(o,state)}</div></td></tr>`}
@@ -73,23 +112,27 @@ function card(o){const state=val(o,'delivery_state','state');return `<div class=
 function buttons(o,state){
   const id=val(o,'id','picking_id');
   const allowed=o.allowed_actions;
+  const role=document.getElementById('role').value;
+  const isManager = role === 'store_manager' || role === 'stock_manager';
   let b=`<button class="secondary" onclick="openOdoo(${id})">Open</button>`;
   
   if (Array.isArray(allowed)) {
-    if (allowed.includes('approve')) b+=`<button class="green" onclick="doAction(${id},'approve',this)">Approve</button>`;
-    if (allowed.includes('ready')) b+=`<button class="blue" onclick="doAction(${id},'ready',this)">Mark Ready</button>`;
-    if (allowed.includes('assign_driver')) b+=`<button class="orange" onclick="assignDriver(${id},this)">Assign Driver</button>`;
+    if (allowed.includes('approve') && role !== 'store_keeper') b+=`<button class="green" onclick="doAction(${id},'approve',this)">Approve</button>`;
+    if (allowed.includes('ready') && !isManager) b+=`<button class="blue" onclick="doAction(${id},'ready',this)">Mark Ready</button>`;
+    if (allowed.includes('assign_driver') && !isManager) b+=`<button class="orange" onclick="assignDriver(${id},this)">Assign Driver</button>`;
     if (allowed.includes('notify_drivers')) b+=`<button class="green" onclick="doAction(${id},'notify_drivers',this)">Notify Drivers</button>`;
     if (allowed.includes('accept')) b+=`<button class="blue" onclick="doAction(${id},'accept',this)">Accept</button>`;
     if (allowed.includes('delivered')) b+=`<button class="green" onclick="doAction(${id},'delivered',this)">Delivered</button>`;
     if (allowed.includes('cancel')) b+=`<button class="red" onclick="doAction(${id},'cancel',this)">Cancel</button>`;
   } else {
-    if (state==='new') b+=`<button class="green" onclick="doAction(${id},'approve',this)">Approve</button>`;
+    if (state==='new' && role !== 'store_keeper') b+=`<button class="green" onclick="doAction(${id},'approve',this)">Approve</button>`;
     else if (state==='approved') {
-      b+=`<button class="blue" onclick="doAction(${id},'ready',this)">Mark Ready</button>`;
-      b+=`<button class="orange" onclick="assignDriver(${id},this)">Assign Driver</button>`;
-    } else if (state==='ready') b+=`<button class="green" onclick="doAction(${id},'notify_drivers',this)">Notify Drivers</button>`;
-    else if (state==='dispatched' || state==='accepted') b+=`<button class="green" onclick="doAction(${id},'delivered',this)">Delivered</button>`;
+      if (!isManager) b+=`<button class="blue" onclick="doAction(${id},'ready',this)">Mark Ready</button>`;
+      if (!isManager) b+=`<button class="orange" onclick="assignDriver(${id},this)">Assign Driver</button>`;
+    } else if (state==='ready') {
+      b+=`<button class="green" onclick="doAction(${id},'notify_drivers',this)">Notify Drivers</button>`;
+      if (!isManager) b+=`<button class="orange" onclick="assignDriver(${id},this)">Assign Driver</button>`;
+    } else if (state==='dispatched' || state==='accepted') b+=`<button class="green" onclick="doAction(${id},'delivered',this)">Delivered</button>`;
   }
 
   // Always show labels for statuses if applicable
@@ -145,7 +188,17 @@ window.addEventListener('DOMContentLoaded',()=>{
     else if(roleCode === 'delivery_boy') roleSelect.value = 'delivery';
     else if(roleCode === 'admin' || roleCode === 'company_owner' || roleCode === 'delivery_manager') roleSelect.value = 'admin';
     if(roleCode !== 'admin' && roleCode !== 'company_owner' && roleCode !== 'delivery_manager') {
+      roleSelect.innerHTML = `<option value="${roleSelect.value}">${roleSelect.options[roleSelect.selectedIndex].text}</option>`;
       roleSelect.disabled = true;
+    }
+    
+    const sf = document.getElementById('stateFilter');
+    if(sf) {
+      if(roleCode === 'store_keeper') {
+        sf.innerHTML = `<option value="">Default Queue</option><option value="approved,ready">Active (Appr, Ready)</option><option value="approved">Approved</option><option value="ready">Ready</option><option value="all">All Orders</option>`;
+      } else if (roleCode === 'store_manager' || roleCode === 'stock_manager') {
+        sf.innerHTML = `<option value="">Default Queue</option><option value="new,approved">Active (New, Appr)</option><option value="new">Pending Approval</option><option value="approved">Approved</option><option value="all">All Orders</option>`;
+      }
     }
   }
   loadDashboard();

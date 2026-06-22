@@ -559,6 +559,7 @@ function buildCard(p){
     <div class="pc-body">
       <a href="product.html?id=${id}" class="pc-nm">${name}</a>
       ${p.barcode?`<div class="pc-bc">${p.barcode}</div>`:''}
+      ${p.description_sale?`<div class="pc-desc" style="font-size:11px;color:#6b7280;margin:4px 0;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.description_sale}</div>`:''}
       <div class="pc-prices">
         <span class="pc-price">AED ${price.toFixed(2)}</span>
         ${disc>0?`<span class="pc-was">AED ${std.toFixed(2)}</span><span class="pc-save">-${disc}%</span>`:''}
@@ -835,6 +836,9 @@ async function enrichDealCards(items) {
       const code = p.barcode || p.default_code;
       if (code) {
         nmEl.insertAdjacentHTML('beforeend', `<div class="dp-sku" style="color:#9ca3af;font-size:12.1px;font-weight:600;margin-top:4px">${code}</div>`);
+      }
+      if (p.description_sale && !nmEl.querySelector('.dp-desc')) {
+        nmEl.insertAdjacentHTML('beforeend', `<div class="dp-desc" style="color:#6b7280;font-size:11px;font-weight:400;margin-top:4px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.description_sale}</div>`);
       }
     }
 

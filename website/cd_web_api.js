@@ -139,7 +139,7 @@ const CdApi = (() => {
   const riderAccept      = (id, uid)    => _get(`/api/rider-delivery/${id}/update`, {user_id:uid});
   const riderSendOtp     = (id)         => _get(`/api/rider-own-delivery/${id}/regenerate_send_otp`);
   const riderVerifyOtp   = (id, otp)    => _get(`/api/rider-own-delivery/${id}/verify_otp`, {otp});
-  const riderMarkDone    = (id, uid)    => _get(`/api/rider-delivery-done/${id}/update`, {user_id: uid});
+  const riderMarkDone    = (id)         => _get(`/api/rider-own-delivery/${id}/mark_done`, {by_AJR: 1});
   const riderStart       = (id, uid, lat, lng) =>
     _get(`/api/delivery/${id}/start`, {user_id:uid, latitude:lat, longitude:lng});
   const riderCustomerWait= (id, uid, note='') =>

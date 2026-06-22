@@ -219,8 +219,8 @@ body{font-family:'Inter','Tajawal',sans-serif;background:var(--bg);display:flex;
     <a class="sb-item" onclick="showTab('orders',this)">
       <span class="icon">📋</span> <span class="lbl">All Orders</span> <span class="sb-badge" id="sb-total">0</span>
     </a>
-    <a class="sb-item" onclick="showTab('pending',this)">
-      <span class="icon">⏳</span> <span class="lbl">Pending</span> <span class="sb-badge" id="sb-pending">0</span>
+    <a class="sb-item" onclick="showTab('active',this)">
+      <span class="icon">⚡</span> <span class="lbl">Active Orders</span>
     </a>
     <a class="sb-item" onclick="showTab('ready',this)"><span class="icon">📦</span> <span class="lbl">Ready</span></a>
     <a class="sb-item" onclick="showTab('dispatched',this)"><span class="icon">🚚</span> <span class="lbl">Dispatched</span></a>
@@ -331,6 +331,16 @@ body{font-family:'Inter','Tajawal',sans-serif;background:var(--bg);display:flex;
           <option value="other">Other</option>
           <option value="internal">Internal</option>
         </select>
+        <select id="ord-state" onchange="loadOrders()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:.78rem;font-family:inherit;margin-left:5px">
+          <option value="">All States</option>
+          <option value="new">Awaiting Approval</option>
+          <option value="approved">Store Preparing (Approved)</option>
+          <option value="ready">Ready for Pickup</option>
+          <option value="accepted">Driver Accepted</option>
+          <option value="dispatched">Out for Delivery</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
         <span class="filter-count" id="ord-count">0 orders</span>
         <button class="p-btn" onclick="loadOrders()">⟳ Refresh</button>
       </div>
@@ -340,13 +350,13 @@ body{font-family:'Inter','Tajawal',sans-serif;background:var(--bg);display:flex;
       </div>
     </div>
 
-    <!-- ══ PENDING TAB ══ -->
-    <div id="tab-pending" class="tab-body">
+    <!-- ══ ACTIVE TAB ══ -->
+    <div id="tab-active" class="tab-body">
       <div class="panel">
-        <div class="panel-hdr">⏳ Pending Approval
-          <button onclick="loadStateOrders('pending','new')">⟳ Refresh</button>
+        <div class="panel-hdr">⚡ Active Orders (New, Approved, Ready)
+          <button onclick="loadMultipleStates('active-list','new,approved,ready')">⟳ Refresh</button>
         </div>
-        <div id="pending-list"></div>
+        <div id="active-list"></div>
       </div>
     </div>
 
@@ -460,6 +470,33 @@ window.addEventListener('DOMContentLoaded', async () => {
   const name = localStorage.getItem('cd_user_name') || 'Manager';
   document.getElementById('sb-name').textContent = name;
   document.getElementById('sb-av').textContent   = (name[0]||'S').toUpperCase();
+  
+  const roleCode = localStorage.getItem('cd_role_code');
+  const isKeeper = roleCode === 'store_keeper';
+  const isManager = roleCode === 'store_manager' || roleCode === 'stock_manager';
+  
+  const stateSel = document.getElementById('ord-state');
+  if (isKeeper) {
+    if (stateSel) stateSel.innerHTML = `
+      <option value="">All States</option>
+      <option value="approved">Store Preparing (Approved)</option>
+      <option value="ready">Ready for Pickup</option>
+      <option value="accepted">Driver Accepted</option>
+      <option value="dispatched">Out for Delivery</option>
+      <option value="delivered">Delivered</option>
+      <option value="cancelled">Cancelled</option>
+    `;
+    document.querySelectorAll('.kpi.c-orange').forEach(el => el.style.display = 'none');
+  } else if (isManager) {
+    if (stateSel) stateSel.innerHTML = `
+      <option value="">All States</option>
+      <option value="new">Awaiting Approval</option>
+      <option value="approved">Store Preparing (Approved)</option>
+      <option value="cancelled">Cancelled</option>
+    `;
+    document.querySelectorAll('.kpi.c-teal, .kpi.c-indigo, .kpi.c-yellow, .kpi.c-green').forEach(el => el.style.display = 'none');
+  }
+
   await loadDashboard();
   S.refreshTimer = setInterval(() => { if(!document.hidden) loadDashboard(true); }, 30000);
 });
@@ -467,7 +504,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 // ── Tab switching ─────────────────────────────────────────
 const TAB_TITLES = {
   dashboard:'Delivery Dashboard', orders:'All Orders',
-  pending:'Pending Approval', ready:'Ready for Pickup', dispatched:'Dispatched',
+  active:'Active Orders', ready:'Ready for Pickup', dispatched:'Dispatched',
 };
 function showTab(name, el) {
   document.querySelectorAll('.tab-body').forEach(t => t.classList.remove('active'));
@@ -476,7 +513,7 @@ function showTab(name, el) {
   if (el) el.classList.add('active');
   document.getElementById('tb-title').textContent = TAB_TITLES[name]||name;
   if (name==='orders')    { S.ordOffset=0; S.ordItems=[]; loadOrders(); }
-  if (name==='pending')   loadStateOrders('pending-list','new');
+  if (name==='active')    loadMultipleStates('active-list','new,approved,ready');
   if (name==='ready')     loadStateOrders('ready-list','ready');
   if (name==='dispatched')loadStateOrders('dispatched-list','dispatched');
 }
@@ -584,8 +621,10 @@ function renderSourceChart(bs) {
 // ── Orders list ───────────────────────────────────────────
 async function loadOrders() {
   const source = document.getElementById('ord-source').value;
+  const state = document.getElementById('ord-state').value;
   const params = {limit:25, offset:0};
   if (source) params.source = source;
+  if (state) params.state = state;
   const r = await api('/api/skytec-delivery/orders', params);
   if (!ok(r)) return;
   const d = dat(r);
@@ -599,8 +638,10 @@ async function loadOrders() {
 
 async function loadMoreOrders() {
   const source = document.getElementById('ord-source').value;
+  const state = document.getElementById('ord-state').value;
   const params = {limit:25, offset:S.ordOffset};
   if (source) params.source = source;
+  if (state) params.state = state;
   const r = await api('/api/skytec-delivery/orders', params);
   if (!ok(r)) return;
   const d = dat(r);
@@ -616,10 +657,25 @@ async function loadStateOrders(listId, state) {
   renderOrderList(listId, (dat(r).results||[]), false);
 }
 
+async function loadMultipleStates(listId, stateString) {
+  const states = stateString.split(',');
+  let items = [];
+  for(let st of states){
+    const r = await api('/api/skytec-delivery/orders', {state: st, limit:50});
+    if(ok(r)) items = items.concat(dat(r).results||[]);
+  }
+  items.sort((a,b) => b.id - a.id);
+  renderOrderList(listId, items, true);
+}
+
 function renderOrderList(cid, items, showQuick) {
   const el = document.getElementById(cid);
   if (!el) return;
   if (!items.length) { el.innerHTML='<div class="empty">No orders found</div>'; return; }
+  
+  const roleCode = localStorage.getItem('cd_role_code');
+  const isKeeper = roleCode === 'store_keeper';
+
   el.innerHTML = items.map(o => {
     const src   = o.delivery_source||'internal';
     const state = o.delivery_state||'new';
@@ -628,12 +684,15 @@ function renderOrderList(cid, items, showQuick) {
     const c     = sc(src);
     let qBtn = '';
     if (showQuick) {
-      if (state==='new')
+      if (state==='new' && !isKeeper)
         qBtn=`<button class="quick-btn" style="background:#1CC88A"
           onclick="event.stopPropagation();qApprove(${o.id},this)">✅ Approve</button>`;
       else if (state==='approved')
         qBtn=`<button class="quick-btn" style="background:#36B9CC"
           onclick="event.stopPropagation();qReady(${o.id},this)">📦 Ready</button>`;
+      else if (state==='ready')
+        qBtn=`<button class="quick-btn" style="background:#FFC107;color:#333"
+          onclick="event.stopPropagation();openDetail(${o.id})">🛵 Assign</button>`;
     }
     return `<div class="order-card" onclick="openDetail(${o.id})">
       <div class="oc-stripe" style="background:${c}"></div>
@@ -666,14 +725,14 @@ async function qApprove(id,btn) {
   const r = await api(`/api/skytec-delivery/action?by_AJR=1`, { picking_id: id, action: 'approve' }, 'POST');
   btn.textContent = ok(r)?'✅':'Error';
   btn.style.background = ok(r)?'#1CC88A':'#E74A3B';
-  if(ok(r)) { btn.style.display='none'; setTimeout(()=>{loadDashboard(true);loadStateOrders('pending-list','new');},500); }
+  if(ok(r)) { btn.style.display='none'; setTimeout(()=>{loadDashboard(true);loadMultipleStates('active-list','new,approved,ready');},500); }
 }
 async function qReady(id,btn) {
   btn.textContent='...';btn.disabled=true;
   const r = await api(`/api/skytec-delivery/action?by_AJR=1`, { picking_id: id, action: 'ready' }, 'POST');
   btn.textContent = ok(r)?'✅':'Error';
   btn.style.background = ok(r)?'#36B9CC':'#E74A3B';
-  if(ok(r)) { btn.style.display='none'; setTimeout(()=>{loadDashboard(true);},500); }
+  if(ok(r)) { btn.style.display='none'; setTimeout(()=>{loadDashboard(true);loadMultipleStates('active-list','new,approved,ready');},500); }
 }
 
 // ── Detail panel ──────────────────────────────────────────
@@ -726,22 +785,27 @@ async function openDetail(id) {
   // Action buttons
   const acts = [];
   const allowed = d.allowed_actions;
+  const roleCode = localStorage.getItem('cd_role_code');
+  const isKeeper = roleCode === 'store_keeper';
+
   if (Array.isArray(allowed)) {
-    if (allowed.includes('approve')) acts.push({l:'✅ Approve Delivery',c:'#1CC88A',a:`doAction('approve')`});
+    if (allowed.includes('approve') && !isKeeper) acts.push({l:'✅ Approve Delivery',c:'#1CC88A',a:`doAction('approve')`});
     if (allowed.includes('ready')) acts.push({l:'📦 Mark Ready',c:'#36B9CC',a:`doAction('ready')`});
     if (allowed.includes('assign_driver')) acts.push({l:'🛵 Assign Driver',c:'#FFC107',tc:'#333',a:`doAction('assign_driver')`});
     if (allowed.includes('notify_drivers')) acts.push({l:'🚀 Notify Drivers',c:'#6F42C1',a:`doAction('notify_drivers')`});
     if (allowed.includes('accept')) acts.push({l:'Driver Accepted',c:'#6F42C1',a:`doAction('accept')`});
     if (allowed.includes('cancel')) acts.push({l:'❌ Cancel',c:'danger',a:`doAction('cancel')`});
   } else {
-    if (state==='new')
+    if (state==='new' && !isKeeper)
       acts.push({l:'✅ Approve Delivery',c:'#1CC88A',a:`doAction('approve')`});
     if (state==='approved') {
       acts.push({l:'📦 Mark Ready for Pickup',c:'#36B9CC',a:`doAction('ready')`});
       acts.push({l:'🛵 Assign Driver',c:'#FFC107',tc:'#333',a:`doAction('assign_driver')`});
     }
-    if (state==='ready')
+    if (state==='ready') {
       acts.push({l:'🚀 Notify Drivers',c:'#6F42C1',a:`doAction('notify_drivers')`});
+      acts.push({l:'🛵 Assign Driver',c:'#FFC107',tc:'#333',a:`doAction('assign_driver')`});
+    }
     if (state==='accepted')
       acts.push({l:'✅ Driver Accepted',c:'#1CC88A',a:`doAction('accept')`});
     if (!['delivered','cancelled'].includes(state))
@@ -779,7 +843,7 @@ function closeDetail(e) {
 
 // ── Navigate ──────────────────────────────────────────────
 function openFilter(state) {
-  const tab = state==='new'?'pending':state==='ready'?'ready':state==='dispatched'?'dispatched':'orders';
+  const tab = state==='new'||state==='approved'?'active':state==='ready'?'ready':state==='dispatched'?'dispatched':'orders';
   showTab(tab, null);
 }
 function openSource(src) {
