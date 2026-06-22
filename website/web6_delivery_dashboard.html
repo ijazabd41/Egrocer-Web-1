@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -198,7 +198,7 @@ input::placeholder{color:var(--text-soft)!important;}
 </div>
 
 <script>
-let currentRole='manager', delOffset=0, ruOffset=0, allDels=[], drivers=[], otpDelId=0, statusChart;
+let currentRole='manager', currentTab='', delOffset=0, ruOffset=0, allDels=[], drivers=[], otpDelId=0, statusChart;
 
 window.addEventListener('DOMContentLoaded',()=>{
   CdApi.requireLogin();
@@ -216,9 +216,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   loadStats(); loadCurrentView();
   setInterval(() => {
     if (document.hidden) return;
-    if (document.getElementById('view-otp-detail').style.display !== 'block') {
-      if (currentRole === 'manager' && delOffset <= 15) { loadCurrent(); }
-      else if (currentRole === 'rider' && ruOffset <= 10) { loadCurrent(); }
+    if (currentTab !== 'otp-detail') {
+      loadCurrent();
     }
   }, 15000);
 });
@@ -231,6 +230,7 @@ function setRole(r,el){
 }
 
 function showView(v){
+  currentTab=v;
   ['manager','rider-unassigned','rider-mine','otp-detail','driver-perf'].forEach(x=>
     document.getElementById('view-'+x).style.display='none');
   document.getElementById('view-'+v).style.display='block';
@@ -239,7 +239,13 @@ function showView(v){
      'rider-mine':'My Deliveries','otp-detail':'OTP Verification','driver-perf':'Driver Performance'}[v]||'Delivery';
 }
 
-function loadCurrent(){loadStats();loadCurrentView();}
+function loadCurrent(){
+  loadStats();
+  if(currentTab==='manager'){ delOffset=0; loadDeliveries(''); loadDrivers(); }
+  else if(currentTab==='rider-unassigned') loadRiderUnassigned();
+  else if(currentTab==='rider-mine') loadRiderMine();
+  else if(currentTab==='driver-perf') loadDriverPerf();
+}
 
 function loadCurrentView(){
   if(currentRole==='manager'){showView('manager');loadManagerView();}
