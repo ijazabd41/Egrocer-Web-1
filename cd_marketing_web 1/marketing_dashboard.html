@@ -621,7 +621,7 @@ function initCharts(){
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
 async function _api(path, params={}){
-  const url=new URL('http://cooperp.freeddns.org:8077'+path);
+  const url=new URL('http://cooperp.freeddns.org:8076'+path);
   url.searchParams.set('by_AJR','1');
   Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
   try{

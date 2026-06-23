@@ -9,7 +9,7 @@
 //   Module:     /api/dashboard/full        (needs module installed)
 
 const CdApi = (() => {
-  const BASE = 'http://cooperp.freeddns.org:8077';
+  const BASE = 'http://cooperp.freeddns.org:8076';
   const DB   = 'staging-apr17';
 
   // ── Auth helpers ──────────────────────────────────────────

@@ -1,6 +1,6 @@
 import requests
 
-url = "http://cooperp.freeddns.org:8077"
+url = "http://cooperp.freeddns.org:8076"
 session = requests.Session()
 login_data = {
     "jsonrpc": "2.0",

@@ -1,6 +1,6 @@
 const http = require('http');
 
-const ODOO = 'http://cooperp.freeddns.org:8077';
+const ODOO = 'http://cooperp.freeddns.org:8076';
 
 function get(path) {
   return new Promise((resolve, reject) => {

@@ -53,7 +53,7 @@ web_store_manager_delivery.html  ← NEW
 
 Update the BASE URL in `web_store_manager_delivery.html` line 1:
 ```javascript
-const BASE = 'http://cooperp.freeddns.org:8077';  // ← change this
+const BASE = 'http://cooperp.freeddns.org:8076';  // ← change this
 ```
 
 Login flow: uses existing `cd_web_api.js` session (same `session_id` cookie).
@@ -77,7 +77,7 @@ dependencies:
 ### 3. Update the BASE URL
 In `store_manager_screen.dart` line 1 of `_Api`:
 ```dart
-static const base = 'http://cooperp.freeddns.org:8077';  // ← change this
+static const base = 'http://cooperp.freeddns.org:8076';  // ← change this
 ```
 
 ### 4. Navigate to screen after login

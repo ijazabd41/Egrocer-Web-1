@@ -1,0 +1,840 @@
+
+        
+        <!DOCTYPE html>
+<html lang="en-US" data-website-id="1" data-main-object="ir.ui.view(4020,)">
+    <head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <title>Shopping Cart | COOP DISCOUNTS</title>
+        <link type="image/x-icon" rel="shortcut icon" href="/web/image/website/1/favicon?unique=79f6fef"/>
+        <link rel="preload" href="/web/static/src/libs/fontawesome/fonts/fontawesome-webfont.woff2?v=4.7.0" as="font" crossorigin=""/>
+        <link type="text/css" rel="stylesheet" href="/web/assets/1/2404141/web.assets_frontend.min.css"/>
+        <script id="web.layout.odooscript" type="text/javascript">
+            var odoo = {
+                csrf_token: "24a42b01a816248c2bbfcb37e9ad8a8e09301acbo1813734101",
+                debug: "",
+            };
+        </script>
+        <script type="text/javascript">
+            odoo.__session_info__ = {"is_admin": false, "is_system": false, "is_public": true, "is_internal_user": false, "is_website_user": true, "uid": null, "registry_hash": "4d7f5c1cf1d67cf53b42b3c4fc82d059effd3c3aaf3821792b463e276768a916", "is_frontend": true, "profile_session": null, "profile_collectors": null, "profile_params": null, "show_effect": true, "currencies": {"129": {"name": "AED", "symbol": "AED", "position": "after", "digits": [69, 2]}, "1": {"name": "USD", "symbol": "$", "position": "before", "digits": [69, 2]}}, "quick_login": true, "bundle_params": {"lang": "en_US", "website_id": 1}, "test_mode": false, "websocket_worker_version": "19.0-2", "translationURL": "/website/translations", "geoip_country_code": null, "geoip_phone_code": null, "lang_url_code": "en", "add_to_cart_action": "stay"};
+            if (!/(^|;\s)tz=/.test(document.cookie)) {
+                const userTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                document.cookie = `tz=${userTZ}; path=/`;
+            }
+        </script>
+        <script type="text/javascript" defer="defer" src="/web/assets/1/72a715f/web.assets_frontend_minimal.min.js" onerror="__odooAssetError=1"></script>
+        <script type="text/javascript" data-src="/web/assets/1/542686b/web.assets_frontend_lazy.min.js" onerror="__odooAssetError=1"></script>
+        
+            <meta name="robots" content="noindex, nofollow"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="generator" content="Odoo"/>
+            
+        <meta property="og:type" content="website"/>
+        <meta property="og:title" content="Shopping Cart | COOP DISCOUNTS"/>
+        <meta property="og:site_name" content="COOP DISCOUNTS"/>
+        <meta property="og:url" content="http://cooperp.freeddns.org:8076/shop/cart"/>
+        <meta property="og:image" content="http://cooperp.freeddns.org:8076/web/image/website/1/logo?unique=79f6fef"/>
+        <meta property="og:title" content="Shopping Cart | COOP Discounts"/>
+        <meta property="og:site_name" content="COOP Discounts"/>
+        <meta name="twitter:card" content="summary_large_image"/>
+        <meta name="twitter:title" content="Shopping Cart | COOP DISCOUNTS"/>
+        <meta name="twitter:image" content="http://cooperp.freeddns.org:8076/web/image/website/1/logo/300x300?unique=79f6fef"/>
+        
+        <link rel="canonical" href="https://puppet-senorita-viral.ngrok-free.dev/shop/cart"/>
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin=""/>
+            
+            <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "name": "BEST COOP DISCOUNTS L.L.C",
+    "logo": "https://puppet-senorita-viral.ngrok-free.dev/logo.png?company=1",
+    "url": "https://puppet-senorita-viral.ngrok-free.dev"
+}
+            </script>
+
+             
+        
+    </head>
+    <body class="o_website_sale_checkout">
+        
+
+
+
+        <div id="wrapwrap" class="   ">
+            <a class="o_skip_to_content btn btn-primary rounded-0 visually-hidden-focusable position-absolute start-0" href="#wrap">Skip to Content</a>
+
+            <div class="organic-topbar bg-organic-700 py-1">
+
+                <div class="container">
+
+                    <div class="mobile-center d-flex justify-content-between align-items-center">
+
+                        
+                        <div class="d-flex align-items-center gap-3">
+                            <span>Free shipping on orders over $50</span>
+                        </div>
+
+                        
+                        <div class="utility-links d-flex align-items-center gap-3">
+
+                            <div class="d-flex align-items-center gap-1 bg-opacity-10 rounded-pill px-2 py-1">
+
+
+
+                                
+
+                                <span class="small text-white">
+                                        AED
+                                        (AED)
+                                </span>
+                                
+
+                            </div>
+
+                            <div class="d-flex align-items-center gap-1 bg-opacity-10 rounded-pill px-2 py-1">
+
+                                
+
+                            </div>
+
+
+                            
+                            
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+                <header class="organic-header bg-white shadow-sm">
+                <div class="container py-3"> 
+                
+                    <div class="d-flex align-items-center justify-content-between Main-header"> 
+                     <div class="mobile-menu-toggle d-lg-none me-2">
+            <button class="btn btn-outline-organic" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-controls="mobileMenu">
+              <i class="bi bi-list"></i>
+            </button>
+          </div>  
+                    
+                    
+    <a data-name="Navbar Logo" href="/" class="navbar-brand logo d-flex align-items-center">
+            
+            <span role="img" aria-label="Logo of COOP DISCOUNTS" title="COOP DISCOUNTS"><img src="/web/image/website/1/logo/COOP%20DISCOUNTS?unique=79f6fef" class="img img-fluid" width="95" height="40" alt="COOP DISCOUNTS" loading="lazy"/></span>
+        </a>
+    
+                        <div class="organic-search d-none d-lg-block">
+                            <form action="/shop" method="get" class="position-relative">
+                                <input type="search" name="search" class="form-control o_searchbar_input" placeholder="Search products..." value=""/>
+                                <button type="submit" class="organic-search-btn border-0 position-absolute top-50 end-0 translate-middle-y me-2">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </form>
+                        </div> 
+                        <div class="d-flex align-items-center gap-3">
+                            
+                            <a class="btn btn-light rounded-pill shadow-sm d-flex align-items-center gap-2 " href="/web/login">
+                                <i class="bi bi-person-circle"></i>
+                                <span class="d-none d-sm-inline">
+                                    Login
+                                </span>
+                            </a>
+                            
+                            <div class="d-flex align-items-center gap-2">
+                                
+                                    
+
+
+
+                                        <div class="o_wsale_my_wish ">
+
+                                            <a class="btn btn-light d-flex align-items-center gap-2 rounded-pill position-relative bg-white shadow-sm hover-organic" href="/shop/wishlist">
+
+                                                <i class="bi bi-heart text-danger"></i>
+                                                <span class="d-none d-sm-inline fw-medium">Wishlist</span>
+
+                                                
+                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger my_wish_quantity d-none">0</span>
+
+                                            </a>
+
+                                        </div>
+
+                                    
+
+                          
+                                <li class="o_wsale_my_cart list-unstyled d-inline-block position-relative cart-dropdown-container">
+
+                                    <a href="/shop/cart" class="btn btn-light d-flex align-items-center gap-2 rounded-pill hover-organic position-relative bg-white shadow-sm" aria-label="Shopping cart" onmouseenter="showCartDropdown()" onmouseleave="hideCartDropdown()" onclick="if (window.matchMedia(&#39;(max-width: 991px)&#39;).matches) { return true; } showCartDropdown(); return false;">
+
+                                        <i class="bi bi-cart3"></i>
+                                        <span class="d-none d-sm-inline fw-medium">Cart</span>
+
+                                        
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success shadow-sm my_cart_quantity d-none">0</span>
+
+                                    </a>
+                                    <div id="cart-dropdown" class="position-absolute top-100 end-0 mt-2 bg-white rounded-3 shadow-lg border p-3 d-none" onmouseenter="keepCartDropdown()" onmouseleave="hideCartDropdown()" style="min-width: 380px; z-index: 1055;">
+                                        <div class="d-flex align-items-center justify-content-between mb-3">
+                                            <h6 class="mb-0 fw-bold">Shopping Cart</h6>
+                                            <span class="text-muted small" id="cart-dropdown-items-count">0 items</span>
+                                        </div>
+
+                                        <div id="cart-dropdown-items"></div>
+
+                                        <div id="cart-dropdown-empty" class="text-center py-3 text-muted small d-none">
+                                            Your cart is empty
+                                        </div>
+
+                                        <hr class="my-3"/>
+
+                                        <div class="d-flex align-items-center justify-content-between mb-3">
+                                            <span class="fw-bold">Total:</span>
+                                            <span class="fw-bold text-organic-600" id="cart-dropdown-total">$0.00</span>
+                                        </div>
+
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <a href="/shop/cart" class="btn btn-outline-organic btn-lg w-100 rounded-5">
+                                                    View Cart
+                                                </a>
+                                            </div>
+                                            <div class="col-6">
+                                                <a href="/shop/checkout" class="btn btn-organic btn-lg w-100 rounded-5">
+                                                    Checkout
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                        </div>
+                    </div>
+                    <nav class="organic-nav d-none d-lg-block">
+                        <ul class="nav d-flex align-items-center gap-3 justify-content-center">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/shop/category/1">
+                                        Fresh Vegetables
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/shop/category/2">
+                                        Deli
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/shop/category/3">
+                                        Baby Products
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/shop/category/4">
+                                        Beauty &amp; Fragrance
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/shop/category/5">
+                                        Butchery
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/shop/category/6">
+                                        Electronics
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/shop/category/7">
+                                        Frozen Food
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/shop/category/8">
+                                        Garments
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/shop/category/9">
+                                        Organic Products
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/shop/category/10">
+                                        Toys &amp; Games
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/shop/category/12">
+                                        Pet Supplies
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/shop/category/13">
+                                        Beverages
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/shop/category/14">
+                                        Dairy
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/shop/category/15">
+                                        Roastery
+                                    </a>
+                                </li>
+                        </ul>
+                    </nav>
+                </div>
+            </header>
+
+            
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title w-100" id="mobileMenuLabel">
+    <a data-name="Navbar Logo" href="/" class="navbar-brand logo d-flex align-items-center justify-content-center">
+            
+            <span role="img" aria-label="Logo of COOP DISCOUNTS" title="COOP DISCOUNTS"><img src="/web/image/website/1/logo/COOP%20DISCOUNTS?unique=79f6fef" class="img img-fluid" width="95" height="40" alt="COOP DISCOUNTS" loading="lazy"/></span>
+        </a>
+    
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+
+                <div class="utility-links d-flex align-items-center gap-3 bg-organic-100 p-2">
+                    <div class="d-flex align-items-center gap-1 bg-opacity-10 rounded-pill px-2 py-1">
+                        <i class="bi bi-currency-dollar"></i>
+                        <select class="form-select form-select-sm border-0 bg-transparent" style="font-size: 0.8rem; width: auto" onchange="if (this.value) { window.location.href = &#39;/shop/change_pricelist/&#39; + this.value; }" disabled="True">
+                                <option value="1" selected="True">
+                                    AED
+                                </option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-1 bg-opacity-10 rounded-pill px-2 py-1">
+                        <i class="bi bi-globe"></i>
+                        <select class="form-select form-select-sm border-0 bg-transparent" style="font-size: 0.8rem; width: auto" onchange="if (this.value) { var redirectUrl = window.location.pathname + window.location.search + window.location.hash; window.location.href = &#39;/website/lang/&#39; + this.value + &#39;?r=&#39; + encodeURIComponent(redirectUrl); }">
+                                <option value="ar">
+                                    Arabic / الْعَرَبيّة
+                                </option>
+                                <option value="en" selected="True">
+                                    English (US)
+                                </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="offcanvas-body p-0">
+                    <nav class="mobile-nav">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a href="/" class="nav-link mobile-nav-link">
+                                    <span>Home</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="/shop" class="nav-link mobile-nav-link d-flex justify-content-between align-items-center" data-submenu-target="#mobileShopCategoriesSubmenu" aria-expanded="false">
+                                    <span class="fw-semibold">Shop by Category</span>
+                                    <i class="bi bi-chevron-down ms-1 small"></i>
+                                </a>
+                                <div class="collapse" id="mobileShopCategoriesSubmenu">
+                                    <div class="mobile-mega-menu-content p-3">
+                                        <ul class="list-unstyled mb-0">
+                                                <li>
+                                                    <a class="text-decoration-none d-block py-1 hover-organic-link mobile-mega-link" href="/shop/category/1">
+                                                        Fresh Vegetables
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="text-decoration-none d-block py-1 hover-organic-link mobile-mega-link" href="/shop/category/2">
+                                                        Deli
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="text-decoration-none d-block py-1 hover-organic-link mobile-mega-link" href="/shop/category/3">
+                                                        Baby Products
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="text-decoration-none d-block py-1 hover-organic-link mobile-mega-link" href="/shop/category/4">
+                                                        Beauty &amp; Fragrance
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="text-decoration-none d-block py-1 hover-organic-link mobile-mega-link" href="/shop/category/5">
+                                                        Butchery
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="text-decoration-none d-block py-1 hover-organic-link mobile-mega-link" href="/shop/category/6">
+                                                        Electronics
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="text-decoration-none d-block py-1 hover-organic-link mobile-mega-link" href="/shop/category/7">
+                                                        Frozen Food
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="text-decoration-none d-block py-1 hover-organic-link mobile-mega-link" href="/shop/category/8">
+                                                        Garments
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="text-decoration-none d-block py-1 hover-organic-link mobile-mega-link" href="/shop/category/9">
+                                                        Organic Products
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="text-decoration-none d-block py-1 hover-organic-link mobile-mega-link" href="/shop/category/10">
+                                                        Toys &amp; Games
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="text-decoration-none d-block py-1 hover-organic-link mobile-mega-link" href="/shop/category/12">
+                                                        Pet Supplies
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="text-decoration-none d-block py-1 hover-organic-link mobile-mega-link" href="/shop/category/13">
+                                                        Beverages
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="text-decoration-none d-block py-1 hover-organic-link mobile-mega-link" href="/shop/category/14">
+                                                        Dairy
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="text-decoration-none d-block py-1 hover-organic-link mobile-mega-link" href="/shop/category/15">
+                                                        Roastery
+                                                    </a>
+                                                </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="/shop/cart" class="nav-link mobile-nav-link">
+                                    <span class="fw-semibold">Cart</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link mobile-nav-link" href="/web/login">
+                                    <span class="fw-semibold">
+                                        Login
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <div class="offcanvas-footer d-lg-none p-3 border-top"></div>
+                </div>
+            </div>
+
+        <main>
+                    
+            <div id="wrap" class="d-flex flex-column flex-grow-1">
+                <div class="oe_website_sale o_website_sale_checkout_container container d-flex flex-column flex-grow-1 py-lg-2">
+                    <div class="row  mb32">
+                        <div class="col-12">
+    
+    <div class="o_wizard d-flex flex-wrap row-gap-2 my-3 small">
+            <span class=" d-flex no-decoration">
+                <div name="step_name" class="d-flex align-items-center fw-bold">
+                    <p class="text-center mb-0">
+                        <span>Order</span>
+                    </p>
+                    <span class="fa fa-angle-right d-inline-block align-middle mx-3 text-muted fs-5"></span>
+                </div>
+            </span>
+            <span class="o_disabled d-flex no-decoration">
+                <div name="step_name" class="d-flex align-items-center text-muted">
+                    <p class="text-center mb-0">
+                        <span>Address</span>
+                    </p>
+                    <span class="fa fa-angle-right d-inline-block align-middle mx-3 text-muted fs-5"></span>
+                </div>
+            </span>
+            <span class="o_disabled d-flex no-decoration">
+                <div name="step_name" class="d-flex align-items-center text-muted">
+                    <p class="text-center mb-0">
+                        <span>Payment</span>
+                    </p>
+                </div>
+            </span>
+    </div>
+                        </div>
+                        
+                        <div class="oe_clear_stucture oe_cart col-12 ">
+                            
+            <div id="shop_cart" class="col">
+                <div class="d-flex align-items-center mb-3">
+                    <h4 class="mb-0">Order summary</h4>
+                    <div class="ms-3 border-start ps-2">
+        <span title="
+            Login to reorder
+        ">
+            <button id="quick_reorder_button" type="button" class="btn btn-sm btn-link" data-bs-toggle="offcanvas" data-bs-target="#quick_reorder_sidebar" aria-controls="quick_reorder_sidebar" disabled="True">
+                <i class="fa fa-rotate-left me-2"></i>Quick reorder
+            </button>
+        </span>
+        <div id="quick_reorder_sidebar" class="offcanvas offcanvas-end" aria-labelledby="quick_reorder_sidebar">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">Quick reorder</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                
+            </div>
+        </div></div>
+                </div>
+        <div class="js_cart_lines w-100">
+            <div class="mt-5 mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100" viewBox="0 0 100 92" fill="none">
+            <style>
+                .heartBeat {
+                    animation: heartBeat 1.3s ease-in-out forwards;
+                    animation-delay: 0.75s;
+                    transform-origin: 80.5px 28.5px;
+                }
+                .tilt {
+                    animation: tilt 1s ease forwards;
+                    animation-delay: 0.75s;
+                    transform-origin: bottom left;
+                }
+                @keyframes heartBeat {
+                    0% {
+                    transform: scale(1);
+                    }
+
+                    14% {
+                        transform: scale(1.2);
+                    }
+
+                    28% {
+                        transform: scale(1);
+                    }
+
+                    42% {
+                        transform: scale(1.2);
+                    }
+
+                    70% {
+                        transform: scale(1);
+                    }
+                }
+                @keyframes tilt {
+                    0% {
+                        transform: rotate(0deg);
+                    }
+                    50% {
+                        transform: rotate(-7deg);
+                    }
+                    100% {
+                        transform: rotate(0deg);
+                    }
+                }
+            </style>
+            <path class="tilt" d="M40.3846 71.8461C40.3846 73.2211 39.8822 74.411 38.8774 75.4158C37.8726 76.4207 36.6827 76.9231 35.3077 76.9231C33.9327 76.9231 32.7428 76.4207 31.738 75.4158C30.7332 74.411 30.2308 73.2211 30.2308 71.8461C30.2308 70.4711 30.7332 69.2812 31.738 68.2764C32.7428 67.2716 33.9327 66.7692 35.3077 66.7692C36.6827 66.7692 37.8726 67.2716 38.8774 68.2764C39.8822 69.2812 40.3846 70.4711 40.3846 71.8461ZM75.9231 71.8461C75.9231 73.2211 75.4207 74.411 74.4159 75.4158C73.4111 76.4207 72.2212 76.9231 70.8462 76.9231C69.4712 76.9231 68.2812 76.4207 67.2764 75.4158C66.2716 74.411 65.7692 73.2211 65.7692 71.8461C65.7692 70.4711 66.2716 69.2812 67.2764 68.2764C68.2812 67.2716 69.4712 66.7692 70.8462 66.7692C72.2212 66.7692 73.4111 67.2716 74.4159 68.2764C75.4207 69.2812 75.9231 70.4711 75.9231 71.8461ZM81 28.6923V49C81 49.6346 80.7818 50.1965 80.3456 50.6857C79.9093 51.1749 79.3738 51.4591 78.7392 51.5384L37.3305 56.3774C37.6743 57.9639 37.8462 58.8894 37.8462 59.1538C37.8462 59.5769 37.5288 60.4231 36.8942 61.6923H73.3846C74.0721 61.6923 74.6671 61.9435 75.1695 62.4459C75.6719 62.9483 75.9231 63.5432 75.9231 64.2307C75.9231 64.9182 75.6719 65.5132 75.1695 66.0156C74.6671 66.518 74.0721 66.7692 73.3846 66.7692H32.7692C32.0817 66.7692 31.4868 66.518 30.9844 66.0156C30.482 65.5132 30.2308 64.9182 30.2308 64.2307C30.2308 63.9399 30.3365 63.5234 30.5481 62.9813C30.7596 62.4393 30.9712 61.9633 31.1827 61.5535C31.3942 61.1436 31.6785 60.6148 32.0355 59.9669C32.3924 59.3191 32.5974 58.9291 32.6502 58.7969L25.6298 26.1538H17.5385C16.851 26.1538 16.256 25.9026 15.7536 25.4002C15.2512 24.8978 15 24.3029 15 23.6154C15 22.9279 15.2512 22.3329 15.7536 21.8305C16.256 21.3281 16.851 21.0769 17.5385 21.0769H27.6923C28.1154 21.0769 28.4922 21.1628 28.8227 21.3347C29.1532 21.5066 29.4111 21.7115 29.5962 21.9495C29.7812 22.1875 29.9531 22.5114 30.1118 22.9213C30.2704 23.3311 30.3762 23.6749 30.4291 23.9525C30.482 24.2301 30.5547 24.6202 30.6472 25.1226C30.7398 25.625 30.7993 25.9687 30.8257 26.1538H78.4615C79.149 26.1538 79.744 26.405 80.2464 26.9074C80.7488 27.4098 81 28.0048 81 28.6923Z" fill="currentColor"></path>
+            <circle class="heartBeat" cx="80.5" cy="28.5" r="11.5" fill="var(--o-color-1, #D9D9D9)" stroke="var(--body-bg, #F5F5F5)" stroke-width="3"></circle>
+            <path class="heartBeat" d="M81.0014 33.1662C80.2997 33.1662 79.6974 32.9886 79.1946 32.6335C78.6946 32.2756 78.3097 31.7599 78.0398 31.0866C77.7727 30.4105 77.6392 29.5966 77.6392 28.6449C77.642 27.6932 77.777 26.8835 78.044 26.2159C78.3139 25.5455 78.6989 25.0341 79.1989 24.6818C79.7017 24.3295 80.3026 24.1534 81.0014 24.1534C81.7003 24.1534 82.3011 24.3295 82.804 24.6818C83.3068 25.0341 83.6918 25.5455 83.9588 26.2159C84.2287 26.8864 84.3636 27.696 84.3636 28.6449C84.3636 29.5994 84.2287 30.4148 83.9588 31.0909C83.6918 31.7642 83.3068 32.2784 82.804 32.6335C82.304 32.9886 81.7031 33.1662 81.0014 33.1662ZM81.0014 31.8324C81.5469 31.8324 81.9773 31.5639 82.2926 31.027C82.6108 30.4872 82.7699 29.6932 82.7699 28.6449C82.7699 27.9517 82.6974 27.3693 82.5526 26.8977C82.4077 26.4261 82.2031 26.071 81.9389 25.8324C81.6747 25.5909 81.3622 25.4702 81.0014 25.4702C80.4588 25.4702 80.0298 25.7401 79.7145 26.2798C79.3991 26.8168 79.2401 27.6051 79.2372 28.6449C79.2344 29.3409 79.304 29.9261 79.446 30.4006C79.5909 30.875 79.7955 31.233 80.0597 31.4744C80.3239 31.7131 80.6378 31.8324 81.0014 31.8324Z" fill="var(--o-color-3, #000)"></path>
+        </svg></div>
+            <h5 class="mb-3" style="text-align: center;">
+                Your cart is empty!
+            </h5>
+            <p style="text-align: center;">
+                <a href="/shop" class="btn btn-primary">
+                    Shop
+                </a>
+            </p>
+        </div>
+                <div class="clearfix"></div>
+                <div class="oe_structure" id="oe_structure_website_sale_cart_1"></div>
+            </div>
+        
+                        </div>
+
+                        
+                        <div class="o_wsale_shorter_cart_summary offset-xxl-1 col-lg-5 col-xxl-4">
+                            
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+                
+                
+                <div class="oe_structure" id="oe_structure_website_sale_cart_2"></div>
+            
+            </div>
+        
+        <div id="o_shared_blocks" class="oe_unremovable"></div>
+                </main>
+                <footer>
+
+                
+                <div class="footer-main py-5">
+                    <div class="container">
+                        <div class="row g-5">
+
+                            
+                            <div class="col-lg-4">
+                                <div class="footer-brand">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <div class="d-flex align-items-center logo">
+                                            <img alt="Vegetables" class="w-100" src="/theme_natural_foods/static/src/img/fotter-logo.png" loading="lazy"/>
+                                        </div>
+                                    </div>
+
+                                    <p class="text-muted mb-4 lh-lg">
+                                        Your trusted source for premium organic groceries,
+                                        sourced directly from local farms and delivered fresh to your door.
+                                        We're committed to sustainability and your health.
+                                    </p>
+
+                                    
+                                    <div class="social-media">
+                                        <h6 class="text-white fw-semibold mb-3">
+                                            Follow Our Journey
+                                        </h6>
+
+                                        <div class="d-flex gap-3">
+                                            <a href="#" class="social-link" data-platform="facebook">
+                                                <i class="bi bi-facebook"></i>
+                                            </a>
+                                            <a href="#" class="social-link" data-platform="instagram">
+                                                <i class="bi bi-instagram"></i>
+                                            </a>
+                                            <a href="#" class="social-link" data-platform="twitter">
+                                                <i class="bi bi-twitter"></i>
+                                            </a>
+                                            <a href="#" class="social-link" data-platform="youtube">
+                                                <i class="bi bi-youtube"></i>
+                                            </a>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                            <div class="col-lg-8">
+                                <div class="row g-4">
+
+                                    
+                                    <div class="col-md-3 col-6">
+                                        <div class="footer-section">
+                                            <h6 class="text-white fw-bold mb-3 d-flex align-items-center">
+                                                <i class="bi bi-basket me-2 text-organic-400"></i>
+                                                Shop
+                                            </h6>
+
+                                            <ul class="footer-links">
+                                                <li>
+                                                    <a href="#">All Products</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Fresh Vegetables</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Organic Fruits</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Dairy Products</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Meat & Seafood</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Fresh Bakery</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Pantry Essentials</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    
+                                    <div class="col-md-3 col-6">
+                                        <div class="footer-section">
+                                            <h6 class="text-white fw-bold mb-3 d-flex align-items-center">
+                                                <i class="bi bi-headset me-2 text-organic-400"></i>
+                                                Support
+                                            </h6>
+
+                                            <ul class="footer-links">
+                                                <li>
+                                                    <a href="#">Help Center</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Track Your Order</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Shipping & Delivery</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Returns & Refunds</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Size Guide</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Product Care</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Bulk Orders</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    
+                                    <div class="col-md-3 col-6">
+                                        <div class="footer-section">
+                                            <h6 class="text-white fw-bold mb-3 d-flex align-items-center">
+                                                <i class="bi bi-building me-2 text-organic-400"></i>
+                                                Company
+                                            </h6>
+
+                                            <ul class="footer-links">
+                                                <li>
+                                                    <a href="#">About Us</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Our Story</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Sustainability</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Farm Partners</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Careers</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Press Kit</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Investor Relations</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    
+                                    <div class="col-md-3 col-6">
+                                        <div class="footer-section">
+                                            <h6 class="text-white fw-bold mb-3 d-flex align-items-center">
+                                                <i class="bi bi-book me-2 text-organic-400"></i>
+                                                Resources
+                                            </h6>
+
+                                            <ul class="footer-links">
+                                                <li>
+                                                    <a href="#">Healthy Recipes</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Nutrition Guide</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Organic Certification</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Seasonal Calendar</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Blog & Tips</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">Mobile App</a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">API for Developers</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="footer-bottom py-4">
+                    <div class="container">
+                        <div class="row align-items-center">
+
+                            <div class="col-lg-6 mb-3 mb-lg-0">
+                                <div class="d-flex align-items-center flex-wrap gap-3">
+                                    <p class="text-muted mb-0">
+                                        © 2024 Natural Foods. All rights reserved.
+                                    </p>
+
+                                    <div class="payment-methods d-flex align-items-center gap-2">
+                                        <span class="text-muted small">We accept:</span>
+                                        <i class="bi bi-credit-card text-muted"></i>
+                                        <i class="bi bi-paypal text-muted"></i>
+                                        <i class="bi bi-apple text-muted"></i>
+                                        <i class="bi bi-google text-muted"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="d-flex justify-content-lg-end align-items-center gap-4 flex-wrap">
+                                    <a href="#" class="footer-legal-link">Privacy Policy</a>
+                                    <a href="#" class="footer-legal-link">Terms of Service</a>
+                                    <a href="#" class="footer-legal-link">Cookie Policy</a>
+                                    <a href="#" class="footer-legal-link">Accessibility</a>
+
+                                    <button class="btn btn-sm btn-outline-organic back-to-top" onclick="window.scrollTo({top: 0, behavior: &#39;smooth&#39;})">
+                                        <i class="bi bi-arrow-up me-2"></i>
+                                        Back to Top
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </footer>
+
+            </div>
+        <div>
+                <span id="oe_neutralize_banner" style="                         text-align: center;                         color: #FFFFFF;                         background-color: #D0442C;                         position: relative;                         display: block;                         font-size: 16px;                         ">
+                    Database neutralized for testing: no emails sent, etc.
+                </span>
+            </div>
+            <div>
+                <span id="oe_neutralize_ribbon" style="                         width: 400px;                         top: 55px;                         left: -100px;                         font-size: 32px;                         text-align: center;                         padding: 10px;                         line-height: 30px;                         color: #F0F0F0;                         transform: rotate(-45deg);                         position: fixed;                         box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);                         background: #D0442C;                         opacity: 0.6;                         pointer-events: none;                         text-transform: uppercase;                         z-index: 9999;                         ">
+                    Neutralized
+                </span>
+            </div>
+            <div id="loading-screen" class="loading-screen">
+                <div class="loading-content">
+                    <img src="/theme_natural_foods/static/src/img/loader.png" alt="Loading..." class="loading-spinner" loading="lazy"/>
+                </div>
+            </div>
+            <script src="/theme_natural_foods/static/src/js/swiper-bundle.min.js"></script>
+            <script src="/theme_natural_foods/static/src/js/allswiper.js"></script>
+            <script src="/theme_natural_foods/static/src/js/mobile-menu-enhancement.js"></script>
+            <script src="/theme_natural_foods/static/src/js/product-tabs.js"></script>
+            <script src="/theme_natural_foods/static/src/js/action-buttons.js"></script>
+            <script src="/theme_natural_foods/static/src/js/loading-screen.js"></script>
+        
+    </body>
+</html>

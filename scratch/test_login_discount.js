@@ -1,6 +1,6 @@
 const http = require('http');
 
-const ODOO = 'http://cooperp.freeddns.org:8077';
+const ODOO = 'http://cooperp.freeddns.org:8076';
 const DB = 'staging-apr17';
 
 function postJson(path, body, headers = {}) {

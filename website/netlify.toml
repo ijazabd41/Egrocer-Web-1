@@ -1,6 +1,6 @@
 [[redirects]]
   from = "/proxy/*"
-  to = "http://cooperp.freeddns.org:8077/:splat"
+  to = "http://cooperp.freeddns.org:8076/:splat"
   status = 200
   force = true
 

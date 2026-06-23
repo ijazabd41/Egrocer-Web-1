@@ -72,7 +72,7 @@ Every section has a comment like:
 ### Basic fetch pattern (copy-paste for every section):
 
 ```javascript
-const BASE_URL = 'http://cooperp.freeddns.org:8077';
+const BASE_URL = 'http://cooperp.freeddns.org:8076';
 
 async function fetchAPI(path) {
   const res = await fetch(`${BASE_URL}${path}`, {

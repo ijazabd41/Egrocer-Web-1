@@ -507,16 +507,16 @@ const API = ((_DB='staging-apr17', SK='cd_session', NOTIFY='eicoopit@gmail.com')
   // Logo:       /api/deal-day-slider/12 → banner_image = path → img(banner_image)
   // Sliders:    /api/deal-day-slider/9  → image_ids[].id → sliderImg(id)
   // Deals etc:  /api/deal-day-slider/{2,1,3,4,5,8} → image_ids[].id
-  const getLogo        = () => GET('/api/deal-day-slider/12');
-  const getHomeSliders = () => GET('/api/deal-day-slider/9');
-  const getDealOfDay   = () => GET('/api/deal-day-slider/2');
-  const getBestSeller  = () => GET('/api/deal-day-slider/1');
-  const getRecommended = () => GET('/api/deal-day-slider/3');
-  const getFeatured    = () => GET('/api/deal-day-slider/4');
-  const getFreshPick   = () => GET('/api/deal-day-slider/5');
-  const getBrands      = () => GET('/api/deal-day-slider/8');
-  const getMobileAppPromo = () => GET('/api/deal-day-slider/12');
-  const getTrustElements  = () => GET('/api/deal-day-slider/13');
+  const getLogo        = () => GET('/api/deal-day-slider/75');
+  const getHomeSliders = () => GET('/api/deal-day-slider/72');
+  const getDealOfDay   = () => GET('/api/deal-day-slider/65');
+  const getBestSeller  = () => GET('/api/deal-day-slider/64');
+  const getRecommended = () => GET('/api/deal-day-slider/66');
+  const getFeatured    = () => GET('/api/deal-day-slider/67');
+  const getFreshPick   = () => GET('/api/deal-day-slider/68');
+  const getBrands      = () => GET('/api/deal-day-slider/78');
+  const getMobileAppPromo = () => GET('/api/deal-day-slider/77');
+  const getTrustElements  = () => GET('/api/deal-day-slider/79');
   const getAllDeals     = () => GET('/api/deal-day-slider');
   const getDealById    = id  => GET(`/api/deal-day-slider/${id}`);
 
@@ -1746,31 +1746,58 @@ const API = ((_DB='staging-apr17', SK='cd_session', NOTIFY='eicoopit@gmail.com')
     });
   };
 
-  const submitGuestAddress = (fields) => {
-    const qs = `?by_AJR=1`;
-    return POST('/shop/address/submit' + qs, {
-      id: 0,
-      jsonrpc: '2.0',
-      method: 'call',
-      params: {
-        partner_id: -1,
-        mode: "new",
-        name: fields.name || "",
-        email: fields.email || "",
-        phone: fields.phone || "",
-        street: fields.street || "",
-        street2: fields.street2 || "",
-        city: fields.city || "",
-        zip: fields.zip || "",
-        country_id: fields.country_id ? parseInt(fields.country_id, 10) : false,
-        state_id: fields.state_id ? parseInt(fields.state_id, 10) : false
-      }
-    }).then(res => {
-      if (res && res.redirectUrl) {
-         throw new Error("Address validation failed. Odoo requested redirect to: " + res.redirectUrl);
-      }
-      return res;
-    });
+  const submitGuestAddress = async (fields) => {
+    const url = PX + '/shop/address/submit';
+    const session = sess() || {};
+    
+    const formData = new URLSearchParams();
+    formData.append('name', fields.name || '');
+    formData.append('email', fields.email || '');
+    formData.append('phone', fields.phone || '');
+    formData.append('company_name', '');
+    formData.append('vat', '');
+    formData.append('street', fields.street || '');
+    formData.append('street2', fields.street2 || '');
+    formData.append('city', fields.city || '');
+    formData.append('zip', fields.zip || '');
+    if (fields.country_id) formData.append('country_id', fields.country_id);
+    else formData.append('country_id', '');
+    if (fields.state_id) formData.append('state_id', fields.state_id);
+    else formData.append('state_id', '');
+    
+    if (session.csrf_token) formData.append('csrf_token', session.csrf_token);
+    
+    formData.append('address_type', 'billing');
+    formData.append('use_delivery_as_billing', '');
+    formData.append('parent_id', '');
+    formData.append('submitted', '1');
+    formData.append('required_fields', 'name,email,phone,street,city,country_id');
+
+    const opts = {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: formData.toString()
+    };
+    
+    if (session.session_id) {
+       opts.headers['X-Session-Token'] = session.session_id;
+    }
+
+    const res = await fetch(url, opts);
+    if (!res.ok) {
+       throw new Error(`Address submission failed (HTTP ${res.status})`);
+    }
+    const text = await res.text();
+    // Odoo usually renders the form again with errors if it fails validation
+    if (text.includes('alert-danger') || text.includes('alert alert-danger')) {
+      const match = text.match(/<div[^>]*alert-danger[^>]*>([\s\S]*?)<\/div>/i);
+      const errMsg = match ? match[1].replace(/<[^>]+>/g, '').trim() : 'Address validation failed. Check required fields.';
+      throw new Error(errMsg);
+    }
+    return { success: true };
   };
 
   const setGuestDeliveryMethod = (carrierId) => {
