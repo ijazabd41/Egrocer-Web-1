@@ -1037,13 +1037,13 @@ window.promptAddressMethod = function(prefix) {
     if(overlay.parentNode) overlay.parentNode.removeChild(overlay);
   }
   
-  function showForm(p) {
+  async function showForm(p) {
     if(p === 'co') {
       var coForm = document.getElementById('coNewAddr');
       if (coForm) { coForm.style.display='block'; coForm.scrollIntoView({behavior:'smooth',block:'center'}); }
     } else {
       if(typeof showNewAddressForm === 'function') {
-        showNewAddressForm();
+        await showNewAddressForm();
         var accForm = document.getElementById('newAddressFormSec');
         if(accForm) accForm.scrollIntoView({behavior:'smooth',block:'center'});
       } else {
@@ -1053,15 +1053,16 @@ window.promptAddressMethod = function(prefix) {
     }
   }
 
-  document.getElementById('btnUseLoc').onclick = function() {
+  document.getElementById('btnUseLoc').onclick = async function() {
     var btn = this;
     var origText = btn.innerHTML;
     btn.innerHTML = '&#x23F3; Locating...';
     btn.disabled = true;
     
+    await showForm(prefix);
+    
     window.autofillLocation(prefix, function(success) {
       close();
-      showForm(prefix);
     });
   };
   

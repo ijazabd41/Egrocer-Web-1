@@ -1079,6 +1079,11 @@ async function showNewAddressForm(){
   var defaultName = '';
   var defaultPhone = '';
   
+  var defaultStreet = '';
+  var defaultStreet2 = '';
+  var defaultCity = '';
+  var defaultZip = '';
+  
   if (user && user.name) {
     defaultName = user.name;
   }
@@ -1088,16 +1093,20 @@ async function showNewAddressForm(){
     var p = Array.isArray(r.data) ? r.data[0] : r.data;
     if (p) {
        defaultPhone = p.phone || p.mobile || '';
+       defaultStreet = p.street || '';
+       defaultStreet2 = p.street2 || '';
+       defaultCity = p.city || '';
+       defaultZip = p.zip || '';
     }
   } catch(e) {}
   
   document.getElementById('aName').value = defaultName;
   document.getElementById('aPhone').value = defaultPhone;
   
-  document.getElementById('aStreet').value='';
-  document.getElementById('aStreet2').value='';
-  document.getElementById('aCity').value='';
-  document.getElementById('aZip').value='';
+  document.getElementById('aStreet').value=defaultStreet;
+  document.getElementById('aStreet2').value=defaultStreet2;
+  document.getElementById('aCity').value=defaultCity;
+  document.getElementById('aZip').value=defaultZip;
   
   if(document.getElementById('aCountry').options.length === 0){
     try{

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -122,6 +122,8 @@ document.addEventListener('DOMContentLoaded', async function(){
     var imgSrc = pdData.image_1024 ? API.img(pdData.image_1024) : API.prodImg(pdId);
     document.getElementById('pdImg').src = imgSrc;
     document.getElementById('pdImg').alt = name;
+    document.getElementById('pdImg').style.display = 'block';
+    document.getElementById('pdImgFb').style.display = 'none';
 
     // Category
     var cat = Array.isArray(pdData.categ_id) ? pdData.categ_id[1] : '';
