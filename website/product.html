@@ -38,8 +38,7 @@
           <div id="pdRibbon" style="display:none;position:absolute;top:12px;left:0;background:var(--red);color:#fff;font-size:11px;font-weight:800;padding:4px 10px 4px 8px;border-radius:0 20px 20px 0"></div>
         </div>
         <!-- Wishlist -->
-        <button id="pdWishBtn" style="margin-top:12px;width:100%;background:#fff;color:var(--red);border:2px solid var(--red);padding:10px;border-radius:var(--r);font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px"
-          onmouseover="this.style.background='var(--red-l)'" onmouseout="this.style.background='#fff'">
+        <button id="pdWishBtn" style="margin-top:12px;width:100%;background:#fff;color:var(--red);border:2px solid var(--red);padding:10px;border-radius:var(--r);font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px">
           ♡ Save to Wishlist
         </button>
       </div>
@@ -175,8 +174,27 @@ document.addEventListener('DOMContentLoaded', async function(){
     }
 
     // Wishlist button
-    document.getElementById('pdWishBtn').onclick = function(){
+    var wBtn = document.getElementById('pdWishBtn');
+    function updateWishBtn(){
+      var inWl = WL.get().some(function(x){ return x.id === pdId; });
+      if(inWl){
+        wBtn.innerHTML = '❤️ Saved to Wishlist';
+        wBtn.style.background = 'var(--red)';
+        wBtn.style.color = '#fff';
+        wBtn.onmouseover = null;
+        wBtn.onmouseout = null;
+      } else {
+        wBtn.innerHTML = '♡ Save to Wishlist';
+        wBtn.style.background = '#fff';
+        wBtn.style.color = 'var(--red)';
+        wBtn.onmouseover = function(){ wBtn.style.background='var(--red-l)'; };
+        wBtn.onmouseout = function(){ wBtn.style.background='#fff'; };
+      }
+    }
+    updateWishBtn();
+    wBtn.onclick = function(){
       WL.toggle(pdId, name);
+      updateWishBtn();
     };
 
     // Load related products
