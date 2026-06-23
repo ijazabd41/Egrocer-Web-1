@@ -260,7 +260,26 @@ body{font-family:'Inter','Tajawal',sans-serif;background:var(--bg);display:flex;
           <input type="date" class="date-inp" id="date-to">
           <button class="p-btn active" onclick="applyCustom()">Apply</button>
         </div>
-        <span class="filter-count" id="period-label">Today</span>
+        <select id="dash-status" onchange="loadDashboard()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:.75rem;font-family:inherit;margin-left:auto">
+          <option value="all">All Statuses</option>
+          <option value="new">New</option>
+          <option value="approved">Approved</option>
+          <option value="ready">Ready</option>
+          <option value="pickup">Pickup</option>
+          <option value="delivered">Delivered</option>
+        </select>
+        <select id="dash-source" onchange="loadDashboard()" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:.75rem;font-family:inherit;margin-left:5px">
+          <option value="all">All Sources</option>
+          <option value="coopplus_web">COOPPLUS Web</option>
+          <option value="coopplus_mobile">COOPPLUS Mobile</option>
+          <option value="coopdiscount_web">COOP Discount Web</option>
+          <option value="coopdiscount_mobile">COOP Discount Mobile</option>
+          <option value="talabat">Talabat</option>
+          <option value="noon">Noon</option>
+          <option value="instashop">Instashop</option>
+          <option value="other">Other</option>
+        </select>
+        <span class="filter-count" id="period-label" style="margin-left:5px">Today</span>
       </div>
 
       <!-- KPI Grid -->
@@ -541,6 +560,10 @@ function applyCustom() {
 async function loadDashboard(silent=false) {
   const params = {period: S.period};
   if (S.period==='custom') { params.date_from=S.dateFrom; params.date_to=S.dateTo; }
+  const statusEl = document.getElementById('dash-status');
+  if (statusEl && statusEl.value !== 'all') params.status = statusEl.value;
+  const sourceEl = document.getElementById('dash-source');
+  if (sourceEl && sourceEl.value !== 'all') params.source = sourceEl.value;
   const r = await api('/api/skytec-delivery/dashboard', params);
   if (!ok(r)) { showErr(dat(r).message||'Dashboard load failed'); return; }
   const d = dat(r);

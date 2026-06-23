@@ -1,4 +1,4 @@
-﻿�<!DOCTYPE html>
+�<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -39,7 +39,8 @@
           <a href="#" onclick="showTab('loyalty',this)">⭐ Loyalty & Rewards</a>
           <a href="#" onclick="showTab('address',this)">📍 My Address</a>
           <div style="margin-top:20px; padding-top:10px; border-top:1px solid #e5e7eb;">
-            <a href="#" onclick="doLogout()" style="color:var(--red)">🚪 Sign Out</a>
+            <a href="#" onclick="showTab('delete-account',this)" style="color:var(--red)">🗑️ Delete Account</a>
+            <a href="#" onclick="doLogout()" style="color:var(--red); margin-top:10px; display:block;">🚪 Sign Out</a>
           </div>
         </nav>
       </div>
@@ -111,6 +112,19 @@
           </div>
           <div id="pwdMsg" style="margin-top:8px;font-size:12px;font-weight:600"></div>
           <button onclick="changePwd()" class="sbtn" style="margin-top:12px;max-width:180px">Update</button>
+        </div>
+      </div>
+
+      <!-- DELETE ACCOUNT TAB -->
+      <div class="pg-tab" id="tab-delete-account">
+        <div class="fs" id="acctDelSec" style="border:1px solid #fee2e2; padding:20px; background:#fff5f5; border-radius:14px;">
+          <h2 style="color:var(--red); font-size:17px; font-weight:800; margin-bottom:10px;">⚠️ Danger Zone: Delete Account</h2>
+          <p style="font-size:13px;color:#6b7280;margin-bottom:16px;line-height:1.5;">Deleting your account is permanent and cannot be undone. All your data, order history, and loyalty points will be completely removed.</p>
+          <div id="delAcctStatus" style="margin-bottom:16px;font-size:13px;font-weight:600;display:none;padding:12px;border-radius:8px;"></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button id="btnReqDel" onclick="reqAcctDel()" class="sbtn" style="background:var(--red);max-width:220px;">Request Account Deletion</button>
+            <button id="btnCancelDel" onclick="cancelAcctDel()" class="sbtn" style="background:#f3f4f6;color:#374151;border:none;max-width:220px;display:none">Cancel Deletion Request</button>
+          </div>
         </div>
       </div>
 
@@ -246,6 +260,7 @@ function showTab(name, el){
   else if(name==='certificates') loadShareholderCertificates();
   else if(name==='sh-rewards') loadShareholderRewards();
   else if(name==='sh-purchases') loadShareholderPurchases();
+  else if(name==='delete-account') checkAccountDeletionStatus();
 }
 
 document.addEventListener('DOMContentLoaded', async function(){
@@ -295,6 +310,62 @@ async function loadDashboard(){
         +'</div></div></div>';
     }).join('') : '<div style="text-align:center;padding:20px;color:#9ca3af;font-size:13px">No orders yet. <a href="shop.html" style="color:var(--red);font-weight:700">Start shopping →</a></div>';
   }catch(e){ document.getElementById('recentOrders').innerHTML='<div style="color:var(--red);font-size:13px">Could not load orders</div>'; }
+}
+
+async function checkAccountDeletionStatus() {
+  try {
+    var res = await API.getAccountDeletionStatus();
+    var statusData = Array.isArray(res.data) ? res.data[0] : res.data;
+    var delStatusEl = document.getElementById('delAcctStatus');
+    var btnReqDel = document.getElementById('btnReqDel');
+    var btnCancelDel = document.getElementById('btnCancelDel');
+    
+    if (statusData && statusData.status === 'pending') {
+      delStatusEl.style.display = 'block';
+      delStatusEl.style.background = '#fffbea';
+      delStatusEl.style.color = '#b45309';
+      delStatusEl.innerHTML = 'Your account deletion request is <strong>pending</strong>. It will be processed soon.';
+      btnReqDel.style.display = 'none';
+      btnCancelDel.style.display = 'block';
+    } else {
+      delStatusEl.style.display = 'none';
+      btnReqDel.style.display = 'block';
+      btnCancelDel.style.display = 'none';
+    }
+  } catch(e) {
+    console.log("Could not load account deletion status", e);
+  }
+}
+
+async function reqAcctDel() {
+  if (!confirm("Are you sure you want to request account deletion? This action is permanent and cannot be undone.")) return;
+  var btn = document.getElementById('btnReqDel');
+  btn.textContent = 'Requesting...';
+  btn.disabled = true;
+  try {
+    await API.requestAccountDeletion();
+    toast('Account deletion requested successfully.', 'ok');
+    checkAccountDeletionStatus();
+  } catch (e) {
+    toast('❌ ' + e.message, 'err');
+    btn.textContent = 'Request Account Deletion';
+    btn.disabled = false;
+  }
+}
+
+async function cancelAcctDel() {
+  var btn = document.getElementById('btnCancelDel');
+  btn.textContent = 'Canceling...';
+  btn.disabled = true;
+  try {
+    await API.cancelAccountDeletion();
+    toast('Account deletion request canceled.', 'ok');
+    checkAccountDeletionStatus();
+  } catch (e) {
+    toast('❌ ' + e.message, 'err');
+    btn.textContent = 'Cancel Deletion Request';
+    btn.disabled = false;
+  }
 }
 
 async function loadProfile(){

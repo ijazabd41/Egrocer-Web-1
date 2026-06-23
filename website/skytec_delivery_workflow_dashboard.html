@@ -34,7 +34,8 @@
 <div class="toolbar">
 <select id="role"><option value="store_manager">Store Manager</option><option value="store_keeper">Store Keeper</option><option value="delivery">Delivery Boy</option><option value="admin">ERP Admin / Delivery Manager</option></select>
 <select id="period"><option value="all">All Time</option><option value="today">Today</option><option value="this_week">This Week</option><option value="this_month">This Month</option></select>
-<select id="stateFilter" onchange="loadDashboard()"><option value="">Default Queue</option><option value="new,approved,ready">Active (New, Appr, Ready)</option><option value="approved">Approved</option><option value="ready">Ready</option><option value="all">All Orders</option></select>
+<select id="dashStatus" onchange="loadDashboard()"><option value="all">All Statuses</option><option value="new">New</option><option value="approved">Approved</option><option value="ready">Ready</option><option value="pickup">Pickup</option><option value="delivered">Delivered</option></select>
+<select id="dashSource" onchange="loadDashboard()"><option value="all">All Sources</option><option value="coopplus_web">COOPPLUS Web</option><option value="coopplus_mobile">COOPPLUS Mobile</option><option value="coopdiscount_web">COOP Discount Web</option><option value="coopdiscount_mobile">COOP Discount Mobile</option><option value="talabat">Talabat</option><option value="noon">Noon</option><option value="instashop">Instashop</option><option value="other">Other</option></select>
 <input id="limit" type="number" value="25" min="1" max="100" placeholder="limit"/>
 <input id="offset" type="number" value="0" min="0" placeholder="offset"/>
 <input id="sessionId" placeholder="Paste session_id cookie here"/>
@@ -69,8 +70,11 @@ function selectQueue(data){const role=document.getElementById('role').value;if(r
 async function loadDashboard(){
   showErr('');
   try{
-    const stateFilter=document.getElementById('stateFilter')?document.getElementById('stateFilter').value:'';
     const params={by_AJR:1,period:document.getElementById('period').value,limit:document.getElementById('limit').value,offset:document.getElementById('offset').value};
+    const dashStatus = document.getElementById('dashStatus').value;
+    if (dashStatus && dashStatus !== 'all') params.status = dashStatus;
+    const dashSource = document.getElementById('dashSource').value;
+    if (dashSource && dashSource !== 'all') params.source = dashSource;
     const r=await apiGet('/api/skytec-delivery/dashboard',params);
     const data=r.data||r;
     const t=data.totals||{};
@@ -79,24 +83,14 @@ async function loadDashboard(){
     document.getElementById('kApproved').textContent=t.approved||0;
     document.getElementById('kReady').textContent=t.ready||0;
     
-    if(stateFilter){
+    if (dashStatus !== 'all' || dashSource !== 'all') {
       document.getElementById('queueTitle').textContent = 'Filtered Orders';
-      if(stateFilter==='all'){
-        const or=await apiGet('/api/skytec-delivery/orders',params);
-        currentItems=or.data?.results||or.results||or.data||[];
-      }else if(stateFilter.includes(',')){
-        let items=[];
-        for(let st of stateFilter.split(',')){
-          const or=await apiGet('/api/skytec-delivery/orders',{...params,state:st});
-          items=items.concat(or.data?.results||or.results||or.data||[]);
-        }
-        items.sort((a,b)=>b.id-a.id);
-        currentItems=items;
-      }else{
-        const or=await apiGet('/api/skytec-delivery/orders',{...params,state:stateFilter});
-        currentItems=or.data?.results||or.results||or.data||[];
-      }
-    }else{
+      // Use the orders endpoint for explicitly filtered views
+      const ordParams = { ...params };
+      if (dashStatus !== 'all') ordParams.state = dashStatus;
+      const or = await apiGet('/api/skytec-delivery/orders', ordParams);
+      currentItems = or.data?.results || or.results || or.data || [];
+    } else {
       currentItems=selectQueue(data);
       document.getElementById('queueTitle').textContent=document.getElementById('role').selectedOptions[0].text+' Queue';
     }
@@ -190,15 +184,6 @@ window.addEventListener('DOMContentLoaded',()=>{
     if(roleCode !== 'admin' && roleCode !== 'company_owner' && roleCode !== 'delivery_manager') {
       roleSelect.innerHTML = `<option value="${roleSelect.value}">${roleSelect.options[roleSelect.selectedIndex].text}</option>`;
       roleSelect.disabled = true;
-    }
-    
-    const sf = document.getElementById('stateFilter');
-    if(sf) {
-      if(roleCode === 'store_keeper') {
-        sf.innerHTML = `<option value="">Default Queue</option><option value="approved,ready">Active (Appr, Ready)</option><option value="approved">Approved</option><option value="ready">Ready</option><option value="all">All Orders</option>`;
-      } else if (roleCode === 'store_manager' || roleCode === 'stock_manager') {
-        sf.innerHTML = `<option value="">Default Queue</option><option value="new,approved">Active (New, Appr)</option><option value="new">Pending Approval</option><option value="approved">Approved</option><option value="all">All Orders</option>`;
-      }
     }
   }
   loadDashboard();

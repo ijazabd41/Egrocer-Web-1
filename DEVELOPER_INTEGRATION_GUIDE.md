@@ -102,10 +102,12 @@ reads `session_id` and `user_name` automatically.
 All endpoints: `GET /api/skytec-delivery/{endpoint}`
 Authentication: Odoo session cookie (`session_id`)
 
-### Dashboard (with date filter)
+### Dashboard (with date and dropdown filters)
 ```
 GET /api/skytec-delivery/dashboard
     ?period=today|yesterday|this_week|this_month|last_6_months|all|custom
+    &status=all|new|approved|ready|pickup|delivered
+    &source=all|coopplus_web|coopplus_mobile|coopdiscount_web|coopdiscount_mobile|talabat|noon|instashop|other
     &date_from=YYYY-MM-DD   (for custom period)
     &date_to=YYYY-MM-DD     (for custom period)
 

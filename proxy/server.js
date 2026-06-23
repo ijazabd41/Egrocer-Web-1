@@ -28,6 +28,8 @@ const ALLOWED_PATH_PREFIXES = [
   '/web/image/',
   '/web/binary/',
   '/my/invoices/',
+  '/shop',
+  '/payment/',
 ];
 function isAllowedPath(odooPath) {
   return ALLOWED_PATH_PREFIXES.some(prefix => odooPath.startsWith(prefix));
@@ -99,7 +101,7 @@ function isImage(path) {
   return path.includes('/web/image/') || path.includes('/web/binary/');
 }
 
-function fwd(res, odooPath, method, body, cookie, sessionToken) {
+function fwd(res, odooPath, method, body, cookie, sessionToken, reqContentType) {
   // Use WHATWG URL API instead of deprecated url.parse
   const odooUrl = new URL(ODOO);
   const isS = odooUrl.protocol === 'https:';
@@ -108,7 +110,8 @@ function fwd(res, odooPath, method, body, cookie, sessionToken) {
     'Accept': '*/*',
     'User-Agent': 'CoopDiscountsProxy/2.1'
   };
-  if (!isImage(odooPath)) hdrs['Content-Type'] = 'application/json';
+  if (reqContentType) hdrs['Content-Type'] = reqContentType;
+  else if (!isImage(odooPath)) hdrs['Content-Type'] = 'application/json';
   if (cookie) hdrs['Cookie'] = cookie;
   if (sessionToken) hdrs['Cookie'] = (hdrs['Cookie'] ? hdrs['Cookie'] + '; ' : '') + `session_id=${sessionToken}`;
   if (body) hdrs['Content-Length'] = Buffer.byteLength(body);
@@ -257,12 +260,12 @@ http.createServer((req, res) => {
   if (req.method === 'POST') {
     let b = '';
     req.on('data', d => b += d);
-    req.on('end', () => fwd(res, full, 'POST', b, cookie, sessionToken));
+    req.on('end', () => fwd(res, full, 'POST', b, cookie, sessionToken, req.headers['content-type']));
   } else if (req.method === 'PUT') {
     let b = '';
     req.on('data', d => b += d);
-    req.on('end', () => fwd(res, full, 'PUT', b, cookie, sessionToken));
+    req.on('end', () => fwd(res, full, 'PUT', b, cookie, sessionToken, req.headers['content-type']));
   } else {
-    fwd(res, full, req.method, null, cookie, sessionToken);
+    fwd(res, full, req.method, null, cookie, sessionToken, req.headers['content-type']);
   }
 }).listen(PORT, '0.0.0.0', () => console.log(`✅ http://localhost:${PORT}/health\n`));

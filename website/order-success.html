@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -73,6 +73,24 @@ document.addEventListener('DOMContentLoaded', async function(){
   if(accessWarn) document.getElementById('accessWarn').style.display='block';
   document.getElementById('orderNameDisplay').textContent = orderName ? 'Order ' + orderName : 'Order #' + orderId;
   document.getElementById('trackBtn').href = 'track-order.html?oid=' + orderId;
+
+  if (orderId === 'guest') {
+    document.getElementById('orderLoading').style.display='none';
+    document.getElementById('orderDetail').style.display='block';
+    document.getElementById('orderInfoContent').innerHTML = 
+      '<div style="text-align:center;padding:12px 0;line-height:1.6">'
+      +'<p style="font-size:14.3px;color:#374151;margin-bottom:12px;font-weight:600">Your order has been successfully placed under reference: <strong>'+(orderName || 'Guest Order')+'</strong>.</p>'
+      +'<p style="font-size:12.8px;color:#6b7280;margin-bottom:12px">An email confirmation containing your order details and invoice information has been sent to you.</p>'
+      +'<p style="font-size:12.8px;color:#6b7280">You can track your order using the order reference and the link sent to your email.</p>'
+      +'</div>';
+    
+    var trk = document.getElementById('trackBtn');
+    if (trk) {
+      trk.href = 'track-order.html';
+      trk.style.display = 'none';
+    }
+    return;
+  }
 
   try{
     // Load full order detail

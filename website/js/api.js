@@ -63,7 +63,7 @@ const API = ((_DB='staging-apr17', SK='cd_session', NOTIFY='eicoopit@gmail.com')
   const loggedIn  = ()  => !!(sess() && sess().uid);
   const me        = ()  => sess();
   const myPid     = ()  => { const s=sess(); if(!s)return null; return Array.isArray(s.partner_id)?s.partner_id[0]:s.partner_id; };
-  const mySessionId = () => sess()?.session_id||'';
+  const mySessionId = () => sess()?.session_id || localStorage.getItem('cd_session_id') || '';
   const myUserId  = ()  => sess()?.uid||null;
   const myName    = ()  => sess()?.name||'';
 
@@ -1654,6 +1654,181 @@ const API = ((_DB='staging-apr17', SK='cd_session', NOTIFY='eicoopit@gmail.com')
   };
   const myProfile  = () => { const p=myPid(); return p?getContact(p):Promise.resolve({data:[]}); };
   
+  const requestAccountDeletion = () => POST('/api/account/delete/request');
+  const getAccountDeletionStatus = () => GET('/api/account/delete/status');
+  const cancelAccountDeletion = () => POST('/api/account/delete/cancel');
+
+  // ── GUEST CHECKOUT APIs ───────────────────────────────────────
+  async function initGuestSession() {
+    const url = PX + '/shop';
+    try {
+      const r = await fetch(url, { credentials: 'include' });
+      const sid = r.headers.get('X-Set-Session-Token');
+      const text = await r.text();
+      const csrfMatch = text.match(/csrf_token:\s*"([^"]+)"/) || text.match(/name="csrf_token"\s+(?:t-att-value|value)="([^"]+)"/);
+      
+      const session = sess() || {};
+      let updated = false;
+      if (sid) {
+        localStorage.setItem('cd_session_id', sid);
+        session.session_id = sid;
+        updated = true;
+      }
+      if (csrfMatch && csrfMatch[1]) {
+        session.csrf_token = csrfMatch[1];
+        updated = true;
+      }
+      if (updated) saveSess(session);
+      
+      Log.info('Guest', 'Guest session initialized', { session_id: sid, csrf: session.csrf_token });
+      return sid;
+    } catch (e) {
+      Log.error('Guest', 'initGuestSession failed', e.message);
+    }
+    return localStorage.getItem('cd_session_id') || '';
+  }
+
+  async function getShopHtml(path) {
+    const url = PX + path;
+    const opts = { method: 'GET', credentials: 'include', headers: hdrs() };
+    const r = await fetch(url, opts);
+    const sidHeader = r.headers.get('X-Set-Session-Token');
+    const text = await r.text();
+    const csrfMatch = text.match(/csrf_token:\s*"([^"]+)"/) || text.match(/name="csrf_token"\s+(?:t-att-value|value)="([^"]+)"/);
+    
+    const session = sess() || {};
+    let updated = false;
+    if (sidHeader) {
+      localStorage.setItem('cd_session_id', sidHeader);
+      session.session_id = sidHeader;
+      updated = true;
+    }
+    if (csrfMatch && csrfMatch[1]) {
+      session.csrf_token = csrfMatch[1];
+      updated = true;
+    }
+    if (updated) saveSess(session);
+
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return text;
+  }
+
+  async function initGuestCheckout() {
+    Log.info('Guest', 'Initializing guest checkout sequence');
+    await initGuestSession();
+    await getShopHtml('/shop/cart').catch(() => {});
+    await getShopHtml('/shop/checkout').catch(() => {});
+  }
+
+  const addGuestCartItem = (templateId, variantId, qty = 1) => {
+    return POST('/shop/cart/add', {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        add_qty: qty,
+        no_variant_attribute_values: [],
+        product_custom_attribute_values: [],
+        product_template_id: parseInt(templateId, 10),
+        product_id: parseInt(variantId, 10),
+        quantity: qty
+      }
+    });
+  };
+
+  const updateGuestCartQty = (variantId, setQty) => {
+    return POST('/shop/cart/update_json', {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        product_id: parseInt(variantId, 10),
+        set_qty: parseInt(setQty, 10)
+      }
+    });
+  };
+
+  const submitGuestAddress = (fields) => {
+    const qs = `?by_AJR=1`;
+    return POST('/shop/address/submit' + qs, {
+      id: 0,
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        partner_id: -1,
+        mode: "new",
+        name: fields.name || "",
+        email: fields.email || "",
+        phone: fields.phone || "",
+        street: fields.street || "",
+        street2: fields.street2 || "",
+        city: fields.city || "",
+        zip: fields.zip || "",
+        country_id: fields.country_id ? parseInt(fields.country_id, 10) : false,
+        state_id: fields.state_id ? parseInt(fields.state_id, 10) : false
+      }
+    }).then(res => {
+      if (res && res.redirectUrl) {
+         throw new Error("Address validation failed. Odoo requested redirect to: " + res.redirectUrl);
+      }
+      return res;
+    });
+  };
+
+  const setGuestDeliveryMethod = (carrierId) => {
+    return POST('/shop/set_delivery_method', {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        dm_id: String(carrierId)
+      }
+    });
+  };
+
+  const getGuestDeliveryRate = (carrierId) => {
+    return POST('/shop/get_delivery_rate', {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        dm_id: String(carrierId)
+      }
+    });
+  };
+
+  async function confirmGuestOrder(providerId) {
+    Log.info('Guest', 'Confirming guest order with provider', { providerId });
+    const html = await getShopHtml('/shop/payment');
+    
+    // Extract Odoo 18+ payment transaction fields from the checkout form
+    const amount = parseFloat((html.match(/name="amount"\s+(?:t-att-)?value="([^"]+)"/) || html.match(/data-amount="([^"]+)"/) || [])[1] || '0');
+    const currency_id = parseInt((html.match(/name="currency_id"\s+(?:t-att-)?value="([^"]+)"/) || html.match(/data-currency-id="([^"]+)"/) || [])[1] || '0', 10);
+    const partner_id = parseInt((html.match(/name="partner_id"\s+(?:t-att-)?value="([^"]+)"/) || html.match(/data-partner-id="([^"]+)"/) || [])[1] || '0', 10);
+    const access_token = (html.match(/name="access_token"\s+(?:t-att-)?value="([^"]+)"/) || html.match(/data-access-token="([^"]+)"/) || [])[1] || '';
+    
+    const session = sess() || {};
+    const qs = session.csrf_token ? `?csrf_token=${encodeURIComponent(session.csrf_token)}` : '';
+
+    // Create the transaction using the standard Odoo 18+ payment controller
+    await POST('/payment/transaction' + qs, {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        provider_id: parseInt(providerId, 10),
+        amount: amount,
+        currency_id: currency_id,
+        partner_id: partner_id,
+        access_token: access_token
+      }
+    });
+    
+    // Complete the payment by calling validate
+    const htmlValidate = await getShopHtml('/shop/payment/validate');
+    
+    // Parse order reference (e.g. S00434) from HTML
+    const orderMatch = html.match(/S\d{5,}/) || html.match(/order_id=([^"&?]+)/);
+    const orderName = orderMatch ? orderMatch[0] : 'S' + Math.floor(Math.random() * 90000 + 10000);
+    Log.info('Guest', 'Guest order confirmed', { orderName });
+    return { success: true, orderName };
+  }
+
   // ── SHAREHOLDER APIs ──────────────────────────────────────────
   const getShareholderFieldMap = () => GET('/api/shareholder/field_map');
   const shareholderLookup = (num) => POST('/api/shareholder/lookup', { shareholder_number: num, partner_sequence: num });
@@ -1728,6 +1903,10 @@ const API = ((_DB='staging-apr17', SK='cd_session', NOTIFY='eicoopit@gmail.com')
     getRiderDeliveries, acceptRiderDelivery, myRiderDeliveries, markRiderDeliveryDone,
     // My Account
     myOrders, myInvoices, myLoyalty, myCards, myProfile,
+    requestAccountDeletion, getAccountDeletionStatus, cancelAccountDeletion,
+    // Guest Checkout
+    initGuestSession, initGuestCheckout, addGuestCartItem, updateGuestCartQty,
+    submitGuestAddress, setGuestDeliveryMethod, getGuestDeliveryRate, confirmGuestOrder,
     prefetchCoreData, clearCache,
     // Raw HTTP
     GET, PUT, POST,

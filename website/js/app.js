@@ -356,33 +356,50 @@ const Cart=(()=>{
     if(ex){
       ex.qty++;sv(items);
       L().info('Cart','add qty+1',{product_id:prod.product_id,variant_id:ex.variant_id||ex.product_id,qty:ex.qty});
-      const ordId=await ensureOrder();
-      const vid=ex.variant_id||ex.product_id;
-      if(ordId&&vid){
-        try{
-          const r=await API.updateCartQty(parseInt(ordId),vid,ex.qty);
-          if(r.recId){ex.line_id=r.recId;sv(items);}
-        }catch(e){
-          L().warn('Cart','add update failed, retry create',{orderId:ordId,variantId:vid,message:e.message});
-          delete ex.line_id;sv(items);
+      if(!API.loggedIn()) {
+        const vid=ex.variant_id||ex.product_id;
+        if(vid){
+          if(!API.mySessionId()) await API.initGuestSession();
+          try{ await API.updateGuestCartQty(vid, ex.qty); }catch(e){L().error('Cart','guest add qty update failed',e.message);}
+        }
+      } else {
+        const ordId=await ensureOrder();
+        const vid=ex.variant_id||ex.product_id;
+        if(ordId&&vid){
           try{
-            const r=await API.addLine(parseInt(ordId),vid,ex.qty);
-            if(r.data?.rec_id){ex.line_id=r.data.rec_id;sv(items);}
-          }catch(e2){L().error('Cart','add retry failed',{orderId:ordId,variantId:vid,message:e2.message});}
+            const r=await API.updateCartQty(parseInt(ordId),vid,ex.qty);
+            if(r.recId){ex.line_id=r.recId;sv(items);}
+          }catch(e){
+            L().warn('Cart','add update failed, retry create',{orderId:ordId,variantId:vid,message:e.message});
+            delete ex.line_id;sv(items);
+            try{
+              const r=await API.addLine(parseInt(ordId),vid,ex.qty);
+              if(r.data?.rec_id){ex.line_id=r.data.rec_id;sv(items);}
+            }catch(e2){L().error('Cart','add retry failed',{orderId:ordId,variantId:vid,message:e2.message});}
+          }
         }
       }
     }else{
       L().info('Cart','add new item',{product_id:prod.product_id,variant_id:prod.variant_id||prod.product_id,name:prod.name});
-      let lineId=null;const ordId=await ensureOrder();
-      const vid=prod.variant_id||prod.product_id;
-      if(ordId&&vid){
-        try{const r=await API.addLine(parseInt(ordId),vid,1);lineId=r.data?.rec_id||null;}catch(e){L().error('Cart','add line failed',{orderId:ordId,variantId:vid,message:e.message});}
-      }
-      if(ordId&&lineId){
-        try{const qr=await API.getLineQty(lineId);const bq=qr.data?.product_uom_qty||qr.data?.qty||1;if(bq!==1){const ix=items.findIndex(i=>i.product_id===prod.product_id);if(ix>-1){items[ix].qty=bq;sv(items);}}}catch(_){}
+      let lineId=null;
+      if(!API.loggedIn()) {
+        const vid=prod.variant_id||prod.product_id;
+        if(vid){
+          if(!API.mySessionId()) await API.initGuestSession();
+          try{ await API.addGuestCartItem(prod.product_id, vid, 1); }catch(e){L().error('Cart','guest add new item failed',e.message);}
+        }
+      } else {
+        const ordId=await ensureOrder();
+        const vid=prod.variant_id||prod.product_id;
+        if(ordId&&vid){
+          try{const r=await API.addLine(parseInt(ordId),vid,1);lineId=r.data?.rec_id||null;}catch(e){L().error('Cart','add line failed',{orderId:ordId,variantId:vid,message:e.message});}
+        }
+        if(ordId&&lineId){
+          try{const qr=await API.getLineQty(lineId);const bq=qr.data?.product_uom_qty||qr.data?.qty||1;if(bq!==1){const ix=items.findIndex(i=>i.product_id===prod.product_id);if(ix>-1){items[ix].qty=bq;sv(items);}}}catch(_){}
+        }
       }
       items.push({...prod,qty:1,line_id:lineId});sv(items);
-      L().info('Cart','add ✓',{orderId:ordId,lineId,cartCount:count()});
+      L().info('Cart','add ✓',{lineId,cartCount:count()});
     }
     tick();renderDrawer();toast('✅ Added to cart');
   }
@@ -393,7 +410,9 @@ const Cart=(()=>{
     sv(next);
     const o=oid();
     const vid=item?.variant_id||item?.product_id;
-    if(o&&vid){
+    if(!API.loggedIn() && vid) {
+      API.updateGuestCartQty(vid, 0).catch(()=>{});
+    } else if(o&&vid){
       API.updateCartQty(parseInt(o),vid,0).catch(()=>{
         if(item?.line_id) API.rmLines(parseInt(o),[item.line_id]).catch(()=>{});
       });
@@ -407,10 +426,16 @@ const Cart=(()=>{
     if(item.qty===0){remove(pid);return;}
     sv(items);
     const ordId2=oid();
-    if(ordId2&&item.variant_id){
+    if(!API.loggedIn() && item.variant_id) {
+      try {
+        await API.updateGuestCartQty(item.variant_id, item.qty);
+      } catch (e) {
+        L().warn('Cart','guest setQty sync failed',{product_id:pid,qty:item.qty,message:e.message});
+      }
+    } else if(ordId2&&item.variant_id){
       try{
         const r=await API.updateCartQty(parseInt(ordId2),item.variant_id||item.product_id,item.qty);
-        if(r.recId){item.line_id=r.recId;sv(items);}
+        if(r.recId){ex.line_id=r.recId;sv(items);}
       }catch(e){
         delete item.line_id;sv(items);
         L().warn('Cart','setQty sync failed',{product_id:pid,qty:item.qty,message:e.message});
@@ -702,13 +727,6 @@ async function addToCart(json) {
   try { payload = typeof json === 'string' ? JSON.parse(json) : json; }
   catch (_) { toast('Could not add to cart', 'err'); return; }
   if (!payload?.product_id) { toast('Could not add to cart', 'err'); return; }
-
-  if (!API.loggedIn()) {
-    localStorage.setItem('pending_cart_add', JSON.stringify(payload));
-    toast('Please sign in to add to cart', 'warn');
-    setTimeout(() => { location.href = 'login.html?next=' + encodeURIComponent(location.pathname.split('/').pop() || 'index.html'); }, 800);
-    return;
-  }
 
   try {
     const p = await resolveProductForCart(payload.product_id);

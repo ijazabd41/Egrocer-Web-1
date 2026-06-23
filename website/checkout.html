@@ -152,6 +152,7 @@
       <h4 style="font-size:13px;font-weight:800;margin-bottom:10px">Add New Address</h4>
       <div class="fgrid">
         <div class="fg"><label class="fl">Name *</label><input class="fi" id="fn" placeholder="e.g. Home, Office"></div>
+        <div class="fg"><label class="fl">Email *</label><input class="fi" id="em" placeholder="you@example.com" type="email"></div>
         <div class="fg"><label class="fl">Phone *</label><input class="fi" id="ph" placeholder="+971 55 000 0000" type="tel"></div>
         <div class="fg full"><label class="fl">Street / Building *</label><input class="fi" id="addr" placeholder="Building No, Street, Area"></div>
         <div class="fg full"><label class="fl">Street 2 (Apt / Villa)</label><input class="fi" id="addr2" placeholder="Apartment / Villa / Floor"></div>
@@ -305,6 +306,29 @@ function validateStep(step){
     return true;
   }
   if(step===2){
+    if(!API.loggedIn()) {
+      if(selDeliveryKind==='store'){
+        var fn = document.getElementById('fnPk') ? document.getElementById('fnPk').value.trim() : '';
+        var ph = document.getElementById('phPk') ? document.getElementById('phPk').value.trim() : '';
+        var em = document.getElementById('em') ? document.getElementById('em').value.trim() : '';
+        if(!fn || !ph || !em){
+          toast('Please enter your name, email, and phone for pickup', 'warn');
+          return false;
+        }
+      } else {
+        var fn = document.getElementById('fn').value.trim();
+        var em = document.getElementById('em').value.trim();
+        var ph = document.getElementById('ph').value.trim();
+        var street = document.getElementById('addr').value.trim();
+        var city = document.getElementById('city').value.trim();
+        var country = document.getElementById('country').value;
+        if(!fn || !em || !ph || !street || !city || !country){
+          toast('Please fill in Name, Email, Phone, Street, City, Country', 'warn');
+          return false;
+        }
+      }
+      return true;
+    }
     if(selDeliveryKind==='store'){
       var fn = document.getElementById('fnPk') ? document.getElementById('fnPk').value.trim() : '';
       var ph = document.getElementById('phPk') ? document.getElementById('phPk').value.trim() : '';
@@ -335,24 +359,65 @@ async function goStep(step){
     var origTxts = [];
     btnList.forEach(function(b, idx) { origTxts[idx] = b.textContent; b.textContent = '⏳ Saving...'; b.disabled = true; });
     try {
-      var contact = await resolveCheckoutContact();
-      var oid = Cart.oid();
-      if(!oid) {
-         try { oid = await Cart.ensureOrder(); } catch(_) {}
-      }
-      if(oid && !contact.isStore && contact.partnerShippingId) {
-         await API.updDelivery(parseInt(oid), selCarrierId, {
-           partner_shipping_id: contact.partnerShippingId,
-           partner_invoice_id: contact.partnerInvoiceId || contact.partnerShippingId
-         });
-         await Cart.syncToOrder(parseInt(oid), true);
-         renderSummary();
-      } else if (oid && contact.isStore && contact.partnerInvoiceId) {
-         await API.updDelivery(parseInt(oid), selCarrierId, {
-           partner_invoice_id: contact.partnerInvoiceId
-         });
-         await Cart.syncToOrder(parseInt(oid), true);
-         renderSummary();
+      if (!API.loggedIn()) {
+        if(selDeliveryKind==='store'){
+          var fn = document.getElementById('fnPk') ? document.getElementById('fnPk').value.trim() : '';
+          var ph = document.getElementById('phPk') ? document.getElementById('phPk').value.trim() : '';
+          var em = document.getElementById('em') ? document.getElementById('em').value.trim() : '';
+          await API.submitGuestAddress({
+            name: fn,
+            email: em,
+            phone: ph,
+            street: 'Store Pickup',
+            city: 'Dubai',
+            country_id: 228
+          });
+        } else {
+          var fn = document.getElementById('fn').value.trim();
+          var em = document.getElementById('em').value.trim();
+          var ph = document.getElementById('ph').value.trim();
+          var street = document.getElementById('addr').value.trim();
+          var street2 = document.getElementById('addr2').value.trim();
+          var city = document.getElementById('city').value.trim();
+          var zip = document.getElementById('zip').value.trim();
+          var country = document.getElementById('country').value;
+          var state = document.getElementById('state').value;
+          
+          await API.submitGuestAddress({
+            name: fn,
+            email: em,
+            phone: ph,
+            street: street,
+            street2: street2,
+            city: city,
+            zip: zip,
+            country_id: country,
+            state_id: state
+          });
+        }
+        if (selCarrierId) {
+          await API.setGuestDeliveryMethod(selCarrierId);
+        }
+      } else {
+        var contact = await resolveCheckoutContact();
+        var oid = Cart.oid();
+        if(!oid) {
+           try { oid = await Cart.ensureOrder(); } catch(_) {}
+        }
+        if(oid && !contact.isStore && contact.partnerShippingId) {
+           await API.updDelivery(parseInt(oid), selCarrierId, {
+             partner_shipping_id: contact.partnerShippingId,
+             partner_invoice_id: contact.partnerInvoiceId || contact.partnerShippingId
+           });
+           await Cart.syncToOrder(parseInt(oid), true);
+           renderSummary();
+        } else if (oid && contact.isStore && contact.partnerInvoiceId) {
+           await API.updDelivery(parseInt(oid), selCarrierId, {
+             partner_invoice_id: contact.partnerInvoiceId
+           });
+           await Cart.syncToOrder(parseInt(oid), true);
+           renderSummary();
+        }
       }
     } catch(e) {
       if(typeof toast === 'function') toast('Failed to save details: ' + e.message, 'warn');
@@ -390,14 +455,31 @@ function checkPlaceOrderBtnState() {
   var valid = true;
   if(currentStep !== 3) valid = false;
   if(!selCarrierId) valid = false;
-  if(selDeliveryKind !== 'store' && !selDeliveryContact) valid = false;
-  if(selDeliveryKind === 'store') {
-     var fn = document.getElementById('fnPk') ? document.getElementById('fnPk').value.trim() : '';
-     var ph = document.getElementById('phPk') ? document.getElementById('phPk').value.trim() : '';
-     if(!fn || !ph) valid = false;
+  if(API.loggedIn()) {
+    if(selDeliveryKind !== 'store' && !selDeliveryContact) valid = false;
+    if(selDeliveryKind === 'store') {
+       var fn = document.getElementById('fnPk') ? document.getElementById('fnPk').value.trim() : '';
+       var ph = document.getElementById('phPk') ? document.getElementById('phPk').value.trim() : '';
+       if(!fn || !ph) valid = false;
+    } else {
+       var sameCb = document.getElementById('sameAsDeliveryBtn');
+       if((!sameCb || !sameCb.checked) && !selInvoiceContact) valid = false;
+    }
   } else {
-     var sameCb = document.getElementById('sameAsDeliveryBtn');
-     if((!sameCb || !sameCb.checked) && !selInvoiceContact) valid = false;
+    if(selDeliveryKind === 'store') {
+       var fn = document.getElementById('fnPk') ? document.getElementById('fnPk').value.trim() : '';
+       var ph = document.getElementById('phPk') ? document.getElementById('phPk').value.trim() : '';
+       var em = document.getElementById('em') ? document.getElementById('em').value.trim() : '';
+       if(!fn || !ph || !em) valid = false;
+    } else {
+       var fn = document.getElementById('fn').value.trim();
+       var em = document.getElementById('em').value.trim();
+       var ph = document.getElementById('ph').value.trim();
+       var street = document.getElementById('addr').value.trim();
+       var city = document.getElementById('city').value.trim();
+       var country = document.getElementById('country').value;
+       if(!fn || !em || !ph || !street || !city || !country) valid = false;
+    }
   }
   if(!selProvider) valid = false;
   
@@ -465,7 +547,31 @@ document.addEventListener('DOMContentLoaded', async function(){
     return;
   }
   updateStepUi();
-  if(!API.loggedIn()) document.getElementById('loginReminder').style.display='flex';
+
+  if(!API.loggedIn()) {
+    document.getElementById('loginReminder').style.display='flex';
+    API.initGuestCheckout().catch(function(e) { console.warn("Guest checkout init failed", e); });
+    
+    // Toggle address list containers
+    var homeAddr = document.getElementById('homeAddrContainer');
+    if (homeAddr) homeAddr.style.display = 'none';
+    var invAddr = document.getElementById('invoiceAddrContainer');
+    if (invAddr) invAddr.style.display = 'none';
+    
+    // Show guest address form inline
+    var newAddr = document.getElementById('coNewAddr');
+    if (newAddr) {
+      newAddr.style.display = 'block';
+      var addrTypeEl = document.getElementById('addrType');
+      if (addrTypeEl && addrTypeEl.parentElement) addrTypeEl.parentElement.style.display = 'none';
+      var cancelBtn = newAddr.querySelector('button[onclick*="coNewAddr"]');
+      if (cancelBtn) cancelBtn.style.display = 'none';
+      var saveBtn = newAddr.querySelector('button[onclick="saveCheckoutAddress()"]');
+      if (saveBtn) saveBtn.style.display = 'none';
+      var heading = newAddr.querySelector('h4');
+      if (heading) heading.textContent = 'Enter Delivery Address';
+    }
+  }
 
   // PRE-FILL from saved session — populate BOTH home form and pickup-contact form
   var user=API.me();
@@ -509,7 +615,7 @@ document.addEventListener('DOMContentLoaded', async function(){
     }
   });
 
-// Auto-fetch best loyalty coupon if logged in
+  // Auto-fetch best loyalty coupon if logged in
   var preCoupon = new URLSearchParams(location.search).get('coupon');
   
   if (preCoupon) {
@@ -543,6 +649,13 @@ document.addEventListener('DOMContentLoaded', async function(){
   // Listeners for store pickup contacts
   if(document.getElementById('fnPk')) document.getElementById('fnPk').addEventListener('input', checkPlaceOrderBtnState);
   if(document.getElementById('phPk')) document.getElementById('phPk').addEventListener('input', checkPlaceOrderBtnState);
+  
+  // Listeners for guest fields
+  ['fn', 'em', 'ph', 'addr', 'city', 'country', 'state'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if(el) el.addEventListener('input', checkPlaceOrderBtnState);
+    if(el && el.tagName === 'SELECT') el.addEventListener('change', checkPlaceOrderBtnState);
+  });
 });
 
 var checkoutAddrOffset = 0;
@@ -1065,6 +1178,23 @@ async function placeOrder(){
   }
   if(!validateStep(2)){ goStep(2); return; }
   if(currentStep!==3) goStep(3);
+  if (!API.loggedIn()) {
+    btn.disabled=true;btn.textContent='⏳ Placing order...';
+    try {
+      var result = await API.confirmGuestOrder(selProvider);
+      if (result.success && result.orderName) {
+        Cart.clear();
+        location.href='order-success.html?name=' + encodeURIComponent(result.orderName) + '&oid=guest';
+      } else {
+        throw new Error('Order confirmation failed');
+      }
+    } catch (e) {
+      errEl.textContent='❌ '+(e.message||'Could not place order');
+      errEl.style.display='flex';
+      btn.disabled=false;btn.textContent='✅ Place Order';
+    }
+    return;
+  }
   var contact=await resolveCheckoutContact();
   if(contact.isStore){
     if(!contact.fn||!contact.ph){
